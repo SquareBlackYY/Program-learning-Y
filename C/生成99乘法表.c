@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 int main()
 {
 	int a = 1, b = 1,cnt=1;
@@ -9,13 +8,9 @@ int main()
 		{
 			printf("%d*%d=%d", a, b, a * b);
 			if (a == b)
-			{
 				printf("\n");
-			}
 			else
-			{
 				printf(" ");
-			}
 		}
 		a = cnt;
 		cnt + 1;
