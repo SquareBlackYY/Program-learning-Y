@@ -1,4 +1,4 @@
-#include <stdio.h>
+    #include <stdio.h>
 #define MaxData 60 //数组最大长度
 
 void CollectStudentIDAndScores(long StudentIDAndScores[], int *StudentNumber);
