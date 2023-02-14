@@ -1,9 +1,14 @@
 #include<stdio.h>
 int main()
 {
-char ch;
-printf("输入一个符号：");
-scanf("%c",&ch);
-printf("   %c\n  %c%c%c\n %c%c%c%c%c\n%c%c%c%c%c%c%c",ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch,ch);
+    char ch;
+    printf("输入一个符号以及层数：");
+    int linenum,i,j,k;
+    scanf("%c%d",&ch,&linenum);
+    //(1)行
+    for (i=1;i<=linenum;i++)
+    {
+        for(j=;;)
 
+    }
 }
