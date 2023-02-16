@@ -1,17 +1,37 @@
 #include<stdio.h>
 
-int main()
+void main()
 {
     char ch;
-    printf("输入一个符号以及层数：");
-    int linenum,i,j,k;
-    scanf("%c%d",&ch,&linenum);
-    for (i=1;i<=linenum;i++)
+    printf("依次输入一个符号,第一行符号个数，层数：");
+    int linenum,i,j,k,fst;
+    scanf("%c%d%d",&ch,&fst,&linenum);
+    if(linenum==1)
+    //(1)
     {
-        for(j=1;j<=linenum - i;j++)
-        printf(" ");
-        for(k = 1;k<=i * 2- 1;k++)
-        printf("%c", ch);
-    printf("\n");
+        if(fst >80)
+        {
+        printf("您所输入的图形每行不能超过80个符号！\n");
+        return;
+        }
+    }
+    else if (linenum>1)
+    {
+        if(fst +linenum*2-2>80)
+        {
+          printf("您锁输入的图形每行不能超过80！\n");
+          return;
+        }
+        else
+        {
+          for (i=1;i<=linenum;i++)
+          {
+            for(j=1;j<=linenum - i;j++)
+              printf(" ");
+            for(k = 1;k<=fst+i * 2- 2;k++)
+              printf("%c", ch);
+            printf("\n");
+          }
+        }
     }
 }

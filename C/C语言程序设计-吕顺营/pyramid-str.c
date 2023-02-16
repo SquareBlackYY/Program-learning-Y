@@ -10,6 +10,10 @@ int main()
     printf("输入第一行个数：");
     scanf("%d", &firstline);
     cnt_3 = i - 1;
+    if(firstline+i*2-2>80)
+        printf("超过了80\n");
+    else
+{
     for (cnt_2 = 0; cnt_2 < i; cnt_2++)
     {
         for (k = 0; k < cnt_3; k++)
@@ -21,5 +25,6 @@ int main()
         printf("\n");
         cnt_4++;
     }
+}
     return 0;
 }
