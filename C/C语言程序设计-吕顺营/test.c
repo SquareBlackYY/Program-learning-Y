@@ -4,7 +4,7 @@ int main ()
 	char ch;
 	int i, j, k, h, lineNum, res;
 	do
-	{	
+	{
 	    printf("请输入一个符号、首行符号个数和行数：");
         res=scanf("%c%d%d",&ch,&i,&lineNum);
         while(getchar() != '\n');
