@@ -7,5 +7,3 @@ int main()
         pai+=(double)1/start*a;
     printf(".4f",pai*4);
 }
-if(term<0)
-    term*=-1
