@@ -7,11 +7,13 @@ int main()
 {
     int answer, counter, right = 0;
     char op;
+    srand(time(NULL));
     for (counter = 0; counter < 10; counter++)
     {
-        srand(time(NULL));
+        
         int x = rand() % 10 + 1;
         int y = rand() % 10 + 1;
+        printf("%d %d\n", x, y);
         op = CreateRandomOperator();
         printf("%d %c %d=?\n", x, op, y);
         scanf("%d", &answer);
@@ -44,7 +46,7 @@ int Calculate(int x, char op, int y)
         return x / y;
         break;
     }
-}9
+}
 int CreateRandomOperator(void)
 {
     int op;
