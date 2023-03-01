@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-int main()
+void main()
 {
     int n;
     for(n = 100;n <= 999;n++)

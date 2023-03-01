@@ -5,5 +5,5 @@ int main()
     int start=1,a=1;
     for(;(double)1/(start+2)>=0.0001;start+=2,a*=-1)
         pai+=(double)1/start*a;
-    printf(".4f",pai*4);
+    printf("%.4f",pai*4);
 }

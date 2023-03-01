@@ -44,7 +44,7 @@ int Calculate(int x, char op, int y)
         return x / y;
         break;
     }
-}
+}9
 int CreateRandomOperator(void)
 {
     int op;

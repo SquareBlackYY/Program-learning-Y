@@ -1,5 +1,5 @@
 #include<stdio.h>
-int main()
+void main()
 {
     int n = 0, i, term;
     double e = 1;

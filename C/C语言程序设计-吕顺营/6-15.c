@@ -1,5 +1,5 @@
 #include <stdio.h>
-int main()
+void main()
 {
     int chick;
     for(chick = 1;chick <= 98;chick++)

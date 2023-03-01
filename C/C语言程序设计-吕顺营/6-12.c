@@ -1,5 +1,5 @@
 #include <stdio.h>
-int main()
+void main()
 {
     int input, output = 0;
     for(;;)
