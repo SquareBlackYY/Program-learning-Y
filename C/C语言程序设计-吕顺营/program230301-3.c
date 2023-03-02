@@ -8,6 +8,7 @@
 #define NumOfReform 0 //默认单题允许重做次数
 #define AdvancedDivisionMode false //高级除法模式开启时，请四舍五入保留两位小数
 #define AnswerLimit true //答案范围限制，开启后答案范围将沿用随机数范围
+#define ShowAnswer true //回答错误没有继续答题机会后展示正确答案
 
 int main()
 {
@@ -82,7 +83,7 @@ int main()
                     CheckAnswer = true;
                 else if(AdvancedDivisionMode == false && Operator == '/' && Answer == TrueAnswer && Remainder == x % y)
                     CheckAnswer = true;
-                else if(AdvancedDivisionMode == false && Operator != '/' && TrueAnswer == Answer)
+                else if(Operator != '/' && TrueAnswer == Answer)
                     CheckAnswer = true;
                 else
                     CheckAnswer = false;
@@ -95,6 +96,12 @@ int main()
                 else if(NumOfReform == 0 || Reform == NumOfReform)
                 {
                     printf("很遗憾做错了！再接再厉！\n");
+                    if(ShowAnswer == true && AdvancedDivisionMode == true && Operator == '/')
+                        printf("第%d题的正确答案是：%d %c %d = %.2f\n", i, x, Operator, y, TrueAdvancedDivisionModeAnswer);
+                    else if(ShowAnswer == true && AdvancedDivisionMode == false && Operator == '/')
+                        printf("第%d题的正确答案是：%d %c %d = %d  余数为%d\n", i, x, Operator, y, TrueAnswer, x % y);
+                    else if(ShowAnswer == true)
+                        printf("第%d题的正确答案是：%d %c %d = %d\n", i, x, Operator, y, TrueAnswer);
                     break;
                 }
                 else
@@ -112,7 +119,7 @@ int main()
         else if(1.0 * Right / NumOfQuestion >= 0.2)
             printf("答对了%d道题！再认真一点！\n", Right);
         else
-            printf("答对了%d道题，别灰心，有很大发展空间！", Right);
+            printf("答对了%d道题，别灰心，有很大发展空间！\n", Right);
         for(;;)
         {
             printf("你要继续训练吗(y/n)：");
