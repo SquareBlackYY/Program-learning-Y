@@ -36,7 +36,7 @@ int main()
             printf("明文为：");
             for(i = 0;i < TextLength;i++)
             {
-                for(;InputText[i] < KeyText[i % KeyLength];)
+                if(InputText[i] < KeyText[i % KeyLength])
                     InputText[i] += 26;
                 OutputText[i] = InputText[i] - KeyText[i % KeyLength] + 97;
                 printf("%c", OutputText[i]);
