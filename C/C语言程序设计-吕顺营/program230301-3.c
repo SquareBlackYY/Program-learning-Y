@@ -68,22 +68,27 @@ int main()
             }
             for(Reform = 0;Reform <= NumOfReform;Reform++)
             {
-                printf("第%d题： %d %c %d = ?\n", i, x, Operator, y);
+                if(AdvancedDivisionMode == false && Operator == '/')
+                    printf("第%d题： %d %c %d = ?  余数为?\n", i, x, Operator, y);
+                else
+                    printf("第%d题： %d %c %d = ?\n", i, x, Operator, y);
                 if(Operator == '/' && AdvancedDivisionMode == true)
                     scanf("%lf", &AdvancedDivisionModeAnswer);
                 else if(Operator == '/' && AdvancedDivisionMode == false)
                     scanf("%d %d", &Answer, &Remainder);
                 else
                     scanf("%d", &Answer);
-                if(AdvancedDivisionMode == true && Operator == '/' && TrueAdvancedDivisionModeAnswer == AdvancedDivisionModeAnswer || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer > 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0.005) || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer >= -0.005))
+                if(AdvancedDivisionMode == true && Operator == '/' && (TrueAdvancedDivisionModeAnswer == AdvancedDivisionModeAnswer || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer > 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0.005) || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer >= -0.005)))
                     CheckAnswer = true;
                 else if(AdvancedDivisionMode == false && Operator == '/' && Answer == TrueAnswer && Remainder == x % y)
+                    CheckAnswer = true;
+                else if(AdvancedDivisionMode == false && Operator != '/' && TrueAnswer == Answer)
                     CheckAnswer = true;
                 else
                     CheckAnswer = false;
                 if(CheckAnswer == true)
                 {
-                    printf("你是对的！\n");
+                    printf("你是对的！真厉害！\n");
                     Right++;
                     break;
                 }
@@ -96,7 +101,18 @@ int main()
                     printf("不要灰心，再试一次！\n");
             }
         }
-        printf("太棒了！你总共答对了%d道题！\n", Right);
+        if(Right == NumOfQuestion)
+            printf("完美！答对了全部%d道题！不要太骄傲哦～\n", Right);
+        else if(1.0 * Right / NumOfQuestion >= 0.8)
+            printf("太棒了！答对了%d道题！\n", Right);
+        else if(1.0 * Right / NumOfQuestion >= 0.6)
+            printf("做的不错！答对了%d道题！\n", Right);
+        else if(1.0 * Right / NumOfQuestion >= 0.4)
+            printf("答对了%d道题！再加把劲！\n", Right);
+        else if(1.0 * Right / NumOfQuestion >= 0.2)
+            printf("答对了%d道题！再认真一点！\n", Right);
+        else
+            printf("答对了%d道题，别灰心，有很大发展空间！", Right);
         for(;;)
         {
             printf("你要继续训练吗(y/n)：");
@@ -107,7 +123,10 @@ int main()
             break;
         }
         if(Choice == 'n' || Choice == 'N')
+        {
+            printf("拜拜！下次再见！");
             break;
-    }
+        }
+    }  
     return 0;
 }
