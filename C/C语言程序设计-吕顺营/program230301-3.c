@@ -49,7 +49,7 @@ int main()
                     Right++;
                     break;
                 }
-                else if(NumOfReform == 0)
+                else if(NumOfReform == 0 || Reform == NumOfReform)
                     printf("很遗憾做错了！再接再厉！\n");
                 else
                     printf("不要灰心，再试一次！\n");
