@@ -1,22 +1,25 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdbool.h>
 #include<time.h>
 
 #define NumOfQuestion 10 //默认每次生成题数
 #define LowerLimit 0 //默认随机数下限
 #define NumOfReform 0 //默认单题允许重做次数
-
-int CreateRandomOperator(void);
-int CheckAnswer(int x, char Operator, int y, double Answer);
+#define AdvancedDivisionMode false //高级除法模式开启时，请四舍五入保留两位小数
+#define AnswerLimit true //答案范围限制，开启后答案范围将沿用随机数范围
 
 int main()
 {
-    int x, y, UpperLimit, i, Reform, Right;
-    double Answer;
+    int x, y, UpperLimit, i, Reform, Right, Answer, Remainder, TrueAnswer, OperatorNum, CheckAnswer;
+    double TrueAdvancedDivisionModeAnswer, AdvancedDivisionModeAnswer;
     char Operator, Choice;
-    printf("四则运算学习程序\n"
-           "请注意：在进行除法运算时请四舍五入保留2位小数\n"
-           "测试题数：%d\n", NumOfQuestion);
+    printf("四则运算学习程序\n");
+    if(AdvancedDivisionMode == true)
+        printf("请注意：在进行除法运算时，请四舍五入保留2位小数\n");
+    else
+        printf("请注意：在进行除法运算时，请回答商数和余数并用空格隔开\n");
+    printf("测试题数：%d\n", NumOfQuestion);
     for(;;)
     {
         printf("请选择运算范围上限(10、100、1000)：");
@@ -34,23 +37,61 @@ int main()
             {
                 x = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
                 y = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
-                Operator = CreateRandomOperator();
+                OperatorNum = rand() % 4 + 1;
                 if(Operator == '/' && y == 0)
+                    continue;
+                switch (OperatorNum)
+                {
+                    case 1:
+                        Operator = '+';
+                        TrueAnswer = x + y;
+                        break;
+                    case 2:
+                        Operator = '-';
+                        TrueAnswer = x - y;
+                        break;
+                    case 3:
+                        Operator = '*';
+                        TrueAnswer = x * y;
+                        break;
+                    case 4:
+                        Operator = '/';
+                        if(AdvancedDivisionMode == false)
+                            TrueAnswer = x / y;
+                        else
+                            TrueAdvancedDivisionModeAnswer == 1.0 * x / y;
+                        break;
+                }
+                if(AnswerLimit == true && ((AdvancedDivisionMode == false && TrueAnswer < LowerLimit && TrueAnswer > UpperLimit) || (AdvancedDivisionMode == true && TrueAdvancedDivisionModeAnswer < LowerLimit && TrueAdvancedDivisionModeAnswer > UpperLimit)))
                     continue;
                 break;
             }
             for(Reform = 0;Reform <= NumOfReform;Reform++)
             {
                 printf("第%d题： %d %c %d = ?\n", i, x, Operator, y);
-                scanf("%lf", &Answer);
-                if(CheckAnswer(x, Operator, y, Answer) == 1)
+                if(Operator == '/' && AdvancedDivisionMode == true)
+                    scanf("%lf", &AdvancedDivisionModeAnswer);
+                else if(Operator == '/' && AdvancedDivisionMode == false)
+                    scanf("%d %d", &Answer, &Remainder);
+                else
+                    scanf("%d", &Answer);
+                if(AdvancedDivisionMode == true && Operator == '/' && TrueAdvancedDivisionModeAnswer == AdvancedDivisionModeAnswer || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer > 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0.005) || (TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer < 0 && TrueAdvancedDivisionModeAnswer - AdvancedDivisionModeAnswer >= -0.005))
+                    CheckAnswer = true;
+                else if(AdvancedDivisionMode == false && Operator == '/' && Answer == TrueAnswer && Remainder == x % y)
+                    CheckAnswer = true;
+                else
+                    CheckAnswer = false;
+                if(CheckAnswer == true)
                 {
                     printf("你是对的！\n");
                     Right++;
                     break;
                 }
                 else if(NumOfReform == 0 || Reform == NumOfReform)
+                {
                     printf("很遗憾做错了！再接再厉！\n");
+                    break;
+                }
                 else
                     printf("不要灰心，再试一次！\n");
             }
@@ -69,59 +110,4 @@ int main()
             break;
     }
     return 0;
-}
-
-int CreateRandomOperator(void)
-{
-    int OperatorNum = rand() % 4 + 1;
-    char Operator;
-    switch (OperatorNum)
-    {
-        case 1:
-            Operator = '+';
-            break;
-        case 2:
-            Operator = '-';
-            break;
-        case 3:
-            Operator = '*';
-            break;
-        case 4:
-            Operator = '/';
-            break;
-    }
-    return Operator;
-}
-
-int CheckAnswer(int x, char Operator, int y, double Answer)
-{
-    int CheckCode;
-    switch (Operator)
-    {
-        case '+':
-            if(x + y == Answer)
-                CheckCode = 1;
-            else
-                CheckCode = 0;
-            break;
-        case '-':
-            if(x - y == Answer)
-                CheckCode = 1;
-            else
-                CheckCode = 0;
-            break;
-        case '*':
-            if(x * y == Answer)
-                CheckCode = 1;
-            else
-                CheckCode = 0;
-            break;
-        case '/':
-            if(1.0 * x / y == Answer || (1.0 * x / y - Answer > 0 && 1.0 * x / y - Answer < 0.005) || (Answer - 1.0 * x / y > 0 && Answer - 1.0 * x / y <= 0.005))
-                CheckCode = 1;
-            else
-                CheckCode = 0;
-            break;
-    }
-    return CheckCode;
 }
