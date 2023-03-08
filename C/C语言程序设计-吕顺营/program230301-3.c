@@ -26,7 +26,7 @@ int main()
         printf("请选择运算范围上限(10、100、1000)：");
         for(;;)
         {
-            scanf("%d", &UpperLimit);
+            scanf("%d", &UpperLimit);·
             if(UpperLimit == 10 || UpperLimit == 100 || UpperLimit == 1000)
                 break;
             printf("不符合要求！请重新选择运算范围上限(10、100、1000)：");
@@ -39,7 +39,7 @@ int main()
                 x = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
                 y = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
                 OperatorNum = rand() % 4 + 1;
-                if(Operator == '/' && y == 0)
+                if(OperatorNum == 4 && y == 0)
                     continue;
                 switch (OperatorNum)
                 {

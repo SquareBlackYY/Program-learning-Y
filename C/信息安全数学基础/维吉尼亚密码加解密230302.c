@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #define MaxLength 50 //字符串长度
+//待完成功能：限制输入范围
 //待完成功能：输入无视大小写 当前仅输入小写
 //待完成功能：输出大小写控制 当前仅输出小写
 
@@ -43,9 +44,15 @@ int main()
             }
         }
         printf("\n");
-        printf("继续使用？(y/n)");
-        scanf("%c", &ReUseChoice);
-        if(ReUseChoice == 'n')
+        for(;;)
+        {
+            printf("继续使用？(y/n)");
+            scanf("%c", &ReUseChoice);
+            if(ReUseChoice != 'y' && ReUseChoice != 'Y' && ReUseChoice != 'n' && ReUseChoice != 'N')
+                continue;
+            break;
+        }
+        if(ReUseChoice == 'n' || ReUseChoice == 'N')
             break;
     }
     return 0;
