@@ -1,13 +1,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
-//选择计算范围
 int main()
 {
     int UpperLimit, a, b, i,OperatorNum, answer, CheckAnswer, Wrong, Remainder;
+    printf("除法运算时商和余数请以空格隔开\n");
     printf("请选择计算式子的范围(10,100,1000):");
     scanf ("%d",&UpperLimit);
-    //生成随机算数式
     srand(time(NULL));
     for(;;)
     {
@@ -57,7 +56,7 @@ int main()
                 if( OperatorNum == 1 && answer == a + b);
                 else if( OperatorNum == 2 && answer == a - b);
                 else if( OperatorNum == 3 && answer == a * b);
-                else if (OperatorNum == 4 && answer == a / b);
+                else if (OperatorNum == 4 && answer == a / b && Remainder == a % b);
                 else
                 {
                     Wrong++;

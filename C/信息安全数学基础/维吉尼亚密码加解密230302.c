@@ -48,11 +48,11 @@ int main()
         {
             printf("继续使用？(y/n)");
             scanf("%c", &ReUseChoice);
-            if(Choice != 'y' && Choice != 'Y' && Choice != 'n' && Choice != 'N')
+            if(ReUseChoice != 'y' && ReUseChoice != 'Y' && ReUseChoice != 'n' && ReUseChoice != 'N')
                 continue;
             break;
         }
-        if(Choice == 'n' || Choice == 'N')
+        if(ReUseChoice == 'n' || ReUseChoice == 'N')
             break;
     }
     return 0;

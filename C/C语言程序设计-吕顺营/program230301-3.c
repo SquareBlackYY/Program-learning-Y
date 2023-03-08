@@ -39,7 +39,7 @@ int main()
                 x = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
                 y = LowerLimit + rand() % (UpperLimit + 1 - LowerLimit);
                 OperatorNum = rand() % 4 + 1;
-                if(Operator == 4 && y == 0)
+                if(OperatorNum == 4 && y == 0)
                     continue;
                 switch (OperatorNum)
                 {
