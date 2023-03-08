@@ -10,8 +10,7 @@ int main()
         scanf("%d", &Year);
         if((Year & 4 == 0 && Year % 100 != 0) || Year % 400 == 0)
             NumOfDay[1] = 29;
-        Week=(((Year - 1) % 100) + ((Year - 1) % 100) / 4 + ((Year - 1) / 100) / 4 - 2 * ((Year - 1) / 100) + 36) % 7;
-        printf("%d\n", Week);
+        Week = (((Year - 1) % 100) + ((Year - 1) % 100) / 4 + ((Year - 1) / 100) / 4 - 2 * ((Year - 1) / 100) + 36) % 7;
         printf("=====%dÄê ÄêÀú=====\n", Year);
         for(Month = 1, j = 0;Month <= 12;Month++)
         {
