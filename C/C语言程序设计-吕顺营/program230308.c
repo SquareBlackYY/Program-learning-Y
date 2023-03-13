@@ -6,16 +6,16 @@ int main()
     for(;;)
     {
         int NumOfDay[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        printf("ÇëÊäÈëÒ»¸öÄê·İ£¬´òÓ¡¸ÃÄêÄêÀú£º");
+        printf("è¯·è¾“å…¥ä¸€ä¸ªå¹´ä»½ï¼Œæ‰“å°è¯¥å¹´å¹´å†ï¼š");
         scanf("%d", &Year);
         if((Year & 4 == 0 && Year % 100 != 0) || Year % 400 == 0)
             NumOfDay[1] = 29;
         Week = (((Year - 1) % 100) + ((Year - 1) % 100) / 4 + ((Year - 1) / 100) / 4 - 2 * ((Year - 1) / 100) + 36) % 7;
-        printf("=====%dÄê ÄêÀú=====\n", Year);
+        printf("=====%då¹´ å¹´å†=====\n", Year);
         for(Month = 1, j = 0;Month <= 12;Month++)
         {
-            printf("--------%2d ÔÂ--------\n", Month);
-            printf(" ÈÕ Ò» ¶ş Èı ËÄ Îå Áù\n", Month);
+            printf("--------%2d æœˆ--------\n", Month);
+            printf(" æ—¥ ä¸€ äºŒ ä¸‰ å›› äº” å…­\n");
             for(i = 1 - Week;Month == 1 && i != 1;i++, j++)
                 printf("   ");
             for(i = 1, i = i - (j % 7);i <= NumOfDay[Month - 1];i++)
@@ -33,7 +33,7 @@ int main()
         }
         for(;;)
         {
-            printf("¼ÌĞøÊ¹ÓÃ£¿(y/n)");
+            printf("ç»§ç»­ä½¿ç”¨ï¼Ÿ(y/n)");
             getchar();
             scanf("%c", &Choice);
             if(Choice == 'y' || Choice == 'Y' || Choice == 'n' || Choice == 'N')

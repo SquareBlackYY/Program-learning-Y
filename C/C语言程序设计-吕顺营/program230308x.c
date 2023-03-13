@@ -2,16 +2,16 @@
 void main()
 {
     int year, month, daysofmonth, i, week, day[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    printf("ÊäÈëÒ»¸öÄê·İ£º");
+    printf("è¯·è¾“å…¥ä¸€ä¸ªå¹´ä»½ï¼š");
     scanf("%d", &year);
      if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
          day[1]++;
-    printf("=====%dÄê ÄêÀú=====\n", year);
+    printf("=====%då¹´ å¹´å†=====\n", year);
     week = (((year - 1) % 100) + ((year - 1) % 100) / 4 + ((year - 1) / 100) / 4 - 2 * ((year - 1) / 100) + 36) % 7;
     for (month = 1, i = 0; month <= 12; month++)
     {
-        printf("--------%2d ÔÂ--------\n", month);
-        printf(" ÈÕ Ò» ¶ş Èı ËÄ Îå Áù\n", month);
+        printf("--------%2d æœˆ--------\n", month);
+        printf(" æ—¥ ä¸€ äºŒ ä¸‰ å›› äº” å…­\n");
         for (daysofmonth = 1 - (i % 7); daysofmonth <= day[month - 1]; daysofmonth++)
         {
             for(;week>0;week--)
