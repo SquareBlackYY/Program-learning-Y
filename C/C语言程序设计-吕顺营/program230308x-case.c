@@ -1,18 +1,20 @@
 #include <stdio.h>
 int dayofmonth(int month, int year);
+int weekf(int year);
 void main()
 {
-    int year, month, daysofmonth, i, week;
+    int year, month, daysofmonth, i;
     printf("请输入一个年份：");
     scanf("%d", &year);
     printf("=====%d年 年历=====\n", year);
-    week = (((year - 1) % 100) + ((year - 1) % 100) / 4 + ((year - 1) / 100) / 4 - 2 * ((year - 1) / 100) + 36) % 7;
+    //week = (((year - 1) % 100) + ((year - 1) % 100) / 4 + ((year - 1) / 100) / 4 - 2 * ((year - 1) / 100) + 36) % 7;
     for (month = 1, i = 0; month <= 12; month++)
     {
         printf("--------%2d 月--------\n", month);
         printf(" 日 一 二 三 四 五 六\n");
         for (daysofmonth = 1 - (i % 7); daysofmonth <= dayofmonth(month, year); daysofmonth++)
         {
+            int week = weekf(year);
             for(;week>0;week--)
             {
                 printf("   ");
@@ -57,4 +59,9 @@ int dayofmonth(int month, int year)
             break;
     }
     return day;
+}
+int weekf(int year)
+{
+    int week = (((year - 1) % 100) + ((year - 1) % 100) / 4 + ((year - 1) / 100) / 4 - 2 * ((year - 1) / 100) + 36) % 7;
+    return week;
 }
