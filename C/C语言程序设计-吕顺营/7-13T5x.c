@@ -1,21 +1,22 @@
 #include<stdio.h>
-int handsome1();
+int handsome1(int perfectnum);
 int main()
 {
-    int perfectnum,  sum = 0;
+    int perfectnum;
     printf("输入一个正整数：");
     scanf("%d", &perfectnum);
-    if(sum == perfectnum)
+    if(handsome1(perfectnum) == perfectnum)
         printf("此正整数是一个完全数\n");
     else 
         printf("此正整数不是一个完全数\n");
 }
-int handsome1()
+int handsome1(int perfectnum)
 {
-    int i, perfectnum,sum = 0;
-    for(i = 1;i <= (perfectnum/2);i++)
+    int i, sum;
+    for(i = 1,sum = 0;i <= (perfectnum/2);i++)
     {
         if(perfectnum % i == 0)
-            sum += i;
+            sum += i;  
     }
+    return sum;
 }

@@ -13,7 +13,7 @@ void main()
         printf("--------%2d 月--------\n", month);
         printf(" 日 一 二 三 四 五 六\n");
         for (daysofmonth = 1 - (i % 7); daysofmonth <= dayofmonth(month, year); daysofmonth++)
-        {
+        
             int week = weekf(year);
             for(;week>0;week--)
             {

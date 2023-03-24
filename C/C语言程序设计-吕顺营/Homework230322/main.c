@@ -4,8 +4,6 @@ void showMainMenu();/*显示主菜单*/
 void showChapMenu(int chNum);/*显示章菜单，并运行章中程序*/
 void viewCode(char* fileName);/*查看源代码的函数*/ 
 int return_front=0; /*return_front=1时返回上级菜单*/ 
-int handsome1(int perfectnum);
-int pressCh3();
 
 void main() 
 {
@@ -32,7 +30,7 @@ void showChapMenu(int chNum)
   switch(chNum)
   {
     case 0:exit(0);//退出程序 
-	  case 1:pressCh3();break;//第3章处理程序
+	case 1:pressCh3();break;//第3章处理程序
 	 
 	default:break;
   }
@@ -57,26 +55,4 @@ void viewCode(char* fileName)
     putchar(ch);
   }
   fclose(fp);
-}
-int pressCh3()
-{
-  
-      int perfectnum;
-      printf("输入一个正整数：");
-      scanf("%d", &perfectnum);
-      if(handsome1(perfectnum) == perfectnum)
-          printf("此正整数是一个完全数\n");
-      else 
-          printf("此正整数不是一个完全数\n");
-  }
-  
-int handsome1(int perfectnum)
-  {
-      int i, sum;
-      for(i = 1,sum = 0;i <= (perfectnum/2);i++)
-      {
-          if(perfectnum % i == 0)
-              sum += i;  
-      }
-      return sum;
 }
