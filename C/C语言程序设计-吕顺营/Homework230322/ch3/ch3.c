@@ -14,7 +14,6 @@ void pressCh3()
         showCh3Menu();
         printf("请输入题目前面的序号：");
         scanf("%d", &quNum);
-
         pressCh3Ques(quNum);
         if (return_front)
             break;
