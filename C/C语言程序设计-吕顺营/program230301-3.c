@@ -131,7 +131,7 @@ int main()
         }
         if(Choice == 'n' || Choice == 'N')
         {
-            printf("拜拜！下次再见！");
+            printf("拜拜！下次再见！\n");
             break;
         }
     }  
