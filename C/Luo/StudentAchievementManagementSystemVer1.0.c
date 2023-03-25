@@ -1,20 +1,20 @@
-    #include <stdio.h>
-#define MaxData 60 //Êı×é×î´ó³¤¶È
+#include <stdio.h>
+#define MaxData 60 //æ•°ç»„æœ€å¤§é•¿åº¦
 
 void CollectStudentIDAndScores(long StudentIDAndScores[], int *StudentNumber);
-//£¨1£©	Â¼ÈëÃ¿¸öÑ§ÉúµÄÑ§ºÅºÍ¿¼ÊÔ³É¼¨
+//ï¼ˆ1ï¼‰	å½•å…¥æ¯ä¸ªå­¦ç”Ÿçš„å­¦å·å’Œè€ƒè¯•æˆç»©
 void CalculateTotalAndAverageScores(long StudentIDAndScores[], int *StudentNumber, long *Total, double *Average);
-//£¨2£©	¼ÆËã¿Î³ÌµÄ×Ü·ÖºÍÆ½¾ù·Ö
+//ï¼ˆ2ï¼‰	è®¡ç®—è¯¾ç¨‹çš„æ€»åˆ†å’Œå¹³å‡åˆ†
 void SortByGrade(long StudentIDAndScores[], int *StudentNumber);
-//£¨3£©	°´³É¼¨ÓÉ¸ßµ½µÍÅÅ³öÃû´Î±í
+//ï¼ˆ3ï¼‰	æŒ‰æˆç»©ç”±é«˜åˆ°ä½æ’å‡ºåæ¬¡è¡¨
 void SortByID(long StudentIDAndScores[], int *StudentNumber);
-//£¨4£©	°´Ñ§ºÅÓÉĞ¡µ½´óÅÅ³ö³É¼¨±í
+//ï¼ˆ4ï¼‰	æŒ‰å­¦å·ç”±å°åˆ°å¤§æ’å‡ºæˆç»©è¡¨
 void QueryRankAndScore(long StudentIDAndScores[], int *StudentNumber);
-//£¨5£©	°´Ñ§ºÅ²éÑ¯Ñ§ÉúÅÅÃû¼°Æä¿¼ÊÔ³É¼¨
+//ï¼ˆ5ï¼‰	æŒ‰å­¦å·æŸ¥è¯¢å­¦ç”Ÿæ’ååŠå…¶è€ƒè¯•æˆç»©
 void StatisticsAndClassification(long StudentIDAndScores[], int *StudentNumber);
-//£¨6£©	°´ÓÅĞã£¨90~100£©¡¢Á¼ºÃ£¨80~89£©¡¢ÖĞµÈ£¨70~79£©¡¢¼°¸ñ£¨60~69£©¡¢²»¼°¸ñ£¨0~59£©5¸öÀà±ğ£¬Í³¼ÆÃ¿¸öÀà±ğµÄÈËÊıÒÔ¼°ËùÕ¼µÄ°Ù·Ö±È
+//ï¼ˆ6ï¼‰	æŒ‰ä¼˜ç§€ï¼ˆ90~100ï¼‰ã€è‰¯å¥½ï¼ˆ80~89ï¼‰ã€ä¸­ç­‰ï¼ˆ70~79ï¼‰ã€åŠæ ¼ï¼ˆ60~69ï¼‰ã€ä¸åŠæ ¼ï¼ˆ0~59ï¼‰5ä¸ªç±»åˆ«ï¼Œç»Ÿè®¡æ¯ä¸ªç±»åˆ«çš„äººæ•°ä»¥åŠæ‰€å çš„ç™¾åˆ†æ¯”
 void OutputIDAndScore(long StudentIDAndScores[], int *StudentNumber);
-//£¨7£©	Êä³öÃ¿¸öÑ§ÉúµÄÑ§ºÅ¡¢¿¼ÊÔ³É¼¨
+//ï¼ˆ7ï¼‰	è¾“å‡ºæ¯ä¸ªå­¦ç”Ÿçš„å­¦å·ã€è€ƒè¯•æˆç»©
 
 void main()
 {
@@ -71,7 +71,7 @@ void main()
     return;
 }
 
-//£¨1£©	Â¼ÈëÃ¿¸öÑ§ÉúµÄÑ§ºÅºÍ¿¼ÊÔ³É¼¨
+//ï¼ˆ1ï¼‰	å½•å…¥æ¯ä¸ªå­¦ç”Ÿçš„å­¦å·å’Œè€ƒè¯•æˆç»©
 void CollectStudentIDAndScores(long StudentIDAndScores[], int *StudentNumber)
 {
     int Count = 0;
@@ -102,7 +102,7 @@ void CollectStudentIDAndScores(long StudentIDAndScores[], int *StudentNumber)
     return;
 }
 
-//£¨2£©	¼ÆËã¿Î³ÌµÄ×Ü·ÖºÍÆ½¾ù·Ö
+//ï¼ˆ2ï¼‰	è®¡ç®—è¯¾ç¨‹çš„æ€»åˆ†å’Œå¹³å‡åˆ†
 void CalculateTotalAndAverageScores(long StudentIDAndScores[], int *StudentNumber, long *Total, double *Average)
 {
     int StudentNumberCount;
@@ -121,7 +121,7 @@ void CalculateTotalAndAverageScores(long StudentIDAndScores[], int *StudentNumbe
     return;
 }
 
-//£¨3£©	°´³É¼¨ÓÉ¸ßµ½µÍÅÅ³öÃû´Î±í
+//ï¼ˆ3ï¼‰	æŒ‰æˆç»©ç”±é«˜åˆ°ä½æ’å‡ºåæ¬¡è¡¨
 void SortByGrade(long StudentIDAndScores[], int *StudentNumber)
 {
     long Temp[MaxData], TempID, TempScore;
@@ -155,7 +155,7 @@ void SortByGrade(long StudentIDAndScores[], int *StudentNumber)
     return;
 }
 
-//£¨4£©	°´Ñ§ºÅÓÉĞ¡µ½´óÅÅ³ö³É¼¨±í
+//ï¼ˆ4ï¼‰	æŒ‰å­¦å·ç”±å°åˆ°å¤§æ’å‡ºæˆç»©è¡¨
 void SortByID(long StudentIDAndScores[], int *StudentNumber)
 {
     long Temp[MaxData], TempID, TempScore;
@@ -189,7 +189,7 @@ void SortByID(long StudentIDAndScores[], int *StudentNumber)
     return;
 }
 
-//£¨5£©	°´Ñ§ºÅ²éÑ¯Ñ§ÉúÅÅÃû¼°Æä¿¼ÊÔ³É¼¨
+//ï¼ˆ5ï¼‰	æŒ‰å­¦å·æŸ¥è¯¢å­¦ç”Ÿæ’ååŠå…¶è€ƒè¯•æˆç»©
 void QueryRankAndScore(long StudentIDAndScores[], int *StudentNumber)
 {
     long Temp[MaxData], TempID, TempScore, UserInput;
@@ -236,11 +236,11 @@ void QueryRankAndScore(long StudentIDAndScores[], int *StudentNumber)
     return;
 }
 
-//£¨6£©	°´ÓÅĞã£¨90~100£©¡¢Á¼ºÃ£¨80~89£©¡¢ÖĞµÈ£¨70~79£©¡¢¼°¸ñ£¨60~69£©¡¢²»¼°¸ñ£¨0~59£©5¸öÀà±ğ£¬Í³¼ÆÃ¿¸öÀà±ğµÄÈËÊıÒÔ¼°ËùÕ¼µÄ°Ù·Ö±È
+//ï¼ˆ6ï¼‰	æŒ‰ä¼˜ç§€ï¼ˆ90~100ï¼‰ã€è‰¯å¥½ï¼ˆ80~89ï¼‰ã€ä¸­ç­‰ï¼ˆ70~79ï¼‰ã€åŠæ ¼ï¼ˆ60~69ï¼‰ã€ä¸åŠæ ¼ï¼ˆ0~59ï¼‰5ä¸ªç±»åˆ«ï¼Œç»Ÿè®¡æ¯ä¸ªç±»åˆ«çš„äººæ•°ä»¥åŠæ‰€å çš„ç™¾åˆ†æ¯”
 void StatisticsAndClassification(long StudentIDAndScores[], int *StudentNumber)
 {
     int Count, LevelNumber[5] = {0};
-    char Level[5][6] = {"ÓÅĞã", "Á¼ºÃ", "ÖĞµÈ", "¼°¸ñ", "²»¼°¸ñ"};
+    char Level[5][6] = {"ä¼˜ç§€", "è‰¯å¥½", "ä¸­ç­‰", "åŠæ ¼", "ä¸åŠæ ¼"};
     if (StudentIDAndScores[0] == 0)
         printf("You have not entered relevant data!\n");
     else
@@ -264,7 +264,7 @@ void StatisticsAndClassification(long StudentIDAndScores[], int *StudentNumber)
     return;
 }
 
-//£¨7£©	Êä³öÃ¿¸öÑ§ÉúµÄÑ§ºÅ¡¢¿¼ÊÔ³É¼¨
+//ï¼ˆ7ï¼‰	è¾“å‡ºæ¯ä¸ªå­¦ç”Ÿçš„å­¦å·ã€è€ƒè¯•æˆç»©
 void OutputIDAndScore(long StudentIDAndScores[], int *StudentNumber)
 {
     int Count;
