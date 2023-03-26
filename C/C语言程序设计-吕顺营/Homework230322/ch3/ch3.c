@@ -40,22 +40,22 @@ void pressCh3Ques(int quNum)
     case 1:
         return_front = 0;
         ch3_2();
-        viewCode(".\\ch3\\ch3_2.c");
+        viewCode("./ch3/ch3_2.c");
         break;
     case 2:
         return_front = 0;
         ch3_3();
-        viewCode(".\\ch3\\ch3_3.c");
+        viewCode("./ch3/ch3_3.c");
         break;
     case 3:
         return_front = 0;
         ch3_4();
-        viewCode(".\\ch3\\ch3_4.c");
+        viewCode("./ch3/ch3_4.c");
         break;
     case 4:
         return_front = 0;
         ch3_5();
-        viewCode(".\\ch3\\ch3_5.c");
+        viewCode("./ch3/ch3_5.c");
         break;
     }
 }
