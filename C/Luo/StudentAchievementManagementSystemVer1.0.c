@@ -19,7 +19,8 @@ void OutputIDAndScore(long StudentIDAndScores[], int *StudentNumber);
 void main()
 {
     int Choice = -1, Count, StudentNumber;
-    long StudentIDAndScores[MaxData] = {0}, Total;
+    long
+     StudentIDAndScores[MaxData] = {0}, Total;
     double Average;
     for (; Choice != 0;)
     {

@@ -1,21 +1,44 @@
 #include <stdio.h>
 int main()
 {
-    int i, j, a, b, n_1, n_2, n_3;
-    printf("您要输入几乘几的矩阵与几乘几的矩阵相乘：");
-    scanf("%d%d%d%d", &n_1, &n_2, &n_2, &n_3);
-    int element1[n_1][n_2], element2[n_2][n_3];
-    printf("请输入第一个矩阵的各个元素：");
-    for (i = 0; i <= n_1; i++)
-        for (j = 0; j <= n_2; j++)
-            scanf("%d", element1[i][j]);
-    printf("请输入第二个矩阵的各个元素：");
-    for (i = 0; i <= n_1; i++)
-        for (j = 0; j <= n_2; j++)
-            scanf("%d", element2[i][j]);
-    for (a = 0; a <= n_1; a++)
-        for (b = 0; (a - 1) % n_1 == 0; b++)
+
+    int r1, c1, r2, c2, i, j, m;
+    printf("请输入第一个矩阵的行数和列数：");
+    scanf("%d%d", &r1, &c1);
+    printf("请输入第二个矩阵的行数和列数：");
+    scanf("%d%d", &r2, &c2);
+    if (c1 != r2)
+        printf("这两个矩阵无法相乘！\n");
+    int matrxi[r1][c2], matrxi1[r1][c1], matrxi2[r2][c2];
+    // 输入矩阵元素
+    printf("请输入第一个矩阵的元素：\n");
+    for (i = 0; i < r1; i++)
+        for (j = 0; j < c1; j++)
+            scanf("%d", &matrxi1[i][j]);
+    printf("请输入第二个矩阵的元素：\n");
+    for (i = 0; i < r2; i++)
+        for (j = 0; j < c2; j++)
+            scanf("%d", &matrxi2[i][j]);
+    // 矩阵相乘运算
+    for (i = 0; i < r1; i++)
+    {
+        for (j = 0; j < c2; j++)
         {
-            element1[a][b] * element2[b][a];
+            matrxi[i][j]=0;
+            for (m = 0; m < c1; m++)
+            {
+                matrxi[i][j] += matrxi1[i][m] * matrxi2[m][j];
+            }
         }
+    }
+    // 输出结果
+    printf("矩阵相乘的结果是：\n");
+    for (i = 0; i < r1; i++)
+    {
+        for (j = 0; j < c2; j++)
+        {
+            printf("%d ", matrxi[i][j]);
+        }
+        printf("\n");
+    }
 }
