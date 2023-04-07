@@ -24,7 +24,7 @@ int main()
     {
         for (j = 0; j < c2; j++)
         {
-            matrxi[i][j]=0;
+            matrxi[i][j] = 0;
             for (m = 0; m < c1; m++)
             {
                 matrxi[i][j] += matrxi1[i][m] * matrxi2[m][j];
@@ -41,4 +41,5 @@ int main()
         }
         printf("\n");
     }
+    return 0;
 }
