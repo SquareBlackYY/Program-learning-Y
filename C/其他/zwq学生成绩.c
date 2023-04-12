@@ -2,25 +2,25 @@
 
 #define STU 40
 #define COU 3
-#define STYP 2 // 学生总分等类型
+// #define STYP 2   //学生总分等类型
 
 int readscore(int score[][COU], int n);
-int readnum(int n);
-int AverforStud(int STUN[][STYP], int n, int score[][COU]);
+int readnum(int n, int num[]);
+int AverforStud(int STUN[][COU], int n, int score[][COU]);
 int AverforCourse(int score[][COU], int n, int COUN[][COU]);
-int printAll(int score[][COU], int STUN[][STYP], int COUN[][COU], int n);
+int printAll(int score[][COU], int STUN[][COU], int COUN[][COU], int n, int num[]);
 
 int main()
 {
-    int score[STU][COU], STUN[STU][STYP], COUN[STU + 2][COU], n;
-
+    int score[STU][COU], STUN[STU][COU], COUN[STU + 2][COU], n;
+    long num[STU];
     printf("请输入学生的总数:");
     scanf(" %d", &n);
-    readnum(n);
+    readnum(n, num);
     readscore(score, n);
     AverforStud(STUN, n, score);
     AverforCourse(score, n, COUN);
-    printAll(score, STUN, COUN, n);
+    printAll(score, STUN, COUN, n, num);
 }
 
 int readscore(int score[][COU], int n)
@@ -36,21 +36,21 @@ int readscore(int score[][COU], int n)
     }
 }
 
-int readnum(int n)
+int readnum(int n, int num[])
 {
-    long num[STU];
     int i;
     printf("请输入学生的编号\n");
     for (i = 0; i < n; i++)
     {
         scanf(" %ld", &num[i]);
     }
+    return num[i];
 }
 
-int AverforStud(int STUN[][STYP], int n, int score[][COU])
+int AverforStud(int STUN[][COU], int n, int score[][COU])
 {
     int i, j;
-    for (i = 0; i <= n; i++)
+    for (i = 0; i < n; i++)
     {
         STUN[i][j] = 0;
         for (j = 0; j < COU; j++)
@@ -75,21 +75,26 @@ int AverforCourse(int score[][COU], int n, int COUN[][COU])
     }
 }
 
-int printAll(int score[][COU], int STUN[][STYP], int COUN[][COU], int n)
+int printAll(int score[][COU], int STUN[][COU], int COUN[][COU], int n, int num[])
 {
     int i, j, h;
     printf("Student's ID \t MT \t EN \t PH \t SUM \t AVER \n ");
-    for (i = 0; i < n + 2; i++)
+    for (i = 0; i < n; i++)
     {
-        // printf("readnum\n");
+        printf("%ld\t", num[i]);
         for (j = 0; j < COU; j++)
         {
-            printf("%4d\t", score[i][j]);
-            for (h = 0; h < STYP; h++)
-            {
-                printf("%4d\t", STUN[i][j]);
-            }
+            printf("%d\t", score[i][j]);
         }
-        printf("%d", COUN[i][j]);
+        for (h = 2; h <= COU; h++)
+        {
+            printf("%d\t", STUN[i][h]);
+        }
+        printf("\n");
+        if (i < n)
+        {
+            printf("课程总分\t");
+            printf("%d", COUN[i][j]);
+        }
     }
 }
