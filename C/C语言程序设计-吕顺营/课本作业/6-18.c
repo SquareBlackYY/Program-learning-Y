@@ -1,20 +1,20 @@
-#include<stdio.h>
+#include <stdio.h>
 int main()
 {
     int a, b;
-    for(a = 1;a <= 9;a++)
+    for (a = 1; a <= 9; a++)
         printf("%3d", a);
     printf("\n");
-    for(a = 1;a <= 9;a++) 
+    for (a = 1; a <= 9; a++)
         printf("  -");
     printf("\n");
-    for(b=1;b<=9;b++)
+    for (b = 1; b <= 9; b++)
     {
-        for(a = 1;a <=9;a++)
-            if(a<b)
+        for (a = 1; a <= 9; a++)
+            if (a < b)
                 printf("   ");
-            else 
-                printf("%3d", a*b);
+            else
+                printf("%3d", a * b);
         printf("\n");
     }
 }

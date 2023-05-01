@@ -1,13 +1,14 @@
-#include<stdio.h>
+#include <stdio.h>
 void main()
 {
     int n = 0, i, term;
     double e = 1;
-    for(n = 1;;n++)
-    {   
-        for(term = 1,i = 1;i <= n;i++)
+    for (n = 1;; n++)
+    {
+        for (term = 1, i = 1; i <= n; i++)
             term *= i;
-        if(1.0 / term < 0.00001) break;
+        if (1.0 / term < 0.00001)
+            break;
         e += 1.0 / term;
     }
     printf("e=%.5f,累加项数：%d\n", e, n + 1);
