@@ -11,7 +11,7 @@ void InputData(int *, int *, int[][MaxSize], int[], int[][MaxSize], int *, int *
 void PrintMap(int[][MaxSize]);
 void CreatNextMap(int (*)[][MaxSize], int (*)[][MaxSize]);
 void Move(int *, int *, int);
-void FindMirror(int (*)[][MaxSize], int x, int y);
+void FindMirror(int (*)[][MaxSize], int, int);
 void AnswerCheck(int (*)[][MaxSize]);
 void PrintAnswer(int (*)[][MaxSize]);
 
@@ -84,13 +84,13 @@ void InputData(int *Laser, int *Direction, int Mirror[][MaxSize], int Lantern[],
 
     // 输入数据
     printf("·请输入激光器位置和方向：");
-    *Laser = 40, *Direction = 6;
+    *Laser = 20, *Direction = 0;
     // scanf("%d %d", Laser, Direction);
     printf("·请输入反射装置位置：");
-    Mirror[0][0] = 20, Mirror[1][0] = 1, Mirror[2][0] = 31, Mirror[3][0] = 23, *NumOfMirror = 4;
+    Mirror[0][0] = 1, Mirror[1][0] = 4, Mirror[2][0] = 22, Mirror[3][0] = 31,Mirror[4][0] = 34,Mirror[5][0] = 52, *NumOfMirror = 6;
     // for (i = 0; scanf("%d", &Mirror[i][0]) && getchar() != '\n'; i++, (*NumOfMirror)++);
     printf("·请输入灯笼位置：\n");
-    Lantern[0] = 21, Lantern[1] = 22, Lantern[2] = 12, Lantern[3] = 32, *NumOfLantern = 4;
+    Lantern[0] = 2, Lantern[1] = 13, Lantern[2] = 32, Lantern[3] = 33,Lantern[4] = 42,Lantern[5] = 43, *NumOfLantern = 6;
     // for (i = 0; scanf("%d", &Lantern[i]) && getchar() != '\n'; i++, (*NumOfLantern)++);
 
     // 可移动反射装置坐标处理
@@ -230,7 +230,7 @@ void FindMirror(int (*Map)[][MaxSize], int x, int y)
     for (; Direction <= 7;)
     {
         Move(&tx, &ty, Direction);
-        //printf("(%d,%d)的值为%d\n", tx, ty, NextMap[tx + 1][ty + 1]);
+        // printf("(%d,%d)的值为%d\n", tx, ty, NextMap[tx + 1][ty + 1]);
         if (NextMap[tx + 1][ty + 1] == 2)
         {
             NextMap[tx + 1][ty + 1] = -NextMap[tx + 1][ty + 1];

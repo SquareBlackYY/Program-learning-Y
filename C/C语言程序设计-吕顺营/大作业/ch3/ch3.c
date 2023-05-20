@@ -1,10 +1,10 @@
 // ch3.c
 #include <stdio.h>
 
-void showCh3Menu();           /*显示第3章的菜单*/
-void pressCh3Ques(int quNum); /*运行第3章的作业*/
+void showCh3Menu();           // 显示第3章的菜单
+void pressCh3Ques(int quNum); // 运行第3章的作业
 
-extern int return_front; /*声明return_front为外部变量*/
+extern int return_front; // 声明return_front为外部变量
 
 void pressCh3()
 {

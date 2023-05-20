@@ -7,11 +7,9 @@ void ch3_2()
     scanf("%d", &n);
     if (n < 0)
         n = -n;
-
     gw = n % 10;
     sw = (n / 10) % 10;
     bw = n / 100;
     n = gw * 100 + sw * 10 + bw;
-
     printf("该数的逆序数是:%d\n", n);
 }
