@@ -1,5 +1,7 @@
 // ch3_2.c
+
 #include <stdio.h>
+
 void ch3_2()
 {
     int n, gw, sw, bw;

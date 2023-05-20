@@ -1,6 +1,9 @@
 // ch3_5.c
+
 #include <stdio.h>
+
 const double pai = 3.14;
+
 void ch3_5()
 {
     double r, s, v;

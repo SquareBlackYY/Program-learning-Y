@@ -1,6 +1,8 @@
 // ch3_4.c
+
 #include <stdio.h>
 #include <math.h>
+
 void ch3_4()
 {
     double a, b, c, x1, x2;
