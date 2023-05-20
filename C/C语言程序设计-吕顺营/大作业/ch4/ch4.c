@@ -25,7 +25,7 @@ void pressCh4()
 void showCh4Menu()
 {
     printf("********************\n");
-    printf("第4章C语言作业（4个）\n");
+    printf("第4章C语言作业（1个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
     printf("********************\n");

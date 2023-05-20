@@ -32,7 +32,7 @@ void showMainMenu()
 	printf("********************\n");
 	printf("0-退出程序\n");
 	printf("1-第3章作业（4个）\n");
-	printf("2-第4章作业（5个）\n");
+	printf("2-第4章作业（1个）\n");
 	printf("3-第5章作业（个）\n");
 	printf("4-第6章作业（个）\n");
 	printf("5-第7章作业（个）\n");
@@ -59,34 +59,34 @@ void showChapMenu(int chNum)
 		pressCh4();
 		break; // 第4章处理程序
 	case 3:
-		pressCh4();
+		pressCh5();
 		break; // 第5章处理程序
 	case 4:
-		pressCh3();
+		pressCh6();
 		break; // 第6章处理程序
 	case 5:
-		pressCh4();
+		pressCh7();
 		break; // 第7章处理程序
 	case 6:
-		pressCh4();
+		pressCh8();
 		break; // 第8章处理程序
 	case 7:
-		pressCh3();
+		pressCh9();
 		break; // 第9章处理程序
 	case 8:
-		pressCh4();
+		pressCh10();
 		break; // 第10章处理程序
 	case 9:
-		pressCh4();
+		pressCh11();
 		break; // 第11章处理程序
 	case 10:
-		pressCh3();
+		pressCh12();
 		break; // 第12章处理程序
 	case 11:
-		pressCh4();
+		pressCh13();
 		break; // 第13章处理程序
 	case 12:
-		pressCh4();
+		pressCh14();
 		break; // 第14章处理程序
 	default:
 		break;
