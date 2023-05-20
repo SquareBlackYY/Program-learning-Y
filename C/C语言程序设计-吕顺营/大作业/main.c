@@ -1,3 +1,7 @@
+/*# # # # # # # # # # # # # # # # # # # # # # # #
+#	 				WARNING						#
+#	This program can only be run on Linux.		#
+# # # # # # # # # # # # # # # # # # # # # # # #*/
 #include <stdio.h>
 #include <stdlib.h>
 
