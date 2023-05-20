@@ -11,9 +11,11 @@ void pressCh10()
     int quNum;
     while (1)
     {
+        system("clear");
         showCh10Menu();
         printf("请输入题目前面的序号：");
         scanf("%d", &quNum);
+        printf("********************\n");
         pressCh10Ques(quNum);
         if (return_front)
             break;
@@ -22,8 +24,11 @@ void pressCh10()
 
 void showCh10Menu()
 {
+    printf("********************\n");
     printf("第10章C语言作业（10个）\n");
+    printf("********************\n");
     printf("0-返回上级菜单\n");
+    printf("********************\n");
 }
 
 void pressCh10Ques(int quNum)

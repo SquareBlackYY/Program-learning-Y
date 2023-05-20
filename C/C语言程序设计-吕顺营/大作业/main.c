@@ -7,23 +7,25 @@ void viewCode(char *fileName); // 查看源代码的函数
 
 int return_front = 0; // return_front=1时返回上级菜单
 
-// 主函数
 void main()
 {
 	int chNum;
 	while (1)
 	{
+		system("clear");
 		showMainMenu();
 		printf("请输入章节前面的序号：");
 		scanf("%d", &chNum);
+		printf("********************\n");
 		showChapMenu(chNum);
 	}
 }
 
-// 展示程序主菜单
 void showMainMenu()
 {
+	printf("********************\n");
 	printf("张笑宇的C语言程序\n");
+	printf("********************\n");
 	printf("0-退出程序\n");
 	printf("1-第3章作业（4个）\n");
 	printf("2-第4章作业（5个）\n");
@@ -37,9 +39,9 @@ void showMainMenu()
 	printf("10-第12章作业（个）\n");
 	printf("11-第13章作业（个）\n");
 	printf("12-第14章作业（个）\n");
+	printf("********************\n");
 }
 
-// 进入章节菜单
 void showChapMenu(int chNum)
 {
 	switch (chNum)
@@ -92,8 +94,10 @@ void viewCode(char *fileName)
 {
 	FILE *fp;
 	char ch;
+	printf("********************\n");
 	printf("要查看源代码吗？需要请输入Y或y，否则，输入任意其他字符：");
 	scanf(" %c", &ch);
+	printf("********************\n");
 	if (ch != 'Y' && ch != 'y')
 		return;
 	if ((fp = fopen(fileName, "r")) == NULL)
@@ -104,4 +108,8 @@ void viewCode(char *fileName)
 	while ((ch = fgetc(fp)) != EOF)
 		putchar(ch);
 	fclose(fp);
+	printf("\n********************\n");
+	printf("输入任意字符继续...");
+	getchar();
+	getchar();
 }
