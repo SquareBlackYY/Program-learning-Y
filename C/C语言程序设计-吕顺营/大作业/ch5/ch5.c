@@ -39,6 +39,8 @@ void showCh5Menu()
     printf("8-第8题 判断字符类型\n");
     printf("9-第9题 百分制成绩转五分制\n");
     printf("10-第10题 输出某年某月天数\n");
+    printf("11-第11题 身高预测\n");
+    printf("12-第12题 体重预测\n");
     printf("********************\n");
 }
 
@@ -98,6 +100,16 @@ void pressCh5Ques(int quNum)
         return_front = 0;
         ch5_10();
         viewCode("./ch5/ch5_10.c");
+        break;
+    case 11:
+        return_front = 0;
+        ch5_11();
+        viewCode("./ch5/ch5_11.c");
+        break;
+    case 12:
+        return_front = 0;
+        ch5_12();
+        viewCode("./ch5/ch5_12.c");
         break;
     }
 }
