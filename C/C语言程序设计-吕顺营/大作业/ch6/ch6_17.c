@@ -4,17 +4,13 @@
 
 void ch6_17()
 {
-    int i, j, k;
-    int count = 0;
-
-    for (i = 1; i < 40; i++)
-        for (j = 1; j < 20; j++)
-            for (k = 1; k < 10; k++)
-                if (i + j + k == 50 && i + 2 * j + 10 * k == 100)
-                {
-                    printf("10元：%d张 5元：%d张 1元：%d张\n", k, j, i);
-                    count++;
-                }
+    int x, y, z, count = 0;
+    
+    for (x = 1; x <= 20; x++)
+        for (y = 1; y <= 20; y++)
+            for (z = 1; z <= 50; z++)
+                if ((x * 10 + y * 5 + z) == 100 && (x + y + z) == 50)
+                    printf("方案%d：10元纸币%d张，5元纸币%d张，1元纸币%d张\n", ++count, x, y, z);
 
     printf("共有%d种兑换方案\n", count);
 }
