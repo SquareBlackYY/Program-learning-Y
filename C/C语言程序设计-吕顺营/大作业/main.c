@@ -51,6 +51,7 @@ void showChapMenu(int chNum)
 	switch (chNum)
 	{
 	case 0:
+		system("clear");
 		exit(0); // 退出程序
 	case 1:
 		pressCh3();

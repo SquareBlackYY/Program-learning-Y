@@ -15,6 +15,7 @@ void pressCh12()
         showCh12Menu();
         printf("请输入题目前面的序号：");
         scanf("%d", &quNum);
+        getchar();
         printf("********************\n");
         pressCh12Ques(quNum);
         if (return_front)

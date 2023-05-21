@@ -15,6 +15,7 @@ void pressCh4()
         showCh4Menu();
         printf("请输入题目前面的序号：");
         scanf("%d", &quNum);
+        getchar();
         printf("********************\n");
         pressCh4Ques(quNum);
         if (return_front)
@@ -28,6 +29,7 @@ void showCh4Menu()
     printf("第4章C语言作业（1个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
+    printf("1-第4题 小写字母转大写并输出ASCII码\n");
     printf("********************\n");
 }
 
@@ -38,5 +40,10 @@ void pressCh4Ques(int quNum)
     case 0:
         return_front = 1;
         return;
+    case 1:
+        return_front = 0;
+        ch4_4();
+        viewCode("./ch4/ch4_4.c");
+        break;
     }
 }
