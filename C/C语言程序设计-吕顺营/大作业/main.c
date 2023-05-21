@@ -113,6 +113,6 @@ void viewCode(char *fileName)
 		putchar(ch);
 	fclose(fp);
 	printf("\n********************\n");
-	printf("输入任意字符继续...");
+	printf("按回车以继续...");
 	getchar();
 }

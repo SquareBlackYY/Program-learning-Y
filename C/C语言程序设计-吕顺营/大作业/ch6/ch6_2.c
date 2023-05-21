@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <math.h>
 
+int ch6_2_1(void);
+int ch6_2_2(void);
+int ch6_2_3(void);
+int ch6_2_4(void);
+int ch6_2_5(void);
+
 void ch6_2()
 {
     ch6_2_1();
