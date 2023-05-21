@@ -1,7 +1,13 @@
+// ch6_12.c
+
 #include <stdio.h>
-void main()
+
+void ch6_12()
 {
     int input, output = 0;
+
+    printf("请输入一些正数，以负数或零结束：");
+
     for (;;)
     {
         scanf("%d", &input);
@@ -9,5 +15,6 @@ void main()
             break;
         output += input;
     }
-    printf("%d\n", output);
+
+    printf("这些正数的和为：%d\n", output);
 }

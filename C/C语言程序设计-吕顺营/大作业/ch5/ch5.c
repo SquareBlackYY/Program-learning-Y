@@ -26,7 +26,7 @@ void pressCh5()
 void showCh5Menu()
 {
     printf("********************\n");
-    printf("第5章C语言作业（5个）\n");
+    printf("第5章C语言作业（12个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
     printf("1-第1题 输出绝对值\n");

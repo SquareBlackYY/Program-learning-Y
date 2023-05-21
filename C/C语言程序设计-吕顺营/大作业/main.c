@@ -33,8 +33,8 @@ void showMainMenu()
 	printf("0-退出程序\n");
 	printf("1-第3章作业（4个）\n");
 	printf("2-第4章作业（1个）\n");
-	printf("3-第5章作业（个）\n");
-	printf("4-第6章作业（个）\n");
+	printf("3-第5章作业（12个）\n");
+	printf("4-第6章作业（21个）\n");
 	printf("5-第7章作业（个）\n");
 	printf("6-第8章作业（个）\n");
 	printf("7-第9章作业（个）\n");
