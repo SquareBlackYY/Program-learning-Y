@@ -31,18 +31,18 @@ void showMainMenu()
 	printf("张笑宇的C语言程序\n");
 	printf("********************\n");
 	printf("0-退出程序\n");
-	printf("1-第3章作业（4个）\n");
-	printf("2-第4章作业（1个）\n");
-	printf("3-第5章作业（12个）\n");
-	printf("4-第6章作业（21个）\n");
-	printf("5-第7章作业（个）\n");
-	printf("6-第8章作业（个）\n");
-	printf("7-第9章作业（个）\n");
-	printf("8-第10章作业（个）\n");
-	printf("9-第11章作业（个）\n");
-	printf("10-第12章作业（个）\n");
-	printf("11-第13章作业（个）\n");
-	printf("12-第14章作业（个）\n");
+	printf("3-第3章作业（4个）\n");
+	printf("4-第4章作业（1个）\n");
+	printf("5-第5章作业（12个）\n");
+	printf("6-第6章作业（21个）\n");
+	printf("7-第7章作业（个）\n");
+	printf("8-第8章作业（个）\n");
+	printf("9-第9章作业（个）\n");
+	printf("10-第10章作业（个）\n");
+	printf("11-第11章作业（个）\n");
+	printf("12-第12章作业（个）\n");
+	printf("13-第13章作业（个）\n");
+	printf("14-第14章作业（个）\n");
 	printf("********************\n");
 }
 
@@ -53,44 +53,42 @@ void showChapMenu(int chNum)
 	case 0:
 		system("clear");
 		exit(0); // 退出程序
-	case 1:
+	case 3:
 		pressCh3();
 		break; // 第3章处理程序
-	case 2:
+	case 4:
 		pressCh4();
 		break; // 第4章处理程序
-	case 3:
+	case 5:
 		pressCh5();
 		break; // 第5章处理程序
-	case 4:
+	case 6:
 		pressCh6();
 		break; // 第6章处理程序
-	case 5:
+	case 7:
 		pressCh7();
 		break; // 第7章处理程序
-	case 6:
+	case 8:
 		pressCh8();
 		break; // 第8章处理程序
-	case 7:
+	case 9:
 		pressCh9();
 		break; // 第9章处理程序
-	case 8:
+	case 10:
 		pressCh10();
 		break; // 第10章处理程序
-	case 9:
+	case 11:
 		pressCh11();
 		break; // 第11章处理程序
-	case 10:
+	case 12:
 		pressCh12();
 		break; // 第12章处理程序
-	case 11:
+	case 13:
 		pressCh13();
 		break; // 第13章处理程序
-	case 12:
+	case 14:
 		pressCh14();
 		break; // 第14章处理程序
-	default:
-		break;
 	}
 }
 
@@ -102,6 +100,7 @@ void viewCode(char *fileName)
 	printf("********************\n");
 	printf("要查看源代码吗？需要请输入Y或y，否则，输入任意其他字符：");
 	scanf(" %c", &ch);
+	getchar();
 	printf("********************\n");
 	if (ch != 'Y' && ch != 'y')
 		return;
@@ -115,6 +114,5 @@ void viewCode(char *fileName)
 	fclose(fp);
 	printf("\n********************\n");
 	printf("输入任意字符继续...");
-	getchar();
 	getchar();
 }

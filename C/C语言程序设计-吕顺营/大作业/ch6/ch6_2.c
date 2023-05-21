@@ -32,7 +32,7 @@ int ch6_2_2(void)
         term = i * (i + 1) * (i + 2);
         sum += term;
     }
-    printf("(2)sum=%ld", sum);
+    printf("(2)sum=%ld\n", sum);
     return 0;
 }
 
@@ -41,7 +41,7 @@ int ch6_2_3(void)
     long i, sum = 0;
     int a, n, term = 0;
     printf("Input a,n:");
-    scanf("%d,%d", &a, &n);
+    scanf("%d %d", &a, &n);
     for (i = 1; i <= n; i++)
     {
         term = term * 10 + a;

@@ -29,10 +29,10 @@ void showCh3Menu()
     printf("第3章C语言作业（4个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
-    printf("1-第2题 输出逆序数\n");
-    printf("2-第3题 求本利和\n");
-    printf("3-第4题 求解一元二次方程\n");
-    printf("4-第5题 求球的体积和表面积\n");
+    printf("2-第2题 输出逆序数\n");
+    printf("3-第3题 求本利和\n");
+    printf("4-第4题 求解一元二次方程\n");
+    printf("5-第5题 求球的体积和表面积\n");
     printf("********************\n");
 }
 
@@ -43,22 +43,22 @@ void pressCh3Ques(int quNum)
     case 0:
         return_front = 1;
         return;
-    case 1:
+    case 2:
         return_front = 0;
         ch3_2();
         viewCode("./ch3/ch3_2.c");
         break;
-    case 2:
+    case 3:
         return_front = 0;
         ch3_3();
         viewCode("./ch3/ch3_3.c");
         break;
-    case 3:
+    case 4:
         return_front = 0;
         ch3_4();
         viewCode("./ch3/ch3_4.c");
         break;
-    case 4:
+    case 5:
         return_front = 0;
         ch3_5();
         viewCode("./ch3/ch3_5.c");

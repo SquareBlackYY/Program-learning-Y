@@ -5,10 +5,10 @@
 
 void ch6_20()
 {
-    int num;
+    int num, i, j;
     
-    for (int i = 1; i <= 9; i++)
-        for (int j = 0; j <= 9; j++)
+    for (i = 1; i <= 9; i++)
+        for (j = 0; j <= 9; j++)
         {
             if (i == j) // 判断甲的条件
                 continue;
