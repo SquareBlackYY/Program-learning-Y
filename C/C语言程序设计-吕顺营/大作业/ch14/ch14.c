@@ -26,9 +26,11 @@ void pressCh14()
 void showCh14Menu()
 {
     printf("********************\n");
-    printf("第14章C语言作业（14个）\n");
+    printf("第14章C语言作业（2个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
+    printf("1-第1题 迷宫升级版\n");
+    printf("2-第2题 Flappy bird升级版\n");
     printf("********************\n");
 }
 
@@ -39,5 +41,15 @@ void pressCh14Ques(int quNum)
     case 0:
         return_front = 1;
         return;
+    case 1:
+        return_front = 0;
+        ch14_1();
+        viewCode("./ch14/ch14_1.c");
+        break;
+    case 2:
+        return_front = 0;
+        //ch14_2();
+        viewCode("./ch14/ch14_2.c");
+        break;
     }
 }
