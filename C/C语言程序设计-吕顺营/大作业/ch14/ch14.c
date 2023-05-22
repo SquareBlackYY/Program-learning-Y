@@ -48,7 +48,7 @@ void pressCh14Ques(int quNum)
         break;
     case 2:
         return_front = 0;
-        //ch14_2();
+        ch14_2();
         viewCode("./ch14/ch14_2.c");
         break;
     }

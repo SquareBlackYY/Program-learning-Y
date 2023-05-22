@@ -26,9 +26,15 @@ void pressCh11()
 void showCh11Menu()
 {
     printf("********************\n");
-    printf("第11章C语言作业（11个）\n");
+    printf("第11章C语言作业（6个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
+    printf("2-第2题 一些问题\n");
+    printf("3-第3题 输出英文月份\n");
+    printf("4-第4题 转置矩阵\n");
+    printf("5-第5题 字符串处理系列\n");
+    printf("6-第6题 计算最大值\n");
+    printf("7-第7题 输出最高分成绩学生信息\n");
     printf("********************\n");
 }
 
@@ -39,5 +45,35 @@ void pressCh11Ques(int quNum)
     case 0:
         return_front = 1;
         return;
+    case 2:
+        return_front = 0;
+        ch11_2();
+        viewCode("./ch11/ch11_2.c");
+        break;
+    case 3:
+        return_front = 0;
+        ch11_3();
+        viewCode("./ch11/ch11_3.c");
+        break;
+    case 4:
+        return_front = 0;
+        ch11_4();
+        viewCode("./ch11/ch11_4.c");
+        break;
+    case 5:
+        return_front = 0;
+        ch11_5();
+        viewCode("./ch11/ch11_5.c");
+        break;
+    case 6:
+        return_front = 0;
+        ch11_6();
+        viewCode("./ch11/ch11_6.c");
+        break;
+    case 7:
+        return_front = 0;
+        ch11_7();
+        viewCode("./ch11/ch11_7.c");
+        break;
     }
 }
