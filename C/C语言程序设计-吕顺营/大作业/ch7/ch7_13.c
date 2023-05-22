@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <malloc.h>
 
 int IsPrime1(int);
 int IsPrime2(int);

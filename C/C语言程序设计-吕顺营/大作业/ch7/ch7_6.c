@@ -2,14 +2,6 @@
 
 #include <stdio.h>
 
-int fact(int n)
-{
-    if (n == 1)
-        return 1;
-    else
-        return n * fact(n - 1);
-}
-
 void ch7_6()
 {
     int n, sum = 0, i;

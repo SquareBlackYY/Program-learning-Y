@@ -20,7 +20,11 @@ void ch7_7()
 
 int Gcd1(int a, int b)
 {
-    int t = min(a, b);
+    int t;
+    if (a > b)
+        t = b;
+    else
+        t = a;
     while (t > 0)
     {
         if (a % t == 0 && b % t == 0)
@@ -44,9 +48,9 @@ int Gcd2(int a, int b)
 int Gcd3(int a, int b)
 {
     if (a < b)
-        return Gcd(b, a);
+        return Gcd3(b, a);
     else if (a % b == 0)
         return b;
     else
-        return Gcd(b, a % b);
+        return Gcd3(b, a % b);
 }

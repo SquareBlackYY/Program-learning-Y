@@ -15,7 +15,7 @@ void ch7_10()
                 if ((a + b) * 2 + c * 2 == sum - 27)
                 {
                     printf("观众心里想的数是：%d%d%d\n", a, b, c);
-                    return 0;
+                    return;
                 }
 
     printf("你算错了！\n");
