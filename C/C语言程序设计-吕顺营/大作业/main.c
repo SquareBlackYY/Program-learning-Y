@@ -36,7 +36,7 @@ void showMainMenu()
 	printf("5-第5章作业（12个）\n");
 	printf("6-第6章作业（21个）\n");
 	printf("7-第7章作业（13个）\n");
-	printf("8-第8章作业（个）\n");
+	printf("8-第8章作业（16个）\n");
 	printf("9-第9章作业（个）\n");
 	printf("10-第10章作业（个）\n");
 	printf("11-第11章作业（个）\n");

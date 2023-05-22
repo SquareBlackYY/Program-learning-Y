@@ -1,26 +1,22 @@
 #include <stdio.h>
-#include <math.h>
-
-void main()
+int main()
 {
-    unsigned long long i;
-    unsigned long long grain_sum_1 = 0, grain_sum_2 = 0; // 麦子数量的累加和
-
-    // 直接计算累加的通项（左移运算符实现了2的n次方的计算）
-    for (i = 0; i < 64; i++)
-        grain_sum_1 += (1ull << i);
-
-    // 利用前项计算后项
-    unsigned long long current_grain = 1;
-    for (i = 1; i <= 64; i++)
+    int n, x, i;
+    for (n = 1;; n++) // n为椰子总数，迭代计算
     {
-        grain_sum_2 += current_grain;
-        current_grain *= 2;
+        x = n; // 每次迭代时重置x为当前椰子总数
+        for (i = 1; i <= 5; i++) // 迭代处理每个水手分椰子的操作
+        {
+            if (x % 5 == 1)          // 每次分完的剩余量必须为1
+                x = (x - 1) / 5 * 4; // 按照题目要求分椰子
+            else                     // 如有一个船员分完椰子后剩下的数量不为1，则跳出本次循环，继续尝试下一个椰子数
+                break;
+        }
+        if (i > 5 && x % 5 == 0) // 若成功分了5次椰子，则输出椰子数并结束
+        {
+            printf("原来有%d个椰子\n", n);
+            break;
+        }
     }
-
-    double grain_volume_1 = (double)grain_sum_1 / 1.42e8;
-    double grain_volume_2 = (double)grain_sum_2 / 1.42e8;
-
-    printf("直接计算累加的通项方法：舍罕王共需要%llu粒麦子，合%.2lf立方米\n", grain_sum_1, grain_volume_1);
-    printf("利用前项计算后项方法：舍罕王共需要%llu粒麦子，合%.2lf立方米\n", grain_sum_2, grain_volume_2);
+    return 0;
 }
