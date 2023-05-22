@@ -26,7 +26,7 @@ void pressCh7()
 void showCh7Menu()
 {
     printf("********************\n");
-    printf("第7章C语言作业（7个）\n");
+    printf("第7章C语言作业（13个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
     printf("2-第2题 模拟数字时钟\n");
