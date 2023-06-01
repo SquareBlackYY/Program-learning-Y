@@ -26,10 +26,9 @@ void pressCh10()
 void showCh10Menu()
 {
     printf("********************\n");
-    printf("第10章C语言作业（8个）\n");
+    printf("第10章C语言作业（7个）\n");
     printf("********************\n");
     printf("0-返回上级菜单\n");
-    printf("3-第3题 字符串处理系列\n");
     printf("4-第4题 统计单词\n");
     printf("5-第5题 删除相同字符\n");
     printf("6-第6题 字符间插入空格\n");
@@ -47,11 +46,6 @@ void pressCh10Ques(int quNum)
     case 0:
         return_front = 1;
         return;
-    case 3:
-        return_front = 0;
-        ch10_3();
-        viewCode("./ch10/ch10_3.c");
-        break;
     case 4:
         return_front = 0;
         ch10_4();
