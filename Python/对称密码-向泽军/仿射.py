@@ -11,7 +11,6 @@ def affine_cipher(text, key_a, key_b, mode):
             if mode == "e":
                 encrypted_char = chr((key_a * (ord(char) - base) + key_b) % 26 + base)
             else:
-                # 计算乘法逆元
                 inverse_key_a = 0
                 for i in range(26):
                     if (key_a * i) % 26 == 1:
