@@ -2,13 +2,13 @@ def affine_cipher(text, key_a, key_b, mode):
     result = ""
 
     for char in text:
-        if char.isalpha():  # 只对字母进行加密或解密
-            if char.isupper():  # 大写字母
+        if char.isalpha():
+            if char.isupper():
                 base = ord('A')
-            else:  # 小写字母
+            else: 
                 base = ord('a')
 
-            if mode == "encrypt":
+            if mode == "e":
                 encrypted_char = chr((key_a * (ord(char) - base) + key_b) % 26 + base)
             else:
                 # 计算乘法逆元
@@ -19,23 +19,30 @@ def affine_cipher(text, key_a, key_b, mode):
                         break
                 decrypted_char = chr((inverse_key_a * (ord(char) - base - key_b)) % 26 + base)
 
-            result += encrypted_char if mode == "encrypt" else decrypted_char
+            result += encrypted_char if mode == "e" else decrypted_char
         else:
             result += char
 
     return result
 
+while(True):
+    key_a = input("请输入乘法密钥：")
+    if key_a.isdigit() and eval(key_a) in [2, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25]:
+        key_a = eval(key_a)
+        break
+    else:
+        print("错误")
+        continue
 
-key_a = int(input("请输入乘法密钥（整数）："))
-key_b = int(input("请输入加法密钥（整数）："))
-mode = input("请选择操作（encrypt加密，decrypt解密）：")
+key_b = int(input("请输入加法密钥："))
+mode = input("请选择操作（e:加密，d:解密）：")
 text = input("请输入要加密或解密的文本：")
 
-if mode == "encrypt":
-    result = affine_cipher(text, key_a, key_b, "encrypt")
+if mode == "e":
+    result = affine_cipher(text, key_a, key_b, "e")
     print("加密结果：", result)
-elif mode == "decrypt":
-    result = affine_cipher(text, key_a, key_b, "decrypt")
+elif mode == "d":
+    result = affine_cipher(text, key_a, key_b, "d")
     print("解密结果：", result)
 else:
     print("无效的操作")
