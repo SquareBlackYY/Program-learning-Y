@@ -7,12 +7,7 @@ print("========实验报告1:仿射密码加解密程序========")
 # 输入并处理乘法密钥
 while True:
     key_a = input("请输入乘法密钥:")
-    if (
-        key_a.isdigit()
-        and isinstance(eval(key_a), int)
-        and 0 <= eval(key_a) <= 26
-        and math.gcd(eval(key_a), 26) == 1
-    ):
+    if key_a.isdigit() and isinstance(eval(key_a), int) and 0 <= eval(key_a) <= 26 and math.gcd(eval(key_a), 26) == 1:
         key_a = eval(key_a)
         break
     else:
@@ -35,8 +30,23 @@ while True:
     else:
         print("输入错误")
 
-# 输入文本并处理
-text = input("输入文本:")
+# 选择输入方式
+while True:
+    mode_input = input("请选择输入方式(s:终端输入,f:文件输入):")
+    if mode_input in ["s", "f"]:
+        break
+    else:
+        print("输入错误")
+
+# 输入文本
+if mode_input == 's':
+    text = input("输入文本:")
+else:
+    file_name = input("请输入文件名:")
+    with open(file_name, 'r') as file:
+        text = file.read()
+
+# 处理部分
 result = ""
 for char in text:
     if char.isalpha():
@@ -53,9 +63,7 @@ for char in text:
                 if (key_a * i) % 26 == 1:
                     inverse_key_a = i
                     break
-            decrypted_char = chr(
-                (inverse_key_a * (ord(char) - base - key_b)) % 26 + base
-            )
+            decrypted_char = chr((inverse_key_a * (ord(char) - base - key_b)) % 26 + base)
 
         result += encrypted_char if mode == "e" else decrypted_char
     else:
@@ -63,4 +71,4 @@ for char in text:
 
 # 输出结果
 print("处理结果:{}".format(result))
-input("程序运行结束")
+print("================程序运行结束================")
