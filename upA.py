@@ -1,4 +1,6 @@
 def upA():
     dayup = 0.01
-    for i in range(366):
-        x += 
+    day = 1
+    for i in range(365):
+        x += day * dayup
+    return day
