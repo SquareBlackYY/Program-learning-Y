@@ -24,6 +24,6 @@ while True:
         else:
             print("格式错误！")
 
-    choice = input("你要继续玩吗?(y/n)")
+    choice = input("你要继续玩吗?(y/n):")
     if choice != "y":
         break
