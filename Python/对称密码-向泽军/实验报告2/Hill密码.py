@@ -8,6 +8,7 @@ import re
 def encrypt_hill_cipher(text, key_matrix):
     # 去除非字母字符
     text = re.sub(r'[^A-Z]', '', text)
+    print(text)
     # 将明文转换为数字列表
     plain_nums = [ord(c) - ord('A') for c in text]
     # 计算需要添加的填充字符个数并随机填充末尾
@@ -54,7 +55,7 @@ print("========实验报告2:Hill密码加解密程序========")
 while True:
     key_matrix = numpy.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
     # key = input("请输入3*3密钥矩阵(空格分隔):").split()
-    key = ('2 5 7 7 8 3 6 5 1').split()
+    key = ('6 24 1 13 16 10 20 17 15').split()
     if not len(key) == 9 or not isint(key):
         print("格式错误!")
     else:
