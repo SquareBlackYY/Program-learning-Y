@@ -3,12 +3,12 @@ import os
 import math
 import random
 import re
+import sumpy
 
 # 加密函数
 def encrypt_hill_cipher(text, key_matrix):
     # 去除非字母字符
     text = re.sub(r'[^A-Z]', '', text)
-    print(text)
     # 将明文转换为数字列表
     plain_nums = [ord(c) - ord('A') for c in text]
     # 计算需要添加的填充字符个数并随机填充末尾
@@ -32,7 +32,8 @@ def decrypt_hill_cipher(text, key_matrix):
     # 将数字列表转换为矩阵
     encrypted_matrix = numpy.array(encrypted_nums).reshape(-1, key_matrix.shape[0]).T
     # 计算密钥矩阵的逆矩阵
-    key_inv = numpy.linalg.inv(key_matrix)
+    key_sumpy = numpy.Matrix(key_matrix)
+    key_inv = key_sumpy.adjugete()
     # 使用逆矩阵对密文矩阵进行解密
     decrypted_matrix = numpy.dot(key_inv, encrypted_matrix) % 26
     # 将解密后的矩阵转换为数字列表
