@@ -1,4 +1,5 @@
 import numpy
+import os
 
 # 加密函数
 def encrypt_hill_cipher(text, key_matrix):
@@ -37,22 +38,24 @@ def decrypt_hill_cipher(text, key_matrix):
     return decrypted_text
 
 
-def is_int_number(list):
+def isint(list):
     for i in list:
-        if i.isdigit() and isinstance(i, int):
-            return True
-    return False
+        if not i.isdigit() or not isinstance(eval(i), int):
+            return False
+    return True
 
 # 主程序
+
+os.system("cls")
+print("========实验报告1:仿射密码加解密程序========")
 
 # 设置密钥矩阵
 key_matrix = numpy.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
 while True:
     key = input("请输入3*3密钥矩阵(空格分隔):").split()
-    print(key[0])
-    print(is_int_number(key))
-    if not len(key) == 9 or not is_int_number(key):
+
+    if not len(key) == 9 or not isint(key):
         print("格式错误！")
     else:
         # 将数字赋值给矩阵
