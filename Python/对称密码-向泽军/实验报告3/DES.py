@@ -22,10 +22,16 @@ def unicode_binary_to_string(unicode_binary):
 def DES(text, mode):
     # 将文本分段
     text = text_slice(text)
+    # 对每一段进行处理
     for i in range(len(text)):
+        # 进行初始IP置换
         text[i] = initial_permutation(text, mode)
+        # 进行16轮轮函数
         for _ in range(16):
             text[i] = DES_round(text[i], mode)
+        # 进行左右32bit交换
+        # 进行逆置换
+        text[i] = initial_permutation(text, mode)
     text_processed = text
     return text_processed
 
@@ -60,7 +66,8 @@ def initial_permutation(text, mode):
 
 # 轮函数
 def DES_round(text, mode):
-    left = text[0:32]
+    left = text[:32]
+    right = text[32:]
     return text
 
 
