@@ -31,7 +31,8 @@ def decrypt_hill_cipher(text, key_matrix):
     # 将数字列表转换为矩阵
     encrypted_matrix = numpy.array(encrypted_nums).reshape(-1, key_matrix.shape[0]).T
     # 计算密钥矩阵的逆矩阵
-    key_inv = 26 - numpy.linalg.inv(key_matrix) * numpy.linalg.det(key_matrix) % 26
+    key_inv = 26 - (numpy.linalg.inv(key_matrix) * round(numpy.linalg.det(key_matrix) % 26))
+    print(round(numpy.linalg.det(key_matrix) % 26))
     # 转换为整数
     key_inv = numpy.round(key_inv).astype(int)
     # 使用逆矩阵对密文矩阵进行解密
@@ -49,13 +50,31 @@ def isint(list):
             return False
     return True
 
+# 扩展欧几里得算法
+def extended_gcd(a, b):
+    if b == 0:
+        return a, 1, 0
+    else:
+        gcd, x, y = extended_gcd(b, a % b)
+        return gcd, y, x - (a // b) * y
+
+# 求乘法逆元
+def mod_inverse(a, m):
+    gcd, x, _ = extended_gcd(a, m)
+    if gcd == 1:
+        return x % m
+    else:
+        raise ValueError("The modular inverse does not exist.")
+
+# 主程序
 print("{:=^40}".format('实验报告2:Hill密码加解密程序'))
 
 # 设置密钥矩阵
 while True:
     # 创建一个空的密钥矩阵
     key_matrix = numpy.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
-    key = input("请输入3*3密钥矩阵(空格分隔):").split()
+    #key = input("请输入3*3密钥矩阵(空格分隔):").split()
+    key = ('6', '24', '1', '13', '16', '10', '20', '17', '15')
     # 判断密钥矩阵合法性
     if not len(key) == 9 or not isint(key):
         print("格式错误!")
@@ -71,7 +90,8 @@ while True:
             print("密钥矩阵不符合要求!")
 
 # 输入文本
-text = input("请输入文本: ").upper()
+#text = input("请输入文本: ").upper()
+text = ("There will be people willing to help you ward off all the evil in the world.").upper()
 
 # 加密明文
 encrypted_text = encrypt_hill_cipher(text, key_matrix)
@@ -81,4 +101,5 @@ print("加密后的密文: ", encrypted_text)
 decrypted_text = decrypt_hill_cipher(encrypted_text, key_matrix)
 print("解密后的明文: ", decrypted_text)
 
+# 程序结束
 print("{:=^40}".format('程序运行结束'))
