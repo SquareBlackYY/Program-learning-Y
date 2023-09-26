@@ -30,11 +30,14 @@ def decrypt_hill_cipher(text, key_matrix):
     encrypted_nums = [ord(c) - ord('A') for c in text]
     # 将数字列表转换为矩阵
     encrypted_matrix = numpy.array(encrypted_nums).reshape(-1, key_matrix.shape[0]).T
+    # 计算密钥矩阵行列式的值并模26
+    key_det = round(numpy.linalg.det(key_matrix) % 26)
+    # 求上述值的乘法逆元
+    key_det_inv = mod_inverse(key_det, 26)
+    # 计算伴随矩阵并转换为整数
+    key_adj = numpy.round(numpy.linalg.inv(key_matrix) * numpy.linalg.det(key_matrix)).astype(int)
     # 计算密钥矩阵的逆矩阵
-    key_inv = 26 - (numpy.linalg.inv(key_matrix) * round(numpy.linalg.det(key_matrix) % 26))
-    print(round(numpy.linalg.det(key_matrix) % 26))
-    # 转换为整数
-    key_inv = numpy.round(key_inv).astype(int)
+    key_inv = (key_det_inv * key_adj) % 26
     # 使用逆矩阵对密文矩阵进行解密
     decrypted_matrix = numpy.dot(key_inv, encrypted_matrix) % 26
     # 将解密后的矩阵转换为数字列表
@@ -63,18 +66,15 @@ def mod_inverse(a, m):
     gcd, x, _ = extended_gcd(a, m)
     if gcd == 1:
         return x % m
-    else:
-        raise ValueError("The modular inverse does not exist.")
 
 # 主程序
 print("{:=^40}".format('实验报告2:Hill密码加解密程序'))
 
 # 设置密钥矩阵
 while True:
-    # 创建一个空的密钥矩阵
+    # 创建一个空的密钥矩阵并输入密钥矩阵
     key_matrix = numpy.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
-    #key = input("请输入3*3密钥矩阵(空格分隔):").split()
-    key = ('6', '24', '1', '13', '16', '10', '20', '17', '15')
+    key = input("请输入3*3密钥矩阵(空格分隔):").split()
     # 判断密钥矩阵合法性
     if not len(key) == 9 or not isint(key):
         print("格式错误!")
@@ -84,14 +84,13 @@ while True:
             for j in range(3):
                 key_matrix[i][j] = int(key[i*3 + j])
         # 判断是否可逆以及行列式的值是否与26互素
-        if math.gcd(26, int(numpy.linalg.det(key_matrix))) == 1:
+        if math.gcd(26, round(numpy.linalg.det(key_matrix))) == 1:
             break
         else:
             print("密钥矩阵不符合要求!")
 
 # 输入文本
-#text = input("请输入文本: ").upper()
-text = ("There will be people willing to help you ward off all the evil in the world.").upper()
+text = input("请输入文本: ").upper()
 
 # 加密明文
 encrypted_text = encrypt_hill_cipher(text, key_matrix)
