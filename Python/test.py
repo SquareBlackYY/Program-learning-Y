@@ -1,5 +1,3 @@
-mode = 'd'
-mode = chr(ord(mode) ^ 1)
-print(mode)
-mode = chr(ord(mode) ^ 1)
-print(mode)
+a = 'ab'
+a = a[1] + a[0]
+print(a)
