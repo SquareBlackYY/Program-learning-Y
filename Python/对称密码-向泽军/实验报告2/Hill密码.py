@@ -9,7 +9,7 @@ def encrypt_hill_cipher(text, key_matrix):
     text = re.sub(r'[^A-Z]', '', text)
     # 将明文转换为数字列表
     plain_nums = [ord(c) - ord('A') for c in text]
-    # 计算需要添加的填充字符个数并
+    # 计算需要添加的填充字符个数
     padding = len(plain_nums) % key_matrix.shape[0]
     # 若长度不符则随机填充末尾
     if padding > 0:
