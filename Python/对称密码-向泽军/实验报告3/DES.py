@@ -60,6 +60,7 @@ def initial_permutation(text, mode):
 
 # 轮函数
 def DES_round(text, mode):
+    left = text[0:32]
     return text
 
 
