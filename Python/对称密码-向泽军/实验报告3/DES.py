@@ -25,13 +25,13 @@ def DES(text, mode):
     # 对每一段进行处理
     for i in range(len(text)):
         # 进行初始IP置换
-        text[i] = initial_permutation(text, mode)
+        text[i] = initial_permutation(text[i], mode)
         # 进行16轮轮函数
         for _ in range(16):
             text[i] = DES_round(text[i], mode)
         # 进行左右32bit交换
         # 进行逆置换
-        text[i] = initial_permutation(text, mode)
+        text[i] = initial_permutation(text[i], chr(ord(mode) ^ 1))
     text_processed = text
     return text_processed
 
@@ -53,6 +53,8 @@ def initial_permutation(text, mode):
         61, 53, 45, 37, 29, 21, 13, 5,
         63, 55, 47, 39, 31, 23, 15, 7
     ]
+    # 创建长度64的空列表
+    text_ip = [''] * 64
     if mode == 'e':
         # 进行初始置换操作
         text_ip = [text[ip - 1] for ip in ip_table]
@@ -68,13 +70,14 @@ def initial_permutation(text, mode):
 def DES_round(text, mode):
     left = text[:32]
     right = text[32:]
+    #print(left)
+    #print(right)
     return text
-
 
 # 输入待处理文本
 # text = input("请输入文本:")
 text = "Aefwgrfbdvewgrhdtfngbdvsegrfbcxdvsegrfbcxdzscafedgrfbcxdzsefrgcvbxdzsefrvcxdzsefrgvbcxdfvgrcxdfgbvcxdfgbvcxdfbcgvd"
-
+# 将文本转换为Unicode
 text_unicode_binary = string_to_unicode_binary(text)
 # 计算需要添加的填充字符个数
 padding = len(text_unicode_binary) % 64
@@ -83,6 +86,7 @@ if padding > 0:
     text_unicode_binary += "".join(
         str(random.randint(0, 1)) for _ in range(64 - padding)
     )
-# DES处理
+# DES加密处理
 text_processed = DES(text_unicode_binary, 'e')
+# 输出处理结果
 print(text_processed)
