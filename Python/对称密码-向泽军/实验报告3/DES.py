@@ -27,14 +27,14 @@ def DES(unicode, padded_seed_key, mode):
     # 对每一段进行处理
     for i in range(len(unicode)):
         # 进行初始IP置换
-        unicode[i] = initial_permutation(unicode[i], mode)
+        unicode[i] = initial_permutation(unicode[i], 1)
         # 进行16轮轮函数
         for j in range(16):
             unicode[i] = DES_round(unicode[i], key_schedule[j if mode == 'e' else 15 - j])
         # 进行左右32bit交换
         unicode[i] = unicode[i][32:] + unicode[i][:32]
         # 进行逆置换
-        unicode[i] = initial_permutation(unicode[i], chr(ord(mode) ^ 1))
+        unicode[i] = initial_permutation(unicode[i], 0)
         unicode_processed += unicode[i]
     return unicode_processed
 
@@ -58,7 +58,7 @@ def initial_permutation(bits, mode):
     ]
     # 创建长度64的空列表
     bits_ip = [''] * 64
-    if mode == 'e':
+    if mode == 1:
         # 进行初始置换操作
         bits_ip = [bits[ip - 1] for ip in ip_table]
     else:
@@ -99,7 +99,7 @@ def DES_expand(bits):
         16, 17, 18, 19, 20, 21,
         20, 21, 22, 23, 24, 25,
         24, 25, 26, 27, 28, 29,
-        28, 29, 30, 31, 32, 1
+        28, 29, 30, 31, 32,  1
     ]
     expanded_bits = ""
     for index in expansion_table:
@@ -275,7 +275,7 @@ def generate_key_schedule(seed_key):
 # text = input("请输入文本:")
 text = "abcd"
 # 输入种子密钥
-seed_key = "01000110111010011000001010011001001010101011110101010110"
+seed_key = "01000110111010001100010010011001001010101011110101010110"
 
 # 将文本转换为Unicode
 unicode = text_to_unicode(text)
