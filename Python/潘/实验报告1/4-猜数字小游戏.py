@@ -2,7 +2,7 @@ import os
 import random
 
 while True:
-    os.system("cls")
+    #os.system("cls")
     print("猜数字游戏\n范围是1~20的整数")
     num = random.randint(1, 20)
     while True:
