@@ -18,18 +18,19 @@ def unicode_to_text(unicode):
     return text
 
 # DES函数
-def DES(unicode, mode):
+def DES(unicode, padded_seed_key, mode):
     # 将Unicode分段
     unicode = bits_slice(unicode)
     # 初始化处理结果字符串
     unicode_processed = ''
+    key_schedule = generate_key_schedule(padded_seed_key)
     # 对每一段进行处理
     for i in range(len(unicode)):
         # 进行初始IP置换
         unicode[i] = initial_permutation(unicode[i], mode)
         # 进行16轮轮函数
-        for _ in range(16):
-            unicode[i] = DES_round(unicode[i])
+        for j in range(16):
+            unicode[i] = DES_round(unicode[i], key_schedule[j if mode == 'e' else 15 - j])
         # 进行左右32bit交换
         unicode[i] = unicode[i][32:] + unicode[i][:32]
         # 进行逆置换
@@ -69,15 +70,21 @@ def initial_permutation(bits, mode):
     return bits_ip
 
 # 轮函数
-def DES_round(unicode):
+def DES_round(unicode, key_slice):
+    # 切片为左右两半
     left = unicode[:32]
     right = unicode[32:]
+    # 扩展右半
     expanded_right = DES_expand(right)
-    key = "010010101110100101000010100110010010101111011011"
-    xored_bits = xor(expanded_right, key)
+    # 右半与密钥异或
+    xored_bits = xor(expanded_right, key_slice)
+    # 异或后进行压缩运算(S盒)
     compressed_bits = DES_compress(xored_bits)
+    # 压缩后进行P置换
     permuted_bits = DES_permute(compressed_bits)
+    # 左半与P置换后异或
     new_right = xor(left, permuted_bits)
+    # 左右交换
     result = right + new_right
     return result
 
@@ -196,9 +203,79 @@ def DES_permute(bits):
         permuted_bits += bits[index - 1]
     return permuted_bits
 
+# 种子密钥校验
+def validate_and_pad_seed_key(seed_key):
+    # 检查种子密钥长度是否为56位
+    if len(seed_key) != 56:
+        raise ValueError("错误！种子密钥长度应为56位。")
+    # 检查种子密钥是否只包含0和1
+    if not all(bit in ['0', '1'] for bit in seed_key):
+        raise ValueError("错误！种子密钥只能包含0和1。")
+    # 计算种子密钥中1的个数
+    count_ones = seed_key.count('1')
+    # 检查种子密钥中1的个数是否为奇数
+    if count_ones % 2 != 1:
+        raise ValueError("错误！种子密钥中1的个数只能为奇数。")
+    # 补充校验位
+    parity_bit = '1' if count_ones % 2 == 0 else '0'
+    padded_seed_key = seed_key + parity_bit
+    # 补充成64位种子密钥
+    padded_seed_key += '0' * (64 - len(padded_seed_key))
+    return padded_seed_key
+
+# 种子密钥密钥扩展
+def generate_key_schedule(seed_key):
+    # 定义DES的PC-1表，用于密钥置换
+    pc1_table = [
+        57, 49, 41, 33, 25, 17,  9,
+         1, 58, 50, 42, 34, 26, 18,
+        10,  2, 59, 51, 43, 35, 27,
+        19, 11,  3, 60, 52, 44, 36,
+        63, 55, 47, 39, 31, 23, 15,
+         7, 62, 54, 46, 38, 30, 22,
+        14,  6, 61, 53, 45, 37, 29,
+        21, 13,  5, 28, 20, 12,  4
+    ]
+    # 定义DES的PC-2表，用于生成子密钥
+    pc2_table = [
+        14, 17, 11, 24,  1,  5,
+         3, 28, 15,  6, 21, 10,
+        23, 19, 12,  4, 26,  8,
+        16,  7, 27, 20, 13,  2,
+        41, 52, 31, 37, 47, 55,
+        30, 40, 51, 45, 33, 48,
+        44, 49, 39, 56, 34, 53,
+        46, 42, 50, 36, 29, 32
+    ]
+    # 对种子密钥进行PC-1置换
+    permuted_key = [seed_key[pc1 - 1] for pc1 in pc1_table]
+    # 分割置换后的密钥为左半部分和右半部分
+    left = permuted_key[:28]
+    right = permuted_key[28:]
+    key_schedule = []
+    # 生成16个子密钥
+    for round_num in range(16):
+        # 根据轮数计算左移的位数
+        if round_num in [0, 1, 8, 15]:
+            num_shifts = 1
+        else:
+            num_shifts = 2
+        # 左移左半部分和右半部分
+        left = left[num_shifts:] + left[:num_shifts]
+        right = right[num_shifts:] + right[:num_shifts]
+        # 合并左半部分和右半部分
+        combined_key = left + right
+        # 根据PC-2表进行置换，生成子密钥
+        sub_key = [combined_key[pc2 - 1] for pc2 in pc2_table]
+        # 将子密钥添加到密钥流中
+        key_schedule.append(sub_key)
+    return key_schedule
+
 # 输入待处理文本
 # text = input("请输入文本:")
 text = "abcd"
+# 输入种子密钥
+seed_key = "01000110111010011000001010011001001010101011110101010110"
 
 # 将文本转换为Unicode
 unicode = text_to_unicode(text)
@@ -208,13 +285,16 @@ padding = len(unicode) % 64
 if padding > 0:
     unicode += "".join(str(random.randint(0, 1)) for _ in range(64 - padding))
 
+# 56位种子密钥校验并补全校验位
+padded_seed_key = validate_and_pad_seed_key(seed_key)
+
 # DES加密处理
-unicode_encrypted = DES(unicode, 'e')
+unicode_encrypted = DES(unicode, padded_seed_key, 'e')
 # 输出加密处理结果
 print(unicode_encrypted)
 
 # DES解密处理
-unicode_decrypted = DES(unicode_encrypted, 'd')
+unicode_decrypted = DES(unicode_encrypted, padded_seed_key, 'd')
 # 将Unicode转换为文本
 text_decrypted = unicode_to_text(unicode_decrypted)
 # 输出解密处理结果
