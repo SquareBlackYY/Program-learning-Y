@@ -273,7 +273,7 @@ def generate_key_schedule(seed_key):
 
 # 输入待处理文本
 # text = input("请输入文本:")
-text = "abcd"
+text = "我真的谢谢你嗷。"
 # 输入种子密钥
 seed_key = "01000110111010001100010010011001001010101011110101010110"
 
