@@ -1,47 +1,34 @@
 import random
 
-# 字符串转为Unicode编码
-def text_to_unicode(text):
-    unicode = ""
-    for char in text:
-        unicode_value = ord(char)
-        # 转换为二进制并填充到16位
-        unicode += bin(unicode_value)[2:].zfill(16)
-    return unicode
+# 二进制转十六进制
+def binary_to_hex(binary_string):
+    hex_string = hex(int(binary_string, 2))[2:]
+    return hex_string
 
-# Unicode编码转为字符串
-def unicode_to_text(unicode):
-    text = ""
-    for i in range(0, len(unicode), 16):
-        unicode_value = int(unicode[i : i + 16], 2)
-        text += chr(unicode_value)
-    return text
+# 十六进制转二进制
+def hex_to_binary(hex_string):
+    binary_string = bin(int(hex_string, 16))[2:].zfill(len(seed_key) * 4)
+    return binary_string
 
 # DES函数
-def DES(unicode, padded_seed_key, mode):
-    # 将Unicode分段
-    unicode = bits_slice(unicode)
-    # 初始化处理结果字符串
-    unicode_processed = ''
+def DES(plain_text, padded_seed_key, mode):
+    # 将明文切片
+    plain_text = [plain_text[i : i + 64] for i in range(0, len(plain_text), 64)]
+    cipher_text = ''
+    # 密钥生成
     key_schedule = generate_key_schedule(padded_seed_key)
-    # 对每一段进行处理
-    for i in range(len(unicode)):
+    for i in range(len(plain_text)):
         # 进行初始IP置换
-        unicode[i] = initial_permutation(unicode[i], 1)
+        plain_text[i] = initial_permutation(plain_text[i], 1)
         # 进行16轮轮函数
         for j in range(16):
-            unicode[i] = DES_round(unicode[i], key_schedule[j if mode == 'e' else 15 - j])
+            plain_text[i] = DES_round(plain_text[i], key_schedule[j if mode == 'e' else 15 - j])
         # 进行左右32bit交换
-        unicode[i] = unicode[i][32:] + unicode[i][:32]
+        plain_text[i] = plain_text[i][32:] + plain_text[i][:32]
         # 进行逆置换
-        unicode[i] = initial_permutation(unicode[i], 0)
-        unicode_processed += unicode[i]
-    return unicode_processed
-
-# 比特切片函数
-def bits_slice(bits):
-    bits_slice = [bits[i : i + 64] for i in range(0, len(bits), 64)]
-    return bits_slice
+        plain_text[i] = initial_permutation(plain_text[i], 0)
+        cipher_text += plain_text[i]
+    return cipher_text
 
 # IP置换函数
 def initial_permutation(bits, mode):
@@ -70,10 +57,10 @@ def initial_permutation(bits, mode):
     return bits_ip
 
 # 轮函数
-def DES_round(unicode, key_slice):
+def DES_round(plain_text, key_slice):
     # 切片为左右两半
-    left = unicode[:32]
-    right = unicode[32:]
+    left = plain_text[:32]
+    right = plain_text[32:]
     # 扩展右半
     expanded_right = DES_expand(right)
     # 右半与密钥异或
@@ -203,29 +190,9 @@ def DES_permute(bits):
         permuted_bits += bits[index - 1]
     return permuted_bits
 
-# 种子密钥校验
-def validate_and_pad_seed_key(seed_key):
-    # 检查种子密钥长度是否为56位
-    if len(seed_key) != 56:
-        raise ValueError("错误！种子密钥长度应为56位。")
-    # 检查种子密钥是否只包含0和1
-    if not all(bit in ['0', '1'] for bit in seed_key):
-        raise ValueError("错误！种子密钥只能包含0和1。")
-    # 计算种子密钥中1的个数
-    count_ones = seed_key.count('1')
-    # 检查种子密钥中1的个数是否为奇数
-    if count_ones % 2 != 1:
-        raise ValueError("错误！种子密钥中1的个数只能为奇数。")
-    # 补充校验位
-    parity_bit = '1' if count_ones % 2 == 0 else '0'
-    padded_seed_key = seed_key + parity_bit
-    # 补充成64位种子密钥
-    padded_seed_key += '0' * (64 - len(padded_seed_key))
-    return padded_seed_key
-
 # 种子密钥密钥扩展
 def generate_key_schedule(seed_key):
-    # 定义DES的PC-1表，用于密钥置换
+    # PC-1表，用于密钥置换
     pc1_table = [
         57, 49, 41, 33, 25, 17,  9,
          1, 58, 50, 42, 34, 26, 18,
@@ -236,7 +203,7 @@ def generate_key_schedule(seed_key):
         14,  6, 61, 53, 45, 37, 29,
         21, 13,  5, 28, 20, 12,  4
     ]
-    # 定义DES的PC-2表，用于生成子密钥
+    # PC-2表，用于生成子密钥
     pc2_table = [
         14, 17, 11, 24,  1,  5,
          3, 28, 15,  6, 21, 10,
@@ -271,31 +238,24 @@ def generate_key_schedule(seed_key):
         key_schedule.append(sub_key)
     return key_schedule
 
-# 输入待处理文本
-# text = input("请输入文本:")
-text = "我真的谢谢你嗷。"
 # 输入种子密钥
-seed_key = "01000110111010001100010010011001001010101011110101010110"
+seed_key = "1f1f1f1f0e0e0e0e"
+padded_seed_key = hex_to_binary(seed_key)
 
-# 将文本转换为Unicode
-unicode = text_to_unicode(text)
-# 计算需要添加的填充字符个数
-padding = len(unicode) % 64
-# 若长度不符则随机填充末尾
+# 输入待处理文本
+text = "0123456789abcdef"
+binary_text = hex_to_binary(text)
+# 计算需要添加的填充字符个数并随机填充末尾
+padding = len(binary_text) % 64
 if padding > 0:
-    unicode += "".join(str(random.randint(0, 1)) for _ in range(64 - padding))
-
-# 56位种子密钥校验并补全校验位
-padded_seed_key = validate_and_pad_seed_key(seed_key)
+    binary_text += "".join(str(random.randint(0, 1)) for _ in range(64 - padding))
 
 # DES加密处理
-unicode_encrypted = DES(unicode, padded_seed_key, 'e')
-# 输出加密处理结果
-print(unicode_encrypted)
+binary_encrypted = DES(binary_text, padded_seed_key, 'e')
+hex_encrypted = binary_to_hex(binary_encrypted)
+print("加密结果:", hex_encrypted)
 
 # DES解密处理
-unicode_decrypted = DES(unicode_encrypted, padded_seed_key, 'd')
-# 将Unicode转换为文本
-text_decrypted = unicode_to_text(unicode_decrypted)
-# 输出解密处理结果
-print(text_decrypted)
+binary_decrypted = DES(binary_encrypted, padded_seed_key, 'd')
+hex_decrypted = binary_to_hex(binary_decrypted)
+print("解密结果:", hex_decrypted)
