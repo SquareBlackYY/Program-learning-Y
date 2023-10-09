@@ -1,15 +1,3 @@
-import random
-
-# 二进制转十六进制
-def binary_to_hex(binary_string):
-    hex_string = hex(int(binary_string, 2))[2:]
-    return hex_string
-
-# 十六进制转二进制
-def hex_to_binary(hex_string):
-    binary_string = bin(int(hex_string, 16))[2:].zfill(len(seed_key) * 4)
-    return binary_string
-
 # DES函数
 def DES(plain_text, padded_seed_key, mode):
     # 将明文切片
@@ -238,6 +226,16 @@ def generate_key_schedule(seed_key):
         key_schedule.append(sub_key)
     return key_schedule
 
+# 二进制转十六进制
+def binary_to_hex(binary_string):
+    hex_string = hex(int(binary_string, 2))[2:]
+    return hex_string
+
+# 十六进制转二进制
+def hex_to_binary(hex_string):
+    binary_string = bin(int(hex_string, 16))[2:].zfill(len(seed_key) * 4)
+    return binary_string
+
 # 输入种子密钥
 seed_key = "1f1f1f1f0e0e0e0e"
 padded_seed_key = hex_to_binary(seed_key)
@@ -245,10 +243,6 @@ padded_seed_key = hex_to_binary(seed_key)
 # 输入待处理文本
 text = "0123456789abcdef"
 binary_text = hex_to_binary(text)
-# 计算需要添加的填充字符个数并随机填充末尾
-padding = len(binary_text) % 64
-if padding > 0:
-    binary_text += "".join(str(random.randint(0, 1)) for _ in range(64 - padding))
 
 # DES加密处理
 binary_encrypted = DES(binary_text, padded_seed_key, 'e')

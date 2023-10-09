@@ -1,3 +1,5 @@
+import random
+
 # 字符串转为Unicode编码
 def text_to_unicode(text):
     unicode = ""
@@ -37,3 +39,8 @@ def validate_and_pad_seed_key(seed_key):
 
 # 56位种子密钥校验并补全校验位
 padded_seed_key = validate_and_pad_seed_key(seed_key)
+
+# 计算需要添加的填充字符个数并随机填充末尾
+padding = len(binary_text) % 64
+if padding > 0:
+    binary_text += "".join(str(random.randint(0, 1)) for _ in range(64 - padding))
