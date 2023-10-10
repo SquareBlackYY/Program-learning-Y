@@ -228,12 +228,12 @@ def generate_key_schedule(seed_key):
 
 # 二进制转十六进制
 def binary_to_hex(binary_string):
-    hex_string = hex(int(binary_string, 2))[2:]
+    hex_string = hex(int(binary_string, 2))[2:].zfill(len(binary_string) // 4)
     return hex_string
 
 # 十六进制转二进制
 def hex_to_binary(hex_string):
-    binary_string = bin(int(hex_string, 16))[2:].zfill(len(seed_key) * 4)
+    binary_string = bin(int(hex_string, 16))[2:].zfill(len(hex_string) * 4)
     return binary_string
 
 # 输入种子密钥
@@ -253,3 +253,12 @@ print("加密结果:", hex_encrypted)
 binary_decrypted = DES(binary_encrypted, padded_seed_key, 'd')
 hex_decrypted = binary_to_hex(binary_decrypted)
 print("解密结果:", hex_decrypted)
+
+# 比特按位取反
+def bits_reverse(bits):
+    bits_reversed = ''.join('0' if i == '1' else '1' for i in bits)
+    return bits_reversed
+
+binary_decrypted = DES(bits_reverse(binary_encrypted), bits_reverse(padded_seed_key), 'd')
+hex_decrypted = binary_to_hex(binary_decrypted)
+print("比特翻转解密结果:", hex_decrypted)
