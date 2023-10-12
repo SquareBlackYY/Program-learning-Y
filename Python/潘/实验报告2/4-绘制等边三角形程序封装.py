@@ -1,11 +1,11 @@
 from turtle import *
 
-def drawTr(pen_color, pen_size = 1, delta_size = 50):
-    color(pen_color)
-    pensize(pen_size)
+def drawTr(p_color, p_size = 1, d_size = 50):
+    color(p_color)
+    pensize(p_size)
     for i in range(3):
         seth(i * 120)
-        fd(delta_size)
+        fd(d_size)
 
 drawTr("grey", 80, 100)
 drawTr("green")
