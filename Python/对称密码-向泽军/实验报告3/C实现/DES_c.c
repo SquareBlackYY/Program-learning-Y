@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-// PC-1è¡¨ï¼Œç”¨äºå¯†é’¥ç½®æ¢
+// PC-1±í£¬ÓÃÓÚÃÜÔ¿ÖÃ»»
 int pc1_table[56] = {
     57, 49, 41, 33, 25, 17, 9,
     1, 58, 50, 42, 34, 26, 18,
@@ -13,11 +13,11 @@ int pc1_table[56] = {
     14, 6, 61, 53, 45, 37, 29,
     21, 13, 5, 28, 20, 12, 4};
 
-// å·¦ç§»ä½æ•°è¡¨
+// ×óÒÆÎ»Êı±í
 int loop_table[16] = {
     1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
-// PC-2è¡¨ï¼Œç”¨äºç”Ÿæˆå­å¯†é’¥
+// PC-2±í£¬ÓÃÓÚÉú³É×ÓÃÜÔ¿
 int pc2_table[48] = {
     14, 17, 11, 24, 1, 5,
     3, 28, 15, 6, 21, 10,
@@ -28,7 +28,7 @@ int pc2_table[48] = {
     44, 49, 39, 56, 34, 53,
     46, 42, 50, 36, 29, 32};
 
-// ç½®æ¢IPè¡¨
+// ÖÃ»»IP±í
 int ip_table[64] = {
     58, 50, 42, 34, 26, 18, 10, 2,
     60, 52, 44, 36, 28, 20, 12, 4,
@@ -39,7 +39,7 @@ int ip_table[64] = {
     61, 53, 45, 37, 29, 21, 13, 5,
     63, 55, 47, 39, 31, 23, 15, 7};
 
-// æ‰©å±•è¿ç®—è¡¨
+// À©Õ¹ÔËËã±í
 int expansion_table[48] = {
     32, 1, 2, 3, 4, 5,
     4, 5, 6, 7, 8, 9,
@@ -50,7 +50,7 @@ int expansion_table[48] = {
     24, 25, 26, 27, 28, 29,
     28, 29, 30, 31, 32, 1};
 
-// Sç›’
+// SºĞ
 int s_box[8][4][16] = {
     // S1
     {
@@ -101,7 +101,7 @@ int s_box[8][4][16] = {
         {7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
         {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}}};
 
-// Pæ¢ä½è¡¨
+// P»»Î»±í
 int p_table[32] = {
     16, 7, 20, 21,
     29, 12, 28, 17,
@@ -115,31 +115,41 @@ int p_table[32] = {
 const int size_of_char = sizeof(char);
 const int size_of_char_s = sizeof(char *);
 
-char *hex_to_binary(const char *hex);                                                   // 16è¿›åˆ¶è½¬2è¿›åˆ¶
-char *binary_to_hex(const char *binary);                                                // 2è¿›åˆ¶è½¬16è¿›åˆ¶
-void DES(const char *text, const char *seed_key, const int mode, char *text_processed); // DESå‡½æ•°
-char **generate_key_schedule(const char *seed_key);                                     // å¯†é’¥ç”Ÿæˆå‡½æ•°
-char *DES_initial_permutation(const char *bits, const int mode);                        // IPç½®æ¢å‡½æ•°
-char *DES_round(char *bits, const char *key);                                           // è½®å‡½æ•°
-char *DES_expand(const char *bits);                                                     // æ‰©å±•è¿ç®—å‡½æ•°
-char *DES_compress(const char *bits);                                                   // å‹ç¼©è¿ç®—å‡½æ•°(Sç›’)
-char *DES_permute(const char *bits);                                                    // Pç½®æ¢
-void exchange_strings(char *str);                                                       // å­—ç¬¦ä¸²å·¦å³ä¸¤åŠäº¤æ¢å‡½æ•°
-char *xor_strings(const char *str1, const char *str2);                                  // å¼‚æˆ–å‡½æ•°
+char *hex_to_binary(const char *hex);                                                   // 16½øÖÆ×ª2½øÖÆ
+char *binary_to_hex(const char *binary);                                                // 2½øÖÆ×ª16½øÖÆ
+void DES(const char *text, const char *seed_key, const int mode, char *text_processed); // DESº¯Êı
+char **generate_key_schedule(const char *seed_key);                                     // ÃÜÔ¿Éú³Éº¯Êı
+char *DES_initial_permutation(const char *bits, const int mode);                        // IPÖÃ»»º¯Êı
+char *DES_round(char *bits, const char *key);                                           // ÂÖº¯Êı
+char *DES_expand(const char *bits);                                                     // À©Õ¹ÔËËãº¯Êı
+char *DES_compress(const char *bits);                                                   // Ñ¹ËõÔËËãº¯Êı(SºĞ)
+char *DES_permute(const char *bits);                                                    // PÖÃ»»
+void exchange_strings(char *str);                                                       // ×Ö·û´®×óÓÒÁ½°ë½»»»º¯Êı
+char *xor_strings(const char *str1, const char *str2);                                  // Òì»òº¯Êı
 
 int main()
 {
     const char *seed_key = "1f1f1f1f0e0e0e0e";
     char *key_binary = hex_to_binary(seed_key);
-    puts(key_binary);
-    const char *text = "0123456789abcdef";
-    char *text_binary = hex_to_binary(text);
-    puts(text_binary);
-    char *text_processed_binary = (char *)malloc(size_of_char * strlen(text_binary) + 1);
-    DES(text_binary, key_binary, 0, text_processed_binary);
-    char *text_hex = binary_to_hex(text_processed_binary);
-    puts(text_hex);
-    // free(binary);
+    const char *plain_text_hex = "0123456789abcdef";
+    char *plain_text_binary = hex_to_binary(plain_text_hex);
+
+    char *text_processed_binary = (char *)malloc(size_of_char * strlen(plain_text_binary) + 1);
+    DES(plain_text_binary, key_binary, 0, text_processed_binary);
+    char *ciper_text_hex = binary_to_hex(text_processed_binary);
+    printf("¼ÓÃÜ½á¹û:%s\n", ciper_text_hex);
+
+    char *ciper_text_binary = hex_to_binary(ciper_text_hex);
+    DES(ciper_text_binary, key_binary, 1, text_processed_binary);
+    char *new_plain_text_hex = binary_to_hex(text_processed_binary);
+    printf("½âÃÜ½á¹û:%s\n", new_plain_text_hex);
+
+    free(new_plain_text_hex);
+    free(ciper_text_binary);
+    free(ciper_text_hex);
+    free(text_processed_binary);
+    free(plain_text_binary);
+    free(key_binary);
     return 0;
 }
 
@@ -180,11 +190,13 @@ void DES(const char *text, const char *seed_key, const int mode, char *text_proc
     char *text_groups = (char *)malloc(size_of_char * 64 + 1);
     char *text_rounded = (char *)malloc(size_of_char * 64 + 1);
     int number_of_text_groups = strlen(text) / 64;
-    for (int i = 0; i <= number_of_text_groups; i++)
+    for (int i = 0; i < number_of_text_groups; i++)
     {
         memcpy(text_groups, text + i * 64, 64);
+        text_groups[64] = '\0';
         char *bits_iped = DES_initial_permutation(text_groups, 0);
         memcpy(text_rounded, bits_iped, 64);
+        text_rounded[64] = '\0';
         for (int round_num = 0; round_num < 16; round_num++)
             if (mode == 0)
                 text_rounded = DES_round(text_rounded, key_schedule[round_num]);
@@ -193,16 +205,27 @@ void DES(const char *text, const char *seed_key, const int mode, char *text_proc
         exchange_strings(text_rounded);
         char *bits_ip_1ed = DES_initial_permutation(text_rounded, 1);
         memcpy(text_processed + i * 64, bits_ip_1ed, 64);
+        free(bits_ip_1ed);
+        free(bits_iped);
     }
+    text_processed[strlen(text)] = '\0';
+    free(text_rounded);
+    free(text_groups);
+    for (int i = 0; i < 16; i++)
+        free(key_schedule[i]);
+    free(key_schedule);
 }
 
 char **generate_key_schedule(const char *seed_key)
 {
-    char permuted_key[56], left[28], right[28];
+    char permuted_key[56 + 1], left[28 + 1], right[28 + 1];
     for (int i = 0; i < 56; i++)
         permuted_key[i] = seed_key[pc1_table[i] - 1];
+    permuted_key[56] = '\0';
     memcpy(left, permuted_key, 28);
+    left[28] = '\0';
     memcpy(right, permuted_key + 28, 28);
+    right[28] = '\0';
     char **key_schedule = (char **)malloc(size_of_char_s * 16);
     for (int i = 0; i < 16; i++)
         key_schedule[i] = (char *)malloc(size_of_char * 48 + 1);
@@ -240,9 +263,11 @@ char *DES_initial_permutation(const char *bits, const int mode)
 
 char *DES_round(char *bits, const char *key)
 {
-    char left[32], right[32];
+    char left[32 + 1], right[32 + 1];
     memcpy(left, bits, 32);
+    left[32] = '\0';
     memcpy(right, bits + 32, 32);
+    right[32] = '\0';
     char *right_expanded = DES_expand(right);
     char *right_xored_with_key = xor_strings(right_expanded, key);
     char *bits_compressed = DES_compress(right_xored_with_key);
@@ -251,6 +276,11 @@ char *DES_round(char *bits, const char *key)
     memcpy(bits, right, 32);
     memcpy(bits + 32, right_new, 32);
     bits[64] = '\0';
+    free(right_expanded);
+    free(right_xored_with_key);
+    free(bits_compressed);
+    free(bits_permuted);
+    free(right_new);
     return bits;
 }
 
@@ -271,7 +301,10 @@ char *DES_compress(const char *bits)
         int row = (bits[i] - '0') * 2 + (bits[i + 5] - '0');
         int col = (bits[i + 1] - '0') * 8 + (bits[i + 2] - '0') * 4 + (bits[i + 3] - '0') * 2 + (bits[i + 4] - '0');
         int value = s_box[i / 6][row][col];
-        sprintf(compressed_bits + i / 2, "%04d", value);
+        compressed_bits[(i / 6) * 4 + 0] = (value & 0x8) ? '1' : '0';
+        compressed_bits[(i / 6) * 4 + 1] = (value & 0x4) ? '1' : '0';
+        compressed_bits[(i / 6) * 4 + 2] = (value & 0x2) ? '1' : '0';
+        compressed_bits[(i / 6) * 4 + 3] = (value & 0x1) ? '1' : '0';
     }
     compressed_bits[32] = '\0';
     return compressed_bits;
@@ -305,7 +338,7 @@ char *xor_strings(const char *str1, const char *str2)
     int length = strlen(str1);
     char *result = (char *)malloc(size_of_char * length + 1);
     for (int i = 0; i < length; i++)
-        result[i] = str1[i] ^ str2[i];
+        result[i] = (str1[i] ^ str2[i]) + '0';
     result[length] = '\0';
     return result;
 }
