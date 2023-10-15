@@ -6,4 +6,4 @@ for i in range(365):
         result *= 1 - down_factor
     else:
         result *= 1 + up_factor
-print(f"结果为:{result}")
+print("结果为:{:.2f}".format(result))
