@@ -259,6 +259,8 @@ binary_encrypted = DES(binary_text, padded_seed_key, 'e')
 
 # 计时结束
 end_time = time.time()
+execution_time = end_time - start_time
+print("程序用时: %.2f s" % execution_time)
 
 hex_encrypted = binary_to_hex(binary_encrypted)
 # print("加密结果:", hex_encrypted)
@@ -266,9 +268,6 @@ hex_encrypted = binary_to_hex(binary_encrypted)
 # 写入加密结果到output.txt
 with open('output.txt', 'w') as file:
     file.write(hex_encrypted)
-
-execution_time = end_time - start_time
-print("程序用时: %.2f s" % execution_time)
 
 # DES解密处理
 # binary_decrypted = DES(binary_encrypted, padded_seed_key, 'd')
