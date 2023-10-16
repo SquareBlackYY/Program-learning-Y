@@ -6,7 +6,7 @@ int main()
 {
     clock_t start_time, end_time;
     double execution_time;
-    const long num_chars = 75 * 1024 * 1024;
+    const long num_chars = 3 * 1024 * 1024;
 
     srand(time(NULL));
 
