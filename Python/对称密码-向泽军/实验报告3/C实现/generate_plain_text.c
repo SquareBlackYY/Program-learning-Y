@@ -27,7 +27,7 @@ int main()
 
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
-    printf("已生成 %ld 个十六进制字符并写入 input.txt, 用时: %.2f s\n", num_chars);
+    printf("已生成 %ld 个十六进制字符并写入 input.txt, 用时: %.2f s\n", num_chars, execution_time);
 
     return 0;
 }
