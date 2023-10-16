@@ -1,3 +1,5 @@
+import time
+
 # DES函数
 def DES(plain_text, padded_seed_key, mode):
     # 将明文切片
@@ -241,24 +243,43 @@ seed_key = "1f1f1f1f0e0e0e0e"
 padded_seed_key = hex_to_binary(seed_key)
 
 # 输入待处理文本
-text = "0123456789abcdef"
+# text = "0123456789abcdef"
+# binary_text = hex_to_binary(text)
+
+# 从文件中读取待处理文本
+with open('input.txt', 'r') as file:
+    text = file.read().strip()
 binary_text = hex_to_binary(text)
+
+# 开始计时
+start_time = time.time()
 
 # DES加密处理
 binary_encrypted = DES(binary_text, padded_seed_key, 'e')
+
+# 计时结束
+end_time = time.time()
+
 hex_encrypted = binary_to_hex(binary_encrypted)
-print("加密结果:", hex_encrypted)
+# print("加密结果:", hex_encrypted)
+
+# 写入加密结果到output.txt
+with open('output.txt', 'w') as file:
+    file.write(hex_encrypted)
+
+execution_time = end_time - start_time
+print("程序用时: %.2f s" % execution_time)
 
 # DES解密处理
-binary_decrypted = DES(binary_encrypted, padded_seed_key, 'd')
-hex_decrypted = binary_to_hex(binary_decrypted)
-print("解密结果:", hex_decrypted)
+# binary_decrypted = DES(binary_encrypted, padded_seed_key, 'd')
+# hex_decrypted = binary_to_hex(binary_decrypted)
+# print("解密结果:", hex_decrypted)
 
 # 比特按位取反
-def bits_reverse(bits):
-    bits_reversed = ''.join('0' if i == '1' else '1' for i in bits)
-    return bits_reversed
+# def bits_reverse(bits):
+#    bits_reversed = ''.join('0' if i == '1' else '1' for i in bits)
+#    return bits_reversed
 
-binary_decrypted = DES(bits_reverse(binary_encrypted), bits_reverse(padded_seed_key), 'd')
-hex_decrypted = binary_to_hex(binary_decrypted)
-print("比特翻转解密结果:", hex_decrypted)
+# binary_decrypted = DES(bits_reverse(binary_encrypted), bits_reverse(padded_seed_key), 'd')
+# hex_decrypted = binary_to_hex(binary_decrypted)
+# print("比特翻转解密结果:", hex_decrypted)

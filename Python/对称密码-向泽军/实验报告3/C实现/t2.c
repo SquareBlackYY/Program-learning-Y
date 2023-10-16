@@ -1,18 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+void test_f(aaa)
+{
+    aaa = (char *)malloc(sizeof(char) * 4);
+}
+
 int main()
 {
-    char *result = (char *)malloc(sizeof(char) * 3 + 1);
-    char *str1 = "101";
-    char *str2 = "001";
-
-    for (int i = 0; i < 3; i++)
-    {
-        result[i] = str1[i] ^ str2[i];
-        result[i] = '1' ^ '0';
-    }
-    
-    result[3] = '\0';
-    char r = '1' ^ '1' + '0';
-    printf("%c", r);
+    char *aaa;
+    for (int i;i <= 3;i++)
+        test_f(aaa);
 }

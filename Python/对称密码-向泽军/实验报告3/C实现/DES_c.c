@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 // PC-1表，用于密钥置换
 int pc1_table[56] = {
@@ -112,9 +113,6 @@ int p_table[32] = {
     19, 13, 30, 6,
     22, 11, 4, 25};
 
-const int size_of_char = sizeof(char);
-const int size_of_char_s = sizeof(char *);
-
 char *hex_to_binary(const char *hex);                                                   // 16进制转2进制
 char *binary_to_hex(const char *binary);                                                // 2进制转16进制
 void DES(const char *text, const char *seed_key, const int mode, char *text_processed); // DES函数
@@ -129,34 +127,53 @@ char *xor_strings(const char *str1, const char *str2);                          
 
 int main()
 {
+    clock_t start_time, end_time;
+    double execution_time;
     const char *seed_key = "1f1f1f1f0e0e0e0e";
     char *key_binary = hex_to_binary(seed_key);
-    const char *plain_text_hex = "0123456789abcdef";
+
+    FILE *input_file = fopen("input.txt", "r");
+    fseek(input_file, 0, SEEK_END);
+    int input_size = ftell(input_file);
+    rewind(input_file);
+    char *plain_text_hex = (char *)malloc(input_size + 1);
+    fread(plain_text_hex, 1, input_size, input_file);
+    plain_text_hex[input_size] = '\0';
+    fclose(input_file);
+
     char *plain_text_binary = hex_to_binary(plain_text_hex);
+    char *text_processed_binary = (char *)malloc(sizeof(char) * (strlen(plain_text_binary) + 1));
 
-    char *text_processed_binary = (char *)malloc(size_of_char * strlen(plain_text_binary) + 1);
+    // 开始计时
+    start_time = clock();
+
     DES(plain_text_binary, key_binary, 0, text_processed_binary);
+
+    // 计时结束
+    end_time = clock();
+    
     char *ciper_text_hex = binary_to_hex(text_processed_binary);
-    printf("加密结果:%s\n", ciper_text_hex);
 
-    char *ciper_text_binary = hex_to_binary(ciper_text_hex);
-    DES(ciper_text_binary, key_binary, 1, text_processed_binary);
-    char *new_plain_text_hex = binary_to_hex(text_processed_binary);
-    printf("解密结果:%s\n", new_plain_text_hex);
+    FILE *output_file = fopen("output.txt", "w");
+    fprintf(output_file, "%s", ciper_text_hex);
+    fclose(output_file);
 
-    free(new_plain_text_hex);
-    free(ciper_text_binary);
-    free(ciper_text_hex);
-    free(text_processed_binary);
+    free(plain_text_hex);
     free(plain_text_binary);
     free(key_binary);
+    free(text_processed_binary);
+    free(ciper_text_hex);
+
+    execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    printf("程序用时: %.2f s\n", execution_time);
+    
     return 0;
 }
 
 char *hex_to_binary(const char *hex)
 {
     int hex_length = strlen(hex), binary_length = hex_length * 4;
-    char *binary = (char *)malloc(size_of_char * hex_length * 4 + 1);
+    char *binary = (char *)malloc(sizeof(char) * hex_length * 4 + 1);
     for (int i = 0; i < hex_length; i++)
     {
         char c = hex[i];
@@ -171,7 +188,7 @@ char *hex_to_binary(const char *hex)
 char *binary_to_hex(const char *binary)
 {
     int binary_length = strlen(binary), hex_length = (binary_length + 3) / 4;
-    char *hex = (char *)malloc(size_of_char * hex_length + 1);
+    char *hex = (char *)malloc(sizeof(char) * hex_length + 1);
     for (int i = 0; i < hex_length; i++)
     {
         int value = 0;
@@ -187,8 +204,8 @@ char *binary_to_hex(const char *binary)
 void DES(const char *text, const char *seed_key, const int mode, char *text_processed)
 {
     char **key_schedule = generate_key_schedule(seed_key);
-    char *text_groups = (char *)malloc(size_of_char * 64 + 1);
-    char *text_rounded = (char *)malloc(size_of_char * 64 + 1);
+    char *text_groups = (char *)malloc(sizeof(char) * 64 + 1);
+    char *text_rounded = (char *)malloc(sizeof(char) * 64 + 1);
     int number_of_text_groups = strlen(text) / 64;
     for (int i = 0; i < number_of_text_groups; i++)
     {
@@ -226,9 +243,9 @@ char **generate_key_schedule(const char *seed_key)
     left[28] = '\0';
     memcpy(right, permuted_key + 28, 28);
     right[28] = '\0';
-    char **key_schedule = (char **)malloc(size_of_char_s * 16);
+    char **key_schedule = (char **)malloc(sizeof(char *) * 16);
     for (int i = 0; i < 16; i++)
-        key_schedule[i] = (char *)malloc(size_of_char * 48 + 1);
+        key_schedule[i] = (char *)malloc(sizeof(char) * 48 + 1);
     for (int round_num = 0; round_num < 16; round_num++)
     {
         char combined_key[56];
@@ -248,7 +265,7 @@ char **generate_key_schedule(const char *seed_key)
 
 char *DES_initial_permutation(const char *bits, const int mode)
 {
-    char *bits_iped = (char *)malloc(size_of_char * 64 + 1);
+    char *bits_iped = (char *)malloc(sizeof(char) * 64 + 1);
     if (mode == 0)
         for (int i = 0; i < 64; i++)
             bits_iped[i] = bits[ip_table[i] - 1];
@@ -286,7 +303,7 @@ char *DES_round(char *bits, const char *key)
 
 char *DES_expand(const char *bits)
 {
-    char *expanded_bits = (char *)malloc(size_of_char * 48 + 1);
+    char *expanded_bits = (char *)malloc(sizeof(char) * 48 + 1);
     for (int i = 0; i < 48; i++)
         expanded_bits[i] = bits[expansion_table[i] - 1];
     expanded_bits[48] = '\0';
@@ -295,7 +312,7 @@ char *DES_expand(const char *bits)
 
 char *DES_compress(const char *bits)
 {
-    char *compressed_bits = (char *)malloc(size_of_char * 32 + 1);
+    char *compressed_bits = (char *)malloc(sizeof(char) * 32 + 1);
     for (int i = 0; i < 48; i += 6)
     {
         int row = (bits[i] - '0') * 2 + (bits[i + 5] - '0');
@@ -312,7 +329,7 @@ char *DES_compress(const char *bits)
 
 char *DES_permute(const char *bits)
 {
-    char *permuted_bits = malloc(size_of_char * 33 + 1);
+    char *permuted_bits = malloc(sizeof(char) * 33 + 1);
     for (int i = 0; i < 32; i++)
         permuted_bits[i] = bits[p_table[i] - 1];
     permuted_bits[32] = '\0';
@@ -336,7 +353,7 @@ void exchange_strings(char *str)
 char *xor_strings(const char *str1, const char *str2)
 {
     int length = strlen(str1);
-    char *result = (char *)malloc(size_of_char * length + 1);
+    char *result = (char *)malloc(sizeof(char) * length + 1);
     for (int i = 0; i < length; i++)
         result[i] = (str1[i] ^ str2[i]) + '0';
     result[length] = '\0';
