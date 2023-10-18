@@ -261,7 +261,7 @@ if __name__ == "__main__":
     plaintext = 0xfedcba98765432100123456789abcdef
     Key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
     ciphertext = encrypt(plaintext, Key)
-    print("明文：0x{:032x}，密钥为：0x{:032x}".format(plaintext, Key))
+    print("明文：0x{:032x}\n密钥：0x{:032x}".format(plaintext, Key))
     print("加密后密文：0x{}".format(ciphertext))
     decrypttext = decrypt(int(ciphertext, 16), Key)
     print("解密后明文：0x{}".format(decrypttext))
