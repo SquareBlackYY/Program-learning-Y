@@ -9,4 +9,4 @@ for i in range(times):
     if y <= f:
         result += 1
 
-print("结果为:{:.4f},".format(result/times))
+print("结果为:{:.4f}".format(result/times))
