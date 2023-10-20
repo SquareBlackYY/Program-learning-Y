@@ -99,15 +99,15 @@ def mixColumns(text):
     for i in range(4):
         row = []
         for j in range(4):
-            num = 0
+            mixed_num = 0
             for k in range(4):
                 if MIXCOLUMNS_MATRIX[i][k] == 1:
-                    num ^= text[k][j]
+                    mixed_num ^= text[k][j]
                 elif MIXCOLUMNS_MATRIX[i][k] == 2:
-                    num ^= ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B)) % 256
+                    mixed_num ^= ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B)) % 256
                 elif MIXCOLUMNS_MATRIX[i][k] == 3:
-                    num ^= ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B) ^ text[k][j]) % 256
-            row.append(num)
+                    mixed_num ^= ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B) ^ text[k][j]) % 256
+            row.append(mixed_num)
         result.append(row)
     return result
 def inv_mixColumns(text):
@@ -116,26 +116,26 @@ def inv_mixColumns(text):
     for i in range(4):
         row = []
         for j in range(4):
-            sum = 0
+            inv_mixed_num = 0
             for k in range(4):
-                tmp = text[k][j]
+                temp = text[k][j]
                 for n in range(3):
-                    tmp = ((tmp << 1) - (tmp >> 7) * 256) ^ ((tmp >> 7) * 0x1B)  # 08 * A
+                    temp = ((temp << 1) ^ ((temp >> 7) * 0x1B)) % 256
                 if INV_MIXCOLUMNS_MATRIX[i][k] == 9:
-                    sum ^= tmp ^ text[k][j]
+                    inv_mixed_num ^= temp ^ text[k][j]
                 elif INV_MIXCOLUMNS_MATRIX[i][k] == 11:
-                    sum ^= tmp ^ (((text[k][j] << 1) - (text[k][j] >> 7) * 256) ^ ((text[k][j] >> 7) * 0x1B)) ^ text[k][j]
+                    inv_mixed_num ^= temp ^ ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B)) % 256 ^ text[k][j]
                 elif INV_MIXCOLUMNS_MATRIX[i][k] == 13:
                     middle = text[k][j]
                     for n in range(2):
-                        middle = ((middle << 1) - (middle >> 7) * 256) ^ ((middle >> 7) * 0x1B)  # 04 * A
-                    sum ^= tmp ^ middle ^ text[k][j]
+                        middle = ((middle << 1) ^ ((middle >> 7) * 0x1B)) % 256
+                    inv_mixed_num ^= temp ^ middle ^ text[k][j]
                 elif INV_MIXCOLUMNS_MATRIX[i][k] == 14:
                     middle = text[k][j]
                     for n in range(2):
-                        middle = ((middle << 1) - (middle >> 7) * 256) ^ ((middle >> 7) * 0x1B)  # 04 * A
-                    sum ^= tmp ^ middle ^ (((text[k][j] << 1) - (text[k][j] >> 7) * 256) ^ ((text[k][j] >> 7) * 0x1B))
-            row.append(sum)
+                        middle = ((middle << 1) ^ ((middle >> 7) * 0x1B)) % 256
+                    inv_mixed_num ^= temp ^ middle ^ ((text[k][j] << 1) ^ ((text[k][j] >> 7) * 0x1B)) % 256
+            row.append(inv_mixed_num)
         result.append(row)
     return result
 
