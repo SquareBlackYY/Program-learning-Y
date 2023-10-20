@@ -46,6 +46,10 @@ INV_MIXCOLUMNS_MATRIX = [
         [0x0d, 0x09, 0x0e, 0x0b],
         [0x0b, 0x0d, 0x09, 0x0e]]
 '''适用于逆列混淆的逆矩阵'''
+R_CON = [
+    0x01, 0x02, 0x04, 0x08, 0x10,
+    0x20, 0x40, 0x80, 0x1B, 0x36]
+'''轮常量'''
 
 ## 文本与矩阵处理函数
 def text_to_array(hex_int):
@@ -71,14 +75,12 @@ def AddRoundKey(text, key):
 # 字节代换
 def subBytes(text):
     '''字节代换'''
-    global S_BOX
     for i in range(4):
         for j in range(4):
             text[i][j] = S_BOX[text[i][j] // 16][text[i][j] % 16]
     return text
 def inv_subBytes(text):
     '''逆字节代换'''
-    global INV_S_BOX
     for i in range(4):
         for j in range(4):
             text[i][j] = INV_S_BOX[text[i][j] // 16][text[i][j] % 16]
@@ -93,7 +95,6 @@ def inv_shiftRows(text):
 # 列混淆
 def mixColumns(text):
     '''列混淆'''
-    global MIXCOLUMNS_MATRIX
     result = []
     for i in range(4):
         row = []
@@ -111,7 +112,6 @@ def mixColumns(text):
     return result
 def inv_mixColumns(text):
     '''逆列混淆'''
-    global INV_MIXCOLUMNS_MATRIX
     result = []
     for i in range(4):
         row = []
@@ -143,49 +143,40 @@ def inv_mixColumns(text):
 # 密钥矩阵转置
 def key_transpose(key):
     '''密钥矩阵转置'''
-    key_transposed = []
+    result = []
     for i in range(4):
-        tmp = []
+        col = []
         for j in range(4):
-            tmp.append(key[j][i])
-        key_transposed.append(tmp)
-    return key_transposed
-# 
-def key_sub(key, i):
-    global S_BOX
-    Rcon = [
-        0x01, 0x02, 0x04, 0x08, 0x10,
-        0x20, 0x40, 0x80, 0x1B, 0x36]
-    for j in range(4):
-        key[j] = S_BOX[key[j] // 16][key[j] % 16]
-    key[0] ^= Rcon[i]
+            col.append(key[j][i])
+        result.append(col)
+    return result
+# 密钥字字节代换
+def SubWord(key_word):
+    '''密钥字字节代换'''
+    for i in range(4):
+        key_word[i] = S_BOX[key_word[i] // 16][key_word[i] % 16]
+    return key_word
+# 密钥字循环上移一个字节
+def RotWord(key_word):
+    '''密钥字循环上移一个字节'''
+    return [key_word[(i + 1) % 4] for i in range(4)]
+# 每轮密钥扩展
+def key_extend(key, round_num):
+    '''每轮密钥扩展'''
+    key[0] = [SubWord(RotWord(key[3]))[i] ^ key[0][i] ^ R_CON[round_num] for i in range(4)]
+    for i in range(1, 4):
+        key[i] = [key[i - 1][j] ^ key[i][j] for j in range(4)]
     return key
-# 
-def g_convert(key, i):
-    F = [key[(i + 1) % 4] for i in range(4)]
-    F = key_sub(F, i)
-    return F
-# 
-def key_extend(key, F):
-    k = []
-    for i in range(4):
-        tmp = []
-        for j in range(4):
-            tmp.append(key[i][j] ^ F[j])
-        k.append(tmp)
-        F = tmp
-    return k
 # 生成密钥表
 def generate_key_schedule(key):
     '''密钥生成'''
-    subkeys = []
+    key_schedule = []
     key = key_to_array(key)
-    subkeys.append(key_transpose(key))
-    for i in range(10):
-        F = g_convert(key[3], i)
-        key = key_extend(key, F)
-        subkeys.append(key_transpose(key))
-    return subkeys
+    key_schedule.append(key_transpose(key))
+    for round_num in range(10):
+        key = key_extend(key, round_num)
+        key_schedule.append(key_transpose(key))
+    return key_schedule
     
 ## 轮函数
 def round_function_encrypt(text, key):
