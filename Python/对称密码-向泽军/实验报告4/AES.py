@@ -64,13 +64,11 @@ def progress_bar(i, group_len, length, interval):
     '''进度条效果'''
     global max_bps
     progress = i / group_len
-    a = "=" * int(progress * length)
-    b = "." * (length - int(progress * length))
-    c = progress * 100
-    bps = int(((i + 1) * 32) / interval)
+    bps = int(i * 128 / interval)
     if bps > max_bps:
         max_bps = bps
-    print("\r{:6.2f}% [{}=>{}] {:6} bps  max: {:6} bps".format(c, a, b, bps, max_bps), end='')
+    print("\r{:6.2f}% [{}=>{}] {:6} bps  max: {:6} bps"
+          .format(progress * 100, "=" * int(progress * length), "." * (length - int(progress * length)), bps, max_bps), end='')
 
 
 ## 文本与矩阵处理函数
@@ -299,12 +297,12 @@ result = ''
 max_bps = 0
 for i in range(group_len):
     result += AES_encrypt(int(text[i * 32 : (i + 1) * 32], 16), key_schedule)
-    progress_bar(i, group_len, 50, time.time() - start_time)
+    progress_bar(i + 1, group_len, 50, time.time() - start_time)
 
 # 计时结束
 end_time = time.time()
-execution_time = end_time - start_time
-print("\n程序用时: {:.2f} s".format(execution_time))
+execution_time = end_time - start_time - 1
+print("\n程序用时: {:.2f} s, 平均速度: {} bps".format(execution_time, int(text_len * 4 / execution_time)))
 
 # 写入结果
 with open('output.txt', 'w') as file:
