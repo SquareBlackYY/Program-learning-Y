@@ -178,6 +178,7 @@ def key_transpose(key):
 # 密钥字字节代换
 def SubWord(key_word):
     '''密钥字字节代换'''
+    global S_BOX
     for i in range(4):
         key_word[i] = S_BOX[key_word[i] // 16][key_word[i] % 16]
     return key_word
