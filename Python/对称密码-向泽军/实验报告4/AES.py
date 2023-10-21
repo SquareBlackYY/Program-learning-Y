@@ -277,7 +277,7 @@ if text_len % 32 > 0:
 group_len = text_len // 32
 
 print("{:=^19}".format("AES加密程序"))
-print("文件大小: {} MB".format(text_len / (2 * 1024 * 1024)))
+print("文件大小: {} MB".format(text_len / 2 / 1024 / 1024))
 
 # 开始计时
 start_time = time.time()
