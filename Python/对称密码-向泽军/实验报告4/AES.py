@@ -276,7 +276,7 @@ if text_len % 32 > 0:
     text += ['0' for _ in range(32 - text_len)]
 group_len = text_len // 32
 
-print("{:=^30}".format("AES加密程序"))
+print("{:=^19}".format("AES加密程序"))
 print("文件大小: {} MB".format(text_len / (2 * 1024 * 1024)))
 
 # 开始计时
@@ -291,10 +291,10 @@ for i in range(group_len):
 end_time = time.time()
 execution_time = end_time - start_time - 1
 print("程序用时: {:.2f} s".format(execution_time))
-print("平均速度: {:.1f} Kbps".format(text_len / 4 / 1024 / execution_time))
+print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
 
 # 写入结果
 with open('output.txt', 'w') as file:
     file.write(result)
 
-print("{:=^34}".format(''))
+print("{:=^23}".format(''))
