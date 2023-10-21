@@ -1,3 +1,7 @@
+import random
+import time
+
+
 def int16array(p):
     str_16 = format(p, "032x")
     return [int(str_16[2 * i:2 * i + 2], 16) for i in range(16)]
@@ -258,10 +262,22 @@ def decrypt(ciphertext, K):
 
 
 if __name__ == "__main__":
-    plaintext = 0xfedcba98765432100123456789abcdef
-    Key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
+    plaintext = 0x0123456789abcdeffedcba9876543210
+    Key = 0x01010101010101010101010101010101
     ciphertext = encrypt(plaintext, Key)
-    print("明文：0x{:032x}，密钥为：0x{:032x}".format(plaintext, Key))
+    print("明文：0x{:032x}，密钥：0x{:032x}".format(plaintext, Key))
     print("加密后密文：0x{}".format(ciphertext))
     decrypttext = decrypt(int(ciphertext, 16), Key)
     print("解密后明文：0x{}".format(decrypttext))
+
+    with open('input.txt', 'r') as file:
+        text = file.read().strip()
+    text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(len(text) // 32)]
+
+    t = time.perf_counter()
+    for i in text:
+        encrypt(i, Key)
+    t = time.perf_counter() - t
+
+    bps = 65536 * 128 / t / 1024
+    print("加密 2^23 个随机明文，加密速度为：{:.1f}kbps, 用时: {:.1f}s".format(bps, t))

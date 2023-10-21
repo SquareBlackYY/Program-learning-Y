@@ -217,6 +217,7 @@ def round_function_encrypt(text, key):
     text = mixColumns(text)
     text = AddRoundKey(text, key)
     return text
+
 def round_function_decrypt(text, key):
     '''解密轮函数'''
     text = inv_shiftRows(text)
@@ -238,6 +239,7 @@ def AES_encrypt(text, key_schedule):
     text = AddRoundKey(text, key_schedule[10])
     text = array_to_hex(text)
     return text
+
 def AES_decrypt(text, key_schedule):
     '''AES解密函数'''
     text = text_to_array(text)
@@ -269,22 +271,23 @@ key_schedule = generate_key_schedule(seed_key)
 with open('input.txt', 'r') as file:
     text = file.read().strip()
 
-# 判断并填充分组
+# 判断、填充并分组
 text_len = len(text)
 if text_len % 32 > 0:
     text += ['0' for _ in range(32 - text_len)]
 group_len = text_len // 32
+text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(group_len)]
 
 print("{:=^19}".format("AES加密程序"))
-print("文件大小: {} MB".format(text_len / 2 / 1024 / 1024))
+print("文件大小: {:.2f} MB".format(text_len / 2 / 1024 / 1024))
 
 # 开始计时
 start_time = time.time()
 
 # 运行部分
-result = ''
+result = []
 for i in range(group_len):
-    result += AES_encrypt(int(text[i * 32 : (i + 1) * 32], 16), key_schedule)
+    result.append(AES_encrypt(text[i], key_schedule))
 
 # 计时结束
 end_time = time.time()
@@ -294,6 +297,7 @@ print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
 
 # 写入结果
 with open('output.txt', 'w') as file:
-    file.write(result)
+    for i in range(group_len):
+        file.write(result[i])
 
 print("{:=^23}".format(''))
