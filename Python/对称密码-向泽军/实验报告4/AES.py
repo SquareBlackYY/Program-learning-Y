@@ -251,12 +251,11 @@ def AES_decrypt(text, key_schedule):
 
 
 #plain_text = 0xfedcba98765432100123456789abcdef
+
 seed_key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
-#print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
-
-
 key_schedule = generate_key_schedule(seed_key)
 
+#print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
 
 #cipher_text = AES_encrypt(plain_text, key_schedule)
 #print("加密结果:{}".format(cipher_text))
