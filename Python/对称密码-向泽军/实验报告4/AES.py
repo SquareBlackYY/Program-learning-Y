@@ -260,7 +260,6 @@ key_schedule = generate_key_schedule(seed_key)
 #cipher_text = AES_encrypt(plain_text, key_schedule)
 #print("加密结果:{}".format(cipher_text))
 
-
 #decrypted_text = AES_decrypt(int(cipher_text, 16), key_schedule)
 #print("解密结果:{}".format(decrypted_text))
 
