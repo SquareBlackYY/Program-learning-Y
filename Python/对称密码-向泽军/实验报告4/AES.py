@@ -64,10 +64,10 @@ def progress_bar(i, group_len, length, interval):
     '''进度条效果'''
     global max_bps
     progress = i / group_len
-    bps = int(i * 128 / interval)
+    bps = i / 8 / interval
     if bps > max_bps:
         max_bps = bps
-    print("{:6.2f}% [{}=>{}] {:8} bps"
+    print("{:6.1f}% [{}=>{}] {:4.0f} Kbps"
           .format(progress * 100, "=" * int(progress * length), "." * (length - int(progress * length)), bps), end='\r')
 
 
@@ -289,7 +289,7 @@ if text_len % 32 > 0:
 group_len = text_len // 32
 
 
-print("{:=^50}".format("AES加密程序"))
+print("{:=^60}".format("AES加密程序"))
 print("文件大小: {} MB".format(text_len / (2 * 1024 * 1024)))
 
 
@@ -308,12 +308,12 @@ for i in range(group_len):
 # 计时结束
 end_time = time.time()
 execution_time = end_time - start_time - 1
-print("\n程序用时: {:.2f} s, 平均速度: {} bps, 最高速度: {} bps"
-      .format(execution_time, int(text_len * 4 / execution_time), max_bps))
+print("\n程序用时: {:.2f} s, 平均速度: {:.1f} Kbps, 最高速度: {:.1f} Kbps"
+      .format(execution_time, text_len / 256 / execution_time, max_bps))
 
 # 写入结果
 with open('output.txt', 'w') as file:
     file.write(result)
 
 
-print("{:=^54}".format(''))
+print("{:=^64}".format(''))
