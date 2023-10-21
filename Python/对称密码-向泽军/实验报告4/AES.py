@@ -169,7 +169,7 @@ def key_extend(key, round_num):
     return key
 # 生成密钥表
 def generate_key_schedule(key):
-    '''密钥生成'''
+    '''生成密钥表'''
     key_schedule = []
     key = key_to_array(key)
     key_schedule.append(key_transpose(key))
@@ -195,10 +195,9 @@ def round_function_decrypt(text, key):
     return text
 
 ## AES函数
-def AES_encrypt(text, seed_key):
+def AES_encrypt(text, key_schedule):
     '''AES加密函数'''
     text = text_to_array(text)
-    key_schedule = generate_key_schedule(seed_key)
     text = AddRoundKey(text, key_schedule[0])
     for round_num in range(1, 10):
         text = round_function_encrypt(text, key_schedule[round_num])
@@ -207,10 +206,9 @@ def AES_encrypt(text, seed_key):
     text = AddRoundKey(text, key_schedule[10])
     text = array_to_hex(text)
     return text
-def AES_decrypt(text, seed_key):
+def AES_decrypt(text, key_schedule):
     '''AES解密函数'''
     text = text_to_array(text)
-    key_schedule = generate_key_schedule(seed_key)
     text = AddRoundKey(text, key_schedule[10])
     for round_num in range(1, 10):
         text = round_function_decrypt(text, key_schedule[10 - round_num])
@@ -225,10 +223,11 @@ plain_text = 0xfedcba98765432100123456789abcdef
 seed_key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
 print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
 
+key_schedule = generate_key_schedule(seed_key)
 
-cipher_text = AES_encrypt(plain_text, seed_key)
+cipher_text = AES_encrypt(plain_text, key_schedule)
 print("加密结果:{:032x}".format(cipher_text))
 
 
-decrypted_text = AES_decrypt(cipher_text, seed_key)
+decrypted_text = AES_decrypt(cipher_text, key_schedule)
 print("解密结果:{:032x}".format(decrypted_text))
