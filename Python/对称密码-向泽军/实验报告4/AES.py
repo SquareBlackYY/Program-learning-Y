@@ -1,3 +1,6 @@
+import time
+
+
 S_BOX = [
     [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76],
     [0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0],
@@ -61,11 +64,11 @@ def key_to_array(hex_int):
     hex_str = format(hex_int, "032x")
     return [[[int(hex_str[2 * i:2 * i + 2], 16) for i in range(16)][4 * j + i] for i in range(4)] for j in range(4)]
 def array_to_hex(hex_array):
-    '''取消分组并将矩阵转换为十六进制'''
+    '''取消分组并将矩阵转换为十六进制字符串'''
     hex_str = ""
     for i in range(16):
         hex_str += format([hex_array[j][i] for i in range(4) for j in range(4)][i], "02x")
-    return int(hex_str, 16)
+    return hex_str
 
 ## 轮密钥相关函数
 # 轮密钥加
@@ -219,15 +222,44 @@ def AES_decrypt(text, key_schedule):
     return text
 
 
-plain_text = 0xfedcba98765432100123456789abcdef
+#plain_text = 0xfedcba98765432100123456789abcdef
 seed_key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
-print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
+#print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
+
 
 key_schedule = generate_key_schedule(seed_key)
 
-cipher_text = AES_encrypt(plain_text, key_schedule)
-print("加密结果:{:032x}".format(cipher_text))
+
+#cipher_text = AES_encrypt(plain_text, key_schedule)
+#print("加密结果:{}".format(cipher_text))
 
 
-decrypted_text = AES_decrypt(cipher_text, key_schedule)
-print("解密结果:{:032x}".format(decrypted_text))
+#decrypted_text = AES_decrypt(int(cipher_text, 16), key_schedule)
+#print("解密结果:{}".format(decrypted_text))
+
+
+# 读取文本
+with open('input.txt', 'r') as file:
+    text = file.read().strip()
+
+# 判断并填充分组
+text_len = len(text)
+if text_len % 32 > 0:
+    text += ['0' for _ in range(32 - text_len)]
+
+# 开始计时
+start_time = time.time()
+
+# 运行部分
+result = ''
+for i in range(text_len):
+    result += AES_encrypt(text[i * 32 : (i + 1) * 32])
+
+# 计时结束
+end_time = time.time()
+execution_time = end_time - start_time
+print("程序用时: %.2f s" % execution_time)
+
+# 写入结果
+with open('output.txt', 'w') as file:
+    file.write(result)
