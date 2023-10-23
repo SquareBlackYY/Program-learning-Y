@@ -79,8 +79,6 @@ int main()
     
     key_extend(key_schedule);
 
-
-
     // 文本读入并分组
     FILE *input_text_file = fopen("input.txt", "r");
     fseek(input_text_file, 0, SEEK_END);
