@@ -81,7 +81,7 @@ int main()
     for (int i = 0; i < 11; i++)
     {
         for (int j = 0; j < 16; j++)
-            printf("%d ", key_schedule[i][j]);
+            printf("%3d ", key_schedule[i][j]);
         printf("\n");
     }
 
@@ -126,7 +126,7 @@ void key_extend(uint8_t **key_schedule)
 {
     for (int round_num = 1; round_num < 11; round_num++)
     {
-        memcpy(key_schedule[round_num], key_schedule[0] + 12, 4 * sizeof(uint8_t));
+        memcpy(key_schedule[round_num], key_schedule[round_num - 1] + 12, 4 * sizeof(uint8_t));
         RotWord(key_schedule[round_num]);
         SubWord(key_schedule[round_num]);
         key_schedule[round_num][0] ^= key_schedule[round_num - 1][0] ^ R_CON[round_num - 1];
@@ -141,7 +141,7 @@ void key_extend(uint8_t **key_schedule)
 void RotWord(uint8_t *key_word)
 {
     uint8_t temp = key_word[0];
-    memcpy(key_word + 1, key_word, 3 * sizeof(uint8_t));
+    memcpy(key_word, key_word + 1, 3 * sizeof(uint8_t));
     key_word[3] = temp;
 }
 
