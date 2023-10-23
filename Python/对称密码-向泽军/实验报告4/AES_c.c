@@ -59,7 +59,7 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 void key_extend(uint8_t **key_schedule);
-void RotWord(uint8_t *key_word, uint8_t *result);
+void RotWord(uint8_t *key_word);
 void SubWord(uint8_t *key_word);
 
 int main()
@@ -81,7 +81,7 @@ int main()
     for (int i = 0; i < 11; i++)
     {
         for (int j = 0; j < 16; j++)
-            printf("%02x ", key_schedule[i][j]);
+            printf("%d ", key_schedule[i][j]);
         printf("\n");
     }
 
@@ -124,32 +124,30 @@ int main()
 // 密钥扩展
 void key_extend(uint8_t **key_schedule)
 {
-    uint8_t temp[4];
     for (int round_num = 1; round_num < 11; round_num++)
     {
-        RotWord(key_schedule[0], temp);
-        SubWord(temp);
-        key_schedule[round_num][0] = temp[0] ^ key_schedule[round_num - 1][0] ^ R_CON[round_num - 1];
-        printf("aaa\n");
+        memcpy(key_schedule[round_num], key_schedule[0] + 12, 4 * sizeof(uint8_t));
+        RotWord(key_schedule[round_num]);
+        SubWord(key_schedule[round_num]);
+        key_schedule[round_num][0] ^= key_schedule[round_num - 1][0] ^ R_CON[round_num - 1];
         for (int i = 1; i < 4; i++)
-            key_schedule[round_num][i] = temp[i] ^ key_schedule[round_num - 1][i];
+            key_schedule[round_num][i] ^= key_schedule[round_num - 1][i];
         for (int i = 4; i < 16; i++)
             key_schedule[round_num][i] = key_schedule[round_num][i - 4] ^ key_schedule[round_num - 1][i];
     }
 }
 
 // 将w[i-1]的4个字节循环上移一个字节
-void RotWord(uint8_t *key_word, uint8_t *result)
+void RotWord(uint8_t *key_word)
 {
-    uint8_t temp = key_word[12];
-    for (int i = 12; i < 15; i++)
-        result[12] = key_word[i + 1];
-    result[15] = temp;
+    uint8_t temp = key_word[0];
+    memcpy(key_word + 1, key_word, 3 * sizeof(uint8_t));
+    key_word[3] = temp;
 }
 
 // 基于S盒对输入字的每个字节进行代换
 void SubWord(uint8_t *key_word)
 {
-    for (int i = 12; i < 16; i++)
+    for (int i = 0; i < 4; i++)
         key_word[i] = S_BOX[key_word[i]];
 }
