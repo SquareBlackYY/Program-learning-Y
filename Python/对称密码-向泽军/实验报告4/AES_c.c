@@ -61,6 +61,7 @@ const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B,
 void key_extend(uint8_t **key_schedule);
 void RotWord(uint8_t *key_word);
 void SubWord(uint8_t *key_word);
+void AES_encrypt();
 
 int main()
 {
@@ -89,34 +90,41 @@ int main()
     fseek(input_text_file, 0, SEEK_END);
     const int input_size = ftell(input_text_file);
     rewind(input_text_file);
-
-    uint8_t *input_text = (uint8_t *)malloc(input_size / 2);
-    uint8_t *output_text = (uint8_t *)malloc(input_size / 2);
-    for (int i = 0; i < input_size / 2; i++)
-    {
-        fread(hex_text, 2, 1, input_text_file);
-        hex_text[2] = '\0';
-        input_text[i] = (uint8_t)strtol(hex_text, NULL, 16);
-    }
-    fclose(input_text_file);
-
     const int num_groups = input_size / 32;
-    uint8_t **input_text_group = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
-    uint8_t **output_text_group = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
+
+    uint8_t **input_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
+    uint8_t **output_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
     for (int i = 0; i < num_groups; i++)
     {
-        input_text_group[i] = &input_text[i * 16];
-        output_text_group[i] = &output_text[i * 16];
+        input_text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+        output_text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
     }
+
+    for (int i = 0; i < num_groups; i++)
+        for (int j = 0; j < 16; j++)
+        {
+            fread(hex_text, 2, 1, input_text_file);
+            hex_text[2] = '\0';
+            input_text[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
+        }
+
+    fclose(input_text_file);
+
+    
+    
+    
 
 
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
     free(key_schedule);
+    for (int i = 0; i < num_groups; i++)
+    {
+        free(input_text[i]);
+        free(output_text[i]);
+    }
     free(input_text);
     free(output_text);
-    free(input_text_group);
-    free(output_text_group);
 
     return 0;
 }
