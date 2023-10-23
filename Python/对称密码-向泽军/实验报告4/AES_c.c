@@ -65,6 +65,7 @@ void AES_encrypt();
 
 int main()
 {
+    // 种子密钥读入并生成密钥
     FILE *input_seedkey_file = fopen("seedkey.txt", "r");
     uint8_t **key_schedule = (uint8_t **)malloc(11 * sizeof(uint8_t *));
     for (int i = 0; i < 11; i++)
@@ -78,14 +79,8 @@ int main()
     }
     fclose(input_seedkey_file);
     key_extend(key_schedule);
-    
-    for (int i = 0; i < 11; i++)
-    {
-        for (int j = 0; j < 16; j++)
-            printf("%3d ", key_schedule[i][j]);
-        printf("\n");
-    }
 
+    // 文本读入并分组
     FILE *input_text_file = fopen("input.txt", "r");
     fseek(input_text_file, 0, SEEK_END);
     const int num_groups = ftell(input_text_file) / 32;
@@ -114,6 +109,8 @@ int main()
     
 
 
+
+    
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
     free(key_schedule);
