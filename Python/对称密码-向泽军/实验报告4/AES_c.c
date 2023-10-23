@@ -88,9 +88,8 @@ int main()
 
     FILE *input_text_file = fopen("input.txt", "r");
     fseek(input_text_file, 0, SEEK_END);
-    const int input_size = ftell(input_text_file);
+    const int num_groups = ftell(input_text_file) / 32;
     rewind(input_text_file);
-    const int num_groups = input_size / 32;
 
     uint8_t **input_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
     uint8_t **output_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
