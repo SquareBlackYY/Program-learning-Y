@@ -18,7 +18,6 @@ S_BOX = [
     [0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e],
     [0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf],
     [0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]]
-'''适用于字节代换的S盒'''
 
 INV_S_BOX = [
     [0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB],
@@ -37,57 +36,43 @@ INV_S_BOX = [
     [0x60, 0x51, 0x7F, 0xA9, 0x19, 0xB5, 0x4A, 0x0D, 0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF],
     [0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61],
     [0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D]]
-'''适用于逆字节代换的S盒的逆'''
 
 MIXCOLUMNS_MATRIX = [
     [0x02, 0x03, 0x01, 0x01],
     [0x01, 0x02, 0x03, 0x01],
     [0x01, 0x01, 0x02, 0x03],
     [0x03, 0x01, 0x01, 0x02]]
-'''适用于列混淆的矩阵'''
 
 INV_MIXCOLUMNS_MATRIX = [
     [0x0e, 0x0b, 0x0d, 0x09],
     [0x09, 0x0e, 0x0b, 0x0d],
     [0x0d, 0x09, 0x0e, 0x0b],
     [0x0b, 0x0d, 0x09, 0x0e]]
-'''适用于逆列混淆的逆矩阵'''
 
-R_CON = [
-    0x01, 0x02, 0x04, 0x08, 0x10,
-    0x20, 0x40, 0x80, 0x1B, 0x36]
-'''轮常量'''
+R_CON = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
 
 
-## 文本与矩阵处理函数
-def text_to_array(hex_int):
-    '''文本转矩阵并分组(按行分组)'''
+def hex_to_array(hex_int):
     hex_str = format(hex_int, "032x")
-    return [[[int(hex_str[2 * i:2 * i + 2], 16) for i in range(16)][4 * i + j] for i in range(4)] for j in range(4)]
+    return [int(hex_str[2 * i:2 * i + 2], 16) for i in range(16)]
 
-def key_to_array(hex_int):
-    '''密钥转矩阵并分组(按列分组)'''
-    hex_str = format(hex_int, "032x")
-    return [[[int(hex_str[2 * i:2 * i + 2], 16) for i in range(16)][4 * j + i] for i in range(4)] for j in range(4)]
+def text_group(text_array):
+    return [[text_array[4 * i + j] for i in range(4)] for j in range(4)]
+
+def key_group(key_array):
+    return [[key_array[4 * j + i] for i in range(4)] for j in range(4)]
 
 def array_to_hex(hex_array):
-    '''取消分组并将矩阵转换为十六进制字符串'''
     hex_str = ""
     for i in range(16):
         hex_str += format([hex_array[j][i] for i in range(4) for j in range(4)][i], "02x")
     return hex_str
 
 
-## 轮密钥相关函数
-
-# 轮密钥加
 def AddRoundKey(text, key):
-    '''轮密钥加'''
     return [[text[i][j] ^ key[i][j] for j in range(4)] for i in range(4)]
 
-# 字节代换
 def subBytes(text):
-    '''字节代换'''
     global S_BOX
     for i in range(4):
         for j in range(4):
@@ -95,25 +80,19 @@ def subBytes(text):
     return text
 
 def inv_subBytes(text):
-    '''逆字节代换'''
     global INV_S_BOX
     for i in range(4):
         for j in range(4):
             text[i][j] = INV_S_BOX[text[i][j] // 16][text[i][j] % 16]
     return text
 
-# 行移位
 def shiftRows(text):
-    '''行移位'''
     return [[text[i][(i + j) % 4] for j in range(4)] for i in range(4)]
 
 def inv_shiftRows(text):
-    '''逆行移位'''
     return [[text[i][(j - i) % 4] for j in range(4)] for i in range(4)]
 
-# 列混淆
 def mixColumns(text):
-    '''列混淆'''
     global MIXCOLUMNS_MATRIX
     result = []
     for i in range(4):
@@ -132,7 +111,6 @@ def mixColumns(text):
     return result
 
 def inv_mixColumns(text):
-    '''逆列混淆'''
     global INV_MIXCOLUMNS_MATRIX
     result = []
     for i in range(4):
@@ -162,11 +140,7 @@ def inv_mixColumns(text):
     return result
 
 
-## 密钥生成相关函数
-
-# 密钥矩阵转置
 def key_transpose(key):
-    '''密钥矩阵转置'''
     result = []
     for i in range(4):
         col = []
@@ -175,33 +149,29 @@ def key_transpose(key):
         result.append(col)
     return result
 
-# 密钥字字节代换
 def SubWord(key_word):
-    '''密钥字字节代换'''
     global S_BOX
     for i in range(4):
         key_word[i] = S_BOX[key_word[i] // 16][key_word[i] % 16]
     return key_word
 
-# 密钥字循环上移一个字节
 def RotWord(key_word):
-    '''密钥字循环上移一个字节'''
     return [key_word[(i + 1) % 4] for i in range(4)]
 
-# 每轮密钥扩展
 def key_extend(key, round_num):
-    '''每轮密钥扩展'''
     global R_CON
-    key[0] = [SubWord(RotWord(key[3]))[i] ^ key[0][i] ^ R_CON[round_num] for i in range(4)]
+    temp = SubWord(RotWord(key[3]))
+    key[0][0] = key[0][0] ^ temp[0] ^ R_CON[round_num]
+    for i in range(1, 4):
+        key[0][i] = key[0][i] ^ temp[i]
     for i in range(1, 4):
         key[i] = [key[i - 1][j] ^ key[i][j] for j in range(4)]
     return key
 
-# 生成密钥表
 def generate_key_schedule(key):
-    '''生成密钥表'''
     key_schedule = []
-    key = key_to_array(key)
+    key = hex_to_array(key)
+    key = key_group(key)
     key_schedule.append(key_transpose(key))
     for round_num in range(10):
         key = key_extend(key, round_num)
@@ -209,9 +179,7 @@ def generate_key_schedule(key):
     return key_schedule
 
 
-## 轮函数
 def round_function_encrypt(text, key):
-    '''加密轮函数'''
     text = subBytes(text)
     text = shiftRows(text)
     text = mixColumns(text)
@@ -219,7 +187,6 @@ def round_function_encrypt(text, key):
     return text
 
 def round_function_decrypt(text, key):
-    '''解密轮函数'''
     text = inv_shiftRows(text)
     text = inv_subBytes(text)
     text = AddRoundKey(text, key)
@@ -227,10 +194,9 @@ def round_function_decrypt(text, key):
     return text
 
 
-## AES函数
 def AES_encrypt(text, key_schedule):
-    '''AES加密函数'''
-    text = text_to_array(text)
+    text = hex_to_array(text)
+    text = text_group(text)
     text = AddRoundKey(text, key_schedule[0])
     for round_num in range(1, 10):
         text = round_function_encrypt(text, key_schedule[round_num])
@@ -241,8 +207,8 @@ def AES_encrypt(text, key_schedule):
     return text
 
 def AES_decrypt(text, key_schedule):
-    '''AES解密函数'''
-    text = text_to_array(text)
+    text = hex_to_array(text)
+    text = text_group(text)
     text = AddRoundKey(text, key_schedule[10])
     for round_num in range(1, 10):
         text = round_function_decrypt(text, key_schedule[10 - round_num])
@@ -253,52 +219,35 @@ def AES_decrypt(text, key_schedule):
     return text
 
 
-#plain_text = 0xfedcba98765432100123456789abcdef
-
 seed_key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
-#key_schedule = generate_key_schedule(seed_key)
-key_schedule = [[[31, 14, 31, 14], [31, 14, 31, 14], [31, 14, 31, 14], [31, 14, 31, 14]], [[181, 187, 164, 170], [180, 186, 165, 171], [180, 186, 165, 171], [180, 186, 165, 171]], [[213, 110, 202, 96], [214, 108, 201, 98], [214, 108, 201, 98], [24, 162, 7, 172]], [[123, 21, 223, 191], [124, 16, 217, 187], [71, 43, 226, 128], [200, 106, 109, 193]], [[153, 140, 83, 236], [177, 161, 120, 195], [63, 20, 246, 118], [192, 170, 199, 6]], [[167, 43, 120, 148], [137, 40, 80, 147], [80, 68, 178, 196], [14, 164, 99, 101]], [[91, 112, 8, 156], [149, 189, 237, 126], [29, 89, 235, 47], [44, 136, 235, 142]], [[232, 152, 144, 12], [128, 61, 208, 174], [4, 93, 182, 153], [242, 122, 145, 31]], [[140, 20, 132, 136], [110, 83, 131, 45], [196, 153, 47, 182], [12, 118, 231, 248]], [[79, 91, 223, 87], [32, 115, 240, 221], [133, 28, 51, 133], [200, 190, 89, 161]], [[184, 227, 60, 107], [183, 196, 52, 233], [183, 171, 152, 29], [147, 45, 116, 213]]]
+key_schedule = generate_key_schedule(seed_key)
+# print(key_schedule)
 
-#print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
+# with open('input.txt', 'r') as file:
+#     text = file.read().strip()
 
-#cipher_text = AES_encrypt(plain_text, key_schedule)
-#print("加密结果:{}".format(cipher_text))
+# text_len = len(text)
+# if text_len % 32 > 0:
+#     text += ['0' for _ in range(32 - text_len)]
+# group_len = text_len // 32
+# text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(group_len)]
 
-#decrypted_text = AES_decrypt(int(cipher_text, 16), key_schedule)
-#print("解密结果:{}".format(decrypted_text))
+# print("{:=^19}".format("AES加密程序"))
+# print("文件大小: {:.2f} MB".format(text_len / 2 / 1024 / 1024))
 
+# start_time = time.time()
 
-# 读取文本
-with open('input.txt', 'r') as file:
-    text = file.read().strip()
+# result = []
+# for i in range(group_len):
+#     result.append(AES_encrypt(text[i], key_schedule))
 
-# 判断、填充并分组
-text_len = len(text)
-if text_len % 32 > 0:
-    text += ['0' for _ in range(32 - text_len)]
-group_len = text_len // 32
-text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(group_len)]
+# end_time = time.time()
+# execution_time = end_time - start_time - 1
+# print("程序用时: {:.2f} s".format(execution_time))
+# print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
 
-print("{:=^19}".format("AES加密程序"))
-print("文件大小: {:.2f} MB".format(text_len / 2 / 1024 / 1024))
+# with open('output.txt', 'w') as file:
+#     for i in range(group_len):
+#         file.write(result[i])
 
-# 开始计时
-start_time = time.time()
-
-# 运行部分
-result = []
-for i in range(group_len):
-    result.append(AES_encrypt(text[i], key_schedule))
-
-# 计时结束
-end_time = time.time()
-execution_time = end_time - start_time
-print("程序用时: {:.2f} s".format(execution_time))
-print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
-
-# 写入结果
-with open('output.txt', 'w') as file:
-    for i in range(group_len):
-        file.write(result[i])
-
-print("{:=^23}".format(''))
+# print("{:=^23}".format(''))

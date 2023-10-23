@@ -1,4 +1,3 @@
-import random
 import time
 
 
@@ -245,10 +244,9 @@ def encrypt(plaintext, k):
     return p
 
 
-def decrypt(ciphertext, K):
+def decrypt(ciphertext, k):
     c = int16array(ciphertext)
     c = textgroup(c)
-    k = key_schedule(K)
     c = key_xor(c, k[10])
     for i in range(1, 10):
         c = decrypt_round_function(c, k[10 - i])
@@ -261,16 +259,22 @@ def decrypt(ciphertext, K):
 
 
 if __name__ == "__main__":
-    Key = 0x01010101010101010101010101010101
+    Key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
     k = key_schedule(Key)
     with open('input.txt', 'r') as file:
         text = file.read().strip()
-    text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(len(text) // 32)]
 
+    text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(len(text) // 32)]
+    
+    result = []
     t = time.perf_counter()
     for i in text:
-        encrypt(i, k)
+        result.append(encrypt(i, k))
     t = time.perf_counter() - t
 
+    with open('output_.txt', 'w') as file:
+        for i in range(len(text)):
+            file.write(result[i])
+
     bps = 65536 * 128 / t / 1024
-    print("加密 2^23 个随机明文，加密速度为：{:.1f}kbps, 用时: {:.1f}s".format(bps, t))
+    print("加密 1MB 个随机明文，加密速度为：{:.1f}kbps, 用时: {:.4f}s".format(bps, t))
