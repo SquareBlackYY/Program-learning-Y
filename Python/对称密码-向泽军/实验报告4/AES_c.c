@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // 适用于字节代换的S盒
 const uint8_t S_BOX[256] = {
@@ -104,13 +105,19 @@ int main()
 
     fclose(input_text_file);
 
+    clock_t start_time, end_time;
+    double execution_time;
+    // 开始计时
+    start_time = clock();
     
-    
-    
+    // 函数执行
 
 
+    // 计时结束
+    end_time = clock();
+    execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    printf("程序用时: %.2f s\n", execution_time);
 
-    
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
     free(key_schedule);
