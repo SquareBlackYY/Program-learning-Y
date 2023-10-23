@@ -66,20 +66,20 @@ void AES_encrypt();
 
 int main()
 {
-    // 种子密钥读入并生成密钥
-    FILE *input_seedkey_file = fopen("seedkey.txt", "r");
+    // 生成密钥
     uint8_t **key_schedule = (uint8_t **)malloc(11 * sizeof(uint8_t *));
     for (int i = 0; i < 11; i++)
         key_schedule[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
-    char hex_text[3];
-    for (int i = 0; i < 16; i++)
-    {
-        fread(hex_text, 2, 1, input_seedkey_file);
-        hex_text[2] = '\0';
-        key_schedule[0][i] = (uint8_t)strtol(hex_text, NULL, 16);
-    }
-    fclose(input_seedkey_file);
+
+    uint64_t seed_key[2] = {0x1f1f1f1f0e0e0e0e, 0x1f1f1f1f0e0e0e0e};
+    for (int i = 15; i >= 8; i--)
+        key_schedule[0][i] = (seed_key[1] >> ((15 - i) * 8)) & 0xFF;
+    for (int i = 7; i >= 0; i--)
+        key_schedule[0][i] = (seed_key[0] >> ((7 - i) * 8)) & 0xFF;
+    
     key_extend(key_schedule);
+
+
 
     // 文本读入并分组
     FILE *input_text_file = fopen("input.txt", "r");
@@ -95,6 +95,7 @@ int main()
         output_text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
     }
 
+    char hex_text[3];
     for (int i = 0; i < num_groups; i++)
         for (int j = 0; j < 16; j++)
         {
