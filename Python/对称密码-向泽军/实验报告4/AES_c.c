@@ -110,7 +110,7 @@ int main()
     start_time = clock();
     
     // 函数执行
-
+    AES_encrypt();
 
     // 计时结束
     end_time = clock();
