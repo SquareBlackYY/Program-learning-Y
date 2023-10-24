@@ -221,33 +221,32 @@ def AES_decrypt(text, key_schedule):
 
 seed_key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
 key_schedule = generate_key_schedule(seed_key)
-# print(key_schedule)
 
-# with open('input.txt', 'r') as file:
-#     text = file.read().strip()
+with open('input.txt', 'r') as file:
+    text = file.read().strip()
 
-# text_len = len(text)
-# if text_len % 32 > 0:
-#     text += ['0' for _ in range(32 - text_len)]
-# group_len = text_len // 32
-# text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(group_len)]
+text_len = len(text)
+if text_len % 32 > 0:
+    text += ['0' for _ in range(32 - text_len)]
+group_len = text_len // 32
+text = [int(text[i * 32 : (i + 1) * 32], 16) for i in range(group_len)]
 
-# print("{:=^19}".format("AES加密程序"))
-# print("文件大小: {:.2f} MB".format(text_len / 2 / 1024 / 1024))
+print("{:=^19}".format("AES加密程序"))
+print("文件大小: {:.2f} MB".format(text_len / 2 / 1024 / 1024))
 
-# start_time = time.time()
+start_time = time.time()
 
-# result = []
-# for i in range(group_len):
-#     result.append(AES_encrypt(text[i], key_schedule))
+result = []
+for i in range(group_len):
+    result.append(AES_encrypt(text[i], key_schedule))
 
-# end_time = time.time()
-# execution_time = end_time - start_time - 1
-# print("程序用时: {:.2f} s".format(execution_time))
-# print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
+end_time = time.time()
+execution_time = end_time - start_time - 1
+print("程序用时: {:.2f} s".format(execution_time))
+print("平均速度: {:.1f} Kbps".format(text_len * 4 / 1024 / execution_time))
 
-# with open('output.txt', 'w') as file:
-#     for i in range(group_len):
-#         file.write(result[i])
+with open('output.txt', 'w') as file:
+    for i in range(group_len):
+        file.write(result[i])
 
-# print("{:=^23}".format(''))
+print("{:=^23}".format(''))
