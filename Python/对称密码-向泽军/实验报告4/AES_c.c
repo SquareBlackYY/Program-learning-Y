@@ -122,6 +122,7 @@ int main()
     end_time = clock();
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
+    printf("平均速度: %.2f Gbps\n", 128 * num_groups / execution_time / 1024 / 1024 / 1024);
 
     write_output(text, num_groups);
 
