@@ -73,12 +73,12 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 // 轮常量
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
-void read_input(uint8_t ***, int *);
-void write_output(uint8_t **, int);
 void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
 void RotWord(uint8_t *);
 void SubWord(uint8_t *);
+void read_input(uint8_t ***, int *);
+void write_output(uint8_t **, int);
 void AES_encrypt(int, uint8_t **, uint8_t **);
 void AddRoundKey(uint8_t *, uint8_t *);
 void subBytes(uint8_t *);
@@ -102,13 +102,13 @@ uint8_t *ta(uint8_t *array)
 
 int main()
 {
-    uint8_t **text;
-    int num_groups;
-    read_input(&text, &num_groups);
-
     uint8_t **key_schedule;
     char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
     generate_key_schedule(seed_key, &key_schedule);
+    
+    uint8_t **text;
+    int num_groups;
+    read_input(&text, &num_groups);
 
     clock_t start_time, end_time;
     double execution_time;
@@ -134,54 +134,6 @@ int main()
     free(text);
 
     return 0;
-}
-
-void read_input(uint8_t ***text, int *num_groups)
-{
-    FILE *input_file = fopen("input.txt", "r");
-    fseek(input_file, 0, SEEK_END);
-    *num_groups = ftell(input_file) / 32;
-    rewind(input_file);
-    printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
-
-    *text = (uint8_t **)malloc(*num_groups * sizeof(uint8_t *));
-    for (int i = 0; i < *num_groups; i++)
-        (*text)[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
-
-    char hex_text[3];
-    for (int i = 0; i < *num_groups; i++)
-        for (int j = 0; j < 4; j++)
-            for (int k = 0; k < 4; k++)
-            {
-                fread(hex_text, 2, 1, input_file);
-                hex_text[2] = '\0';
-                (*text)[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
-            }
-
-    fclose(input_file);
-    printf("文件读取完成。\n");
-}
-
-void write_output(uint8_t **text, int num_groups)
-{
-    FILE *output_file = fopen("output.txt", "w");
-    for (int i = 0; i < num_groups; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            for (int k = 0; k < 4; k++)
-            {
-                uint8_t value = text[i][k * 4 + j];
-                uint8_t high_nibble = (value >> 4) & 0xF;
-                uint8_t low_nibble = value & 0xF;
-                char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
-                char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
-                fprintf(output_file, "%c%c", high_hex, low_hex);
-            }
-        }
-    }
-    fclose(output_file);
-    printf("文件写入完成。\n");
 }
 
 void generate_key_schedule(char *seed_key, uint8_t ***key_schedule)
@@ -234,6 +186,54 @@ void SubWord(uint8_t *key_word)
 {
     for (int i = 0; i < 4; i++)
         key_word[i] = S_BOX[key_word[i]];
+}
+
+void read_input(uint8_t ***text, int *num_groups)
+{
+    FILE *input_file = fopen("input.txt", "r");
+    fseek(input_file, 0, SEEK_END);
+    *num_groups = ftell(input_file) / 32;
+    rewind(input_file);
+    printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
+
+    *text = (uint8_t **)malloc(*num_groups * sizeof(uint8_t *));
+    for (int i = 0; i < *num_groups; i++)
+        (*text)[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+
+    char hex_text[3];
+    for (int i = 0; i < *num_groups; i++)
+        for (int j = 0; j < 4; j++)
+            for (int k = 0; k < 4; k++)
+            {
+                fread(hex_text, 2, 1, input_file);
+                hex_text[2] = '\0';
+                (*text)[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
+            }
+
+    fclose(input_file);
+    printf("文件读取完成。\n");
+}
+
+void write_output(uint8_t **text, int num_groups)
+{
+    FILE *output_file = fopen("output.txt", "w");
+    for (int i = 0; i < num_groups; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            for (int k = 0; k < 4; k++)
+            {
+                uint8_t value = text[i][k * 4 + j];
+                uint8_t high_nibble = (value >> 4) & 0xF;
+                uint8_t low_nibble = value & 0xF;
+                char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
+                char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
+                fprintf(output_file, "%c%c", high_hex, low_hex);
+            }
+        }
+    }
+    fclose(output_file);
+    printf("文件写入完成。\n");
 }
 
 void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
