@@ -103,7 +103,7 @@ uint8_t *ta(uint8_t *array)
 int main()
 {
     uint8_t **key_schedule;
-    char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
+    char *seed_key = "01010101010101010101010101010101";
     generate_key_schedule(seed_key, &key_schedule);
     
     uint8_t **text;
