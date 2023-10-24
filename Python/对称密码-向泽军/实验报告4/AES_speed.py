@@ -197,7 +197,9 @@ def round_function_decrypt(text, key):
 def AES_encrypt(text, key_schedule):
     text = hex_to_array(text)
     text = text_group(text)
+    print(text)
     text = AddRoundKey(text, key_schedule[0])
+    
     for round_num in range(1, 10):
         text = round_function_encrypt(text, key_schedule[round_num])
     text = subBytes(text)

@@ -81,14 +81,23 @@ int main()
     for (int i = 0; i < 11; i++)
         key_schedule[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
 
-    uint64_t seed_key[2] = {0x1f1f1f1f0e0e0e0e, 0x1f1f1f1f0e0e0e0e};
-    for (int i = 15; i >= 8; i--)
-        key_schedule[0][i] = (seed_key[1] >> ((15 - i) * 8)) & 0xFF;
-    for (int i = 7; i >= 0; i--)
-        key_schedule[0][i] = (seed_key[0] >> ((7 - i) * 8)) & 0xFF;
-
+    char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
+    char hex_text[3];
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+        {
+            sscanf(seed_key + (i * 8 + j * 2), "%2s", hex_text);
+            key_schedule[0][j * 4 + i] = (uint8_t)strtol(hex_text, NULL, 16);
+        }
     key_extend(key_schedule);
     printf("密钥扩展完成。\n");
+    
+    for (int i = 0; i < 11; i++)
+    {
+        for (int j = 0; j < 16; j++)
+            printf("%3d ", key_schedule[i][j]);
+        printf("\n");
+    }
 
     FILE *input_file = fopen("input.txt", "r");
     fseek(input_file, 0, SEEK_END);
@@ -99,14 +108,14 @@ int main()
     for (int i = 0; i < num_groups; i++)
         text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
 
-    char hex_text[3];
     for (int i = 0; i < num_groups; i++)
-        for (int j = 0; j < 16; j++)
-        {
-            fread(hex_text, 2, 1, input_file);
-            hex_text[2] = '\0';
-            text[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
-        }
+        for (int j = 0; j < 4; j++)
+            for (int k = 0; k < 4; k++)
+            {
+                fread(hex_text, 2, 1, input_file);
+                hex_text[2] = '\0';
+                text[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
+            }
 
     fclose(input_file);
     printf("文件读取完成。\n");
@@ -182,18 +191,23 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
 {
     uint8_t *text;
     for (int i = 0; i < num_groups; i++)
-        text = input_text[i];
-    AddRoundKey(text, key_schedule[0]);
-    for (int round_num = 1; round_num < 10; round_num++)
     {
+        text = input_text[i];
+        AddRoundKey(text, key_schedule[0]);
+        for (int i = 0; i < 16; i++)
+            printf("%3d ", text[i]);
+        printf("\n");
+        for (int round_num = 1; round_num < 10; round_num++)
+        {
+            subBytes(text);
+            shiftRows(text);
+            mixColumns(text);
+            AddRoundKey(text, key_schedule[round_num]);
+        }
         subBytes(text);
         shiftRows(text);
-        mixColumns(text);
-        AddRoundKey(text, key_schedule[round_num]);
+        AddRoundKey(text, key_schedule[10]);
     }
-    subBytes(text);
-    shiftRows(text);
-    AddRoundKey(text, key_schedule[10]);
 }
 
 void AddRoundKey(uint8_t *text, uint8_t *key)

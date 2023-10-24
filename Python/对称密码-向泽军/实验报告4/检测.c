@@ -9,6 +9,11 @@ int main()
         printf("\n");
     }
 
+    // 文本检测
+    for (int i = 0; i < 11; i++)
+        printf("%3d ", text[i]);
+    printf("\n");
+
 
 
 
