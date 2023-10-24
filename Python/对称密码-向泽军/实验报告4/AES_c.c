@@ -4,12 +4,12 @@
 #include <string.h>
 #include <time.h>
 
-// 用于转置
+// 用于转置的表
 const int TRANSPOSE_TABLE[16] = {
+    0, 4, 8, 12,
     1, 5, 9, 13,
     2, 6, 10, 14,
-    3, 7, 11, 15,
-    4, 8, 12, 16};
+    3, 7, 11, 15};
 
 // 适用于字节代换的S盒
 const uint8_t S_BOX[256] = {
@@ -51,10 +51,10 @@ const uint8_t INV_S_BOX[256] = {
 
 // 适用于行移位的映射表
 const int SHIFTROWS_TABLE[16] = {
-    1, 6, 11, 16,
-    5, 10, 15, 4,
-    9, 14, 3, 8,
-    13, 2, 7, 12};
+    0, 5, 10, 15,
+    4, 9, 14, 3,
+    8, 13, 2, 7,
+    12, 1, 6, 11};
 
 // 适用于列混淆的矩阵
 const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
@@ -74,6 +74,7 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 void read_input(uint8_t ***, int *);
+void write_output(uint8_t **, int);
 void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
 void RotWord(uint8_t *);
@@ -83,6 +84,22 @@ void AddRoundKey(uint8_t *, uint8_t *);
 void subBytes(uint8_t *);
 void shiftRows(uint8_t *);
 void mixColumns(uint8_t *);
+
+uint8_t *ta(uint8_t *array)
+{
+    uint8_t tda[16];
+    printf("转置前: ");
+    for (int i = 0; i < 16; i++)
+        printf("%3d ", array[i]);
+    printf("\n转置后: ");
+    for (int i = 0; i < 16; i++)
+    {
+        tda[i] = array[TRANSPOSE_TABLE[i]];
+        printf("%3d ", tda[i]);
+    }
+    printf("\n");
+}
+
 
 int main()
 {
@@ -94,12 +111,12 @@ int main()
     char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
     generate_key_schedule(seed_key, &key_schedule);
 
-    for (int i = 0; i < 11; i++)
-    {
-        for (int j = 0; j < 16; j++)
-            printf("%3d ", key_schedule[i][j]);
-        printf("\n");
-    }
+    // for (int i = 0; i < 11; i++)
+    // {
+    //     for (int j = 0; j < 16; j++)
+    //         printf("%3d ", key_schedule[i][j]);
+    //     printf("\n");
+    // }
 
 
     clock_t start_time, end_time;
@@ -115,21 +132,7 @@ int main()
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
 
-    FILE *output_file = fopen("output.txt", "w");
-    for (int i = 0; i < num_groups; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            uint8_t value = text[i][j];
-            uint8_t high_nibble = (value >> 4) & 0xF;
-            uint8_t low_nibble = value & 0xF;
-            char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
-            char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
-            fprintf(output_file, "%c%c", high_hex, low_hex);
-        }
-    }
-    fclose(output_file);
-    printf("文件写入完成。\n");
+    write_output(text, num_groups);
 
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
@@ -164,6 +167,25 @@ void read_input(uint8_t ***text, int *num_groups)
 
     fclose(input_file);
     printf("文件读取完成。\n");
+}
+
+void write_output(uint8_t **text, int num_groups)
+{
+    FILE *output_file = fopen("output.txt", "w");
+    for (int i = 0; i < num_groups; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            uint8_t value = text[i][j];
+            uint8_t high_nibble = (value >> 4) & 0xF;
+            uint8_t low_nibble = value & 0xF;
+            char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
+            char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
+            fprintf(output_file, "%c%c", high_hex, low_hex);
+        }
+    }
+    fclose(output_file);
+    printf("文件写入完成。\n");
 }
 
 void generate_key_schedule(char *seed_key, uint8_t ***key_schedule)
@@ -224,6 +246,9 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
+        ta(text);
+        ta(key_schedule[0]);
+        exit(0);
         AddRoundKey(text, key_schedule[0]);
         for (int round_num = 1; round_num < 10; round_num++)
         {
@@ -261,24 +286,24 @@ void shiftRows(uint8_t *text)
 void mixColumns(uint8_t *text)
 {
     uint8_t temp[4][4];
-    for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int i = 0; i < 4; i++)
         {
             uint8_t mixed_num = 0;
             for (int k = 0; k < 4; k++)
             {
-                if (MIXCOLUMNS_MATRIX[i][k] == 1)
-                    mixed_num ^= text[k * 4 + j];
-                else if (MIXCOLUMNS_MATRIX[i][k] == 2)
-                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B)) % 256;
-                else if (MIXCOLUMNS_MATRIX[i][k] == 3)
-                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B) ^ text[k * 4 + j]) % 256;
+                if (MIXCOLUMNS_MATRIX[k][i] == 1)
+                    mixed_num ^= text[j * 4 + k];
+                else if (MIXCOLUMNS_MATRIX[k][i] == 2)
+                    mixed_num ^= ((text[j * 4 + k] << 1) ^ ((text[j * 4 + k] >> 7) * 0x1B)) % 256;
+                else if (MIXCOLUMNS_MATRIX[k][i] == 3)
+                    mixed_num ^= ((text[j * 4 + k] << 1) ^ ((text[j * 4 + k] >> 7) * 0x1B) ^ text[j * 4 + k]) % 256;
             }
             temp[i][j] = mixed_num;
         }
     }
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            text[i * 4 + j] = temp[i][j];
+    for (int j = 0; j < 4; j++)
+        for (int i = 0; i < 4; i++)
+            text[j * 4 + i] = temp[i][j];
 }
