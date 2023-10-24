@@ -111,7 +111,6 @@ int main()
     fclose(input_file);
     printf("文件读取完成。\n");
 
-
     clock_t start_time, end_time;
     double execution_time;
     // 开始计时
@@ -125,10 +124,11 @@ int main()
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
 
-
     FILE *output_file = fopen("output.txt", "w");
-    for (int i = 0; i < num_groups; i++) {
-        for (int j = 0; j < 16; j++) {
+    for (int i = 0; i < num_groups; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
             uint8_t value = text[i][j];
             uint8_t high_nibble = (value >> 4) & 0xF;
             uint8_t low_nibble = value & 0xF;
@@ -136,11 +136,9 @@ int main()
             char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
             fprintf(output_file, "%c%c", high_hex, low_hex);
         }
-        fprintf(output_file, "\n");
     }
     fclose(output_file);
     printf("文件写入完成。\n");
-
 
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
