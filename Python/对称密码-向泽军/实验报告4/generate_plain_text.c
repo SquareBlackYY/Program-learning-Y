@@ -6,7 +6,7 @@ int main()
 {
     clock_t start_time, end_time;
     double execution_time;
-    const long num_chars = 2 * 1024 * 1024;
+    const long num_chars = 200 * 1024 * 1024;
 
     srand(time(NULL));
 
@@ -27,7 +27,7 @@ int main()
 
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
-    printf("已生成 %ld 个十六进制字符并写入 input.txt, 用时: %.2f s\n", num_chars, execution_time);
+    printf("已生成 %.2f MB数据并写入 input.txt, 用时: %.2f s\n", num_chars / 2.0 / 1024 / 1024, execution_time);
 
     return 0;
 }

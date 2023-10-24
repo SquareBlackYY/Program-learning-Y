@@ -122,7 +122,7 @@ int main()
     end_time = clock();
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
-    printf("平均速度: %.2f Gbps\n", 128 * num_groups / execution_time / 1024 / 1024 / 1024);
+    printf("平均速度: %.2f Mbps\n", 128 * num_groups / execution_time / 1024 / 1024);
 
     write_output(text, num_groups);
 
@@ -142,6 +142,7 @@ void read_input(uint8_t ***text, int *num_groups)
     fseek(input_file, 0, SEEK_END);
     *num_groups = ftell(input_file) / 32;
     rewind(input_file);
+    printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
 
     *text = (uint8_t **)malloc(*num_groups * sizeof(uint8_t *));
     for (int i = 0; i < *num_groups; i++)
@@ -159,7 +160,6 @@ void read_input(uint8_t ***text, int *num_groups)
 
     fclose(input_file);
     printf("文件读取完成。\n");
-    printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
 }
 
 void write_output(uint8_t **text, int num_groups)
