@@ -51,10 +51,10 @@ const uint8_t INV_S_BOX[256] = {
 
 // 适用于行移位的映射表
 const int SHIFTROWS_TABLE[16] = {
-    0, 5, 10, 15,
-    4, 9, 14, 3,
-    8, 13, 2, 7,
-    12, 1, 6, 11};
+    0, 1, 2, 3,
+    5, 6, 7, 4,
+    10, 11, 8, 9,
+    15, 12, 13, 14};
 
 // 适用于列混淆的矩阵
 const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
@@ -249,7 +249,6 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
         {
             subBytes(text);
             shiftRows(text);
-            ta(text);
             mixColumns(text);
             AddRoundKey(text, key_schedule[round_num]);
         }
@@ -275,28 +274,27 @@ void shiftRows(uint8_t *text)
 {
     uint8_t temp[16];
     for (int i = 0; i < 16; i++)
-        temp[SHIFTROWS_TABLE[i]] = text[i];
+        temp[i] = text[SHIFTROWS_TABLE[i]];
     memcpy(text, temp, 16 * sizeof(uint8_t));
 }
 
 void mixColumns(uint8_t *text)
 {
     uint8_t result[16];
-    for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
         {
             uint8_t mixed_num = 0;
-            for (int k = 0; k < 4; k++)
-            {
-                if (MIXCOLUMNS_MATRIX[k][i] == 1)
-                    mixed_num ^= text[j * 4 + k];
-                else if (MIXCOLUMNS_MATRIX[k][i] == 2)
-                    mixed_num ^= ((text[j * 4 + k] << 1) ^ ((text[j * 4 + k] >> 7) * 0x1B)) % 256;
-                else if (MIXCOLUMNS_MATRIX[k][i] == 3)
-                    mixed_num ^= ((text[j * 4 + k] << 1) ^ ((text[j * 4 + k] >> 7) * 0x1B) ^ text[j * 4 + k]) % 256;
+            for (int k = 0; k < 4; k++) {
+                if (MIXCOLUMNS_MATRIX[i][k] == 1)
+                    mixed_num ^= text[k * 4 + j];
+                else if (MIXCOLUMNS_MATRIX[i][k] == 2)
+                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B)) ^ 0xff;
+                else if (MIXCOLUMNS_MATRIX[i][k] == 3)
+                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B) ^ text[k * 4 + j]) ^ 0xff; 
             }
-            result[i * 4 + j] = mixed_num;
+            result[i*4 +j] = mixed_num;
         }
     }
     memcpy(text, result, 16 * sizeof(uint8_t));

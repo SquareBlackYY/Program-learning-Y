@@ -153,7 +153,6 @@ def key_schedule(key):
 def round_function(p, key):
     p = subBytes(p)
     p = shiftRows(p)
-    print(p)
     p = mixColumns(p)
     p = key_xor(p, key)
     return p
