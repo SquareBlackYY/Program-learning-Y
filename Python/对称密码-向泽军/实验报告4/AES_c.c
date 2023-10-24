@@ -73,7 +73,7 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 // 轮常量
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
-void read_input(uint8_t ***text, int *num_groups);
+void read_input(uint8_t ***, int *);
 void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
 void RotWord(uint8_t *);
