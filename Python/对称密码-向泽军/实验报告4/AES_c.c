@@ -110,13 +110,6 @@ int main()
     char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
     generate_key_schedule(seed_key, &key_schedule);
 
-    // for (int i = 0; i < 11; i++)
-    // {
-    //     for (int j = 0; j < 16; j++)
-    //         printf("%3d ", key_schedule[i][j]);
-    //     printf("\n");
-    // }
-
     clock_t start_time, end_time;
     double execution_time;
     // 开始计时
@@ -165,6 +158,7 @@ void read_input(uint8_t ***text, int *num_groups)
 
     fclose(input_file);
     printf("文件读取完成。\n");
+    printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
 }
 
 void write_output(uint8_t **text, int num_groups)
@@ -172,14 +166,17 @@ void write_output(uint8_t **text, int num_groups)
     FILE *output_file = fopen("output.txt", "w");
     for (int i = 0; i < num_groups; i++)
     {
-        for (int j = 0; j < 16; j++)
+        for (int j = 0; j < 4; j++)
         {
-            uint8_t value = text[i][j];
-            uint8_t high_nibble = (value >> 4) & 0xF;
-            uint8_t low_nibble = value & 0xF;
-            char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
-            char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
-            fprintf(output_file, "%c%c", high_hex, low_hex);
+            for (int k = 0; k < 4; k++)
+            {
+                uint8_t value = text[i][k * 4 + j];
+                uint8_t high_nibble = (value >> 4) & 0xF;
+                uint8_t low_nibble = value & 0xF;
+                char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
+                char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
+                fprintf(output_file, "%c%c", high_hex, low_hex);
+            }
         }
     }
     fclose(output_file);
