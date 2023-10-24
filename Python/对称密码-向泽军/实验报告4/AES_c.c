@@ -246,9 +246,6 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
-        ta(text);
-        ta(key_schedule[0]);
-        exit(0);
         AddRoundKey(text, key_schedule[0]);
         for (int round_num = 1; round_num < 10; round_num++)
         {
