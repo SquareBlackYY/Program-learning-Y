@@ -100,7 +100,6 @@ uint8_t *ta(uint8_t *array)
     printf("\n");
 }
 
-
 int main()
 {
     uint8_t **text;
@@ -117,7 +116,6 @@ int main()
     //         printf("%3d ", key_schedule[i][j]);
     //     printf("\n");
     // }
-
 
     clock_t start_time, end_time;
     double execution_time;
@@ -251,6 +249,7 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
         {
             subBytes(text);
             shiftRows(text);
+            ta(text);
             mixColumns(text);
             AddRoundKey(text, key_schedule[round_num]);
         }
@@ -282,7 +281,7 @@ void shiftRows(uint8_t *text)
 
 void mixColumns(uint8_t *text)
 {
-    uint8_t temp[4][4];
+    uint8_t result[16];
     for (int j = 0; j < 4; j++)
     {
         for (int i = 0; i < 4; i++)
@@ -297,10 +296,8 @@ void mixColumns(uint8_t *text)
                 else if (MIXCOLUMNS_MATRIX[k][i] == 3)
                     mixed_num ^= ((text[j * 4 + k] << 1) ^ ((text[j * 4 + k] >> 7) * 0x1B) ^ text[j * 4 + k]) % 256;
             }
-            temp[i][j] = mixed_num;
+            result[i * 4 + j] = mixed_num;
         }
     }
-    for (int j = 0; j < 4; j++)
-        for (int i = 0; i < 4; i++)
-            text[j * 4 + i] = temp[i][j];
+    memcpy(text, result, 16 * sizeof(uint8_t));
 }
