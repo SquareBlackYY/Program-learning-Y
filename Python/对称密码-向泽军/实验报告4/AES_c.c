@@ -42,12 +42,19 @@ const uint8_t INV_S_BOX[256] = {
     0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D};
 
+// 适用于行移位的映射表
+const int SHIFTROWS_TABLE[16] = {
+    1, 6, 11, 16,
+    5, 10, 15, 4,
+    9, 14, 3, 8,
+    13, 2, 7, 12};
+
 // 适用于列混淆的矩阵
-const uint8_t MIXCOLUMNS_MATRIX[16] = {
-    0x02, 0x03, 0x01, 0x01,
-    0x01, 0x02, 0x03, 0x01,
-    0x01, 0x01, 0x02, 0x03,
-    0x03, 0x01, 0x01, 0x02};
+const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
+    {0x02, 0x03, 0x01, 0x01},
+    {0x01, 0x02, 0x03, 0x01},
+    {0x01, 0x01, 0x02, 0x03},
+    {0x03, 0x01, 0x01, 0x02}};
 
 // 适用于逆列混淆的逆矩阵
 const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
@@ -59,14 +66,17 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 // 轮常量
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
-void key_extend(uint8_t **key_schedule);
-void RotWord(uint8_t *key_word);
-void SubWord(uint8_t *key_word);
-void AES_encrypt();
+void key_extend(uint8_t **);
+void RotWord(uint8_t *);
+void SubWord(uint8_t *);
+void AES_encrypt(int, uint8_t **, uint8_t **);
+void AddRoundKey(uint8_t *, uint8_t *);
+void subBytes(uint8_t *);
+void shiftRows(uint8_t *);
+void mixColumns(uint8_t *);
 
 int main()
 {
-    // 生成密钥
     uint8_t **key_schedule = (uint8_t **)malloc(11 * sizeof(uint8_t *));
     for (int i = 0; i < 11; i++)
         key_schedule[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
@@ -76,62 +86,72 @@ int main()
         key_schedule[0][i] = (seed_key[1] >> ((15 - i) * 8)) & 0xFF;
     for (int i = 7; i >= 0; i--)
         key_schedule[0][i] = (seed_key[0] >> ((7 - i) * 8)) & 0xFF;
-    
+
     key_extend(key_schedule);
+    printf("密钥扩展完成。\n");
 
-    // 文本读入并分组
-    FILE *input_text_file = fopen("input.txt", "r");
-    fseek(input_text_file, 0, SEEK_END);
-    const int num_groups = ftell(input_text_file) / 32;
-    rewind(input_text_file);
+    FILE *input_file = fopen("input.txt", "r");
+    fseek(input_file, 0, SEEK_END);
+    const int num_groups = ftell(input_file) / 32;
+    rewind(input_file);
 
-    uint8_t **input_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
-    uint8_t **output_text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
+    uint8_t **text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
     for (int i = 0; i < num_groups; i++)
-    {
-        input_text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
-        output_text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
-    }
+        text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
 
     char hex_text[3];
     for (int i = 0; i < num_groups; i++)
         for (int j = 0; j < 16; j++)
         {
-            fread(hex_text, 2, 1, input_text_file);
+            fread(hex_text, 2, 1, input_file);
             hex_text[2] = '\0';
-            input_text[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
+            text[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
         }
 
-    fclose(input_text_file);
+    fclose(input_file);
+    printf("文件读取完成。\n");
+
 
     clock_t start_time, end_time;
     double execution_time;
     // 开始计时
     start_time = clock();
-    
+
     // 函数执行
-    AES_encrypt();
+    AES_encrypt(num_groups, text, key_schedule);
 
     // 计时结束
     end_time = clock();
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
 
+
+    FILE *output_file = fopen("output.txt", "w");
+    for (int i = 0; i < num_groups; i++) {
+        for (int j = 0; j < 16; j++) {
+            uint8_t value = text[i][j];
+            uint8_t high_nibble = (value >> 4) & 0xF;
+            uint8_t low_nibble = value & 0xF;
+            char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
+            char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
+            fprintf(output_file, "%c%c", high_hex, low_hex);
+        }
+        fprintf(output_file, "\n");
+    }
+    fclose(output_file);
+    printf("文件写入完成。\n");
+
+
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
     free(key_schedule);
     for (int i = 0; i < num_groups; i++)
-    {
-        free(input_text[i]);
-        free(output_text[i]);
-    }
-    free(input_text);
-    free(output_text);
+        free(text[i]);
+    free(text);
 
     return 0;
 }
 
-// 密钥扩展
 void key_extend(uint8_t **key_schedule)
 {
     for (int round_num = 1; round_num < 11; round_num++)
@@ -147,7 +167,6 @@ void key_extend(uint8_t **key_schedule)
     }
 }
 
-// 将w[i-1]的4个字节循环上移一个字节
 void RotWord(uint8_t *key_word)
 {
     uint8_t temp = key_word[0];
@@ -155,9 +174,71 @@ void RotWord(uint8_t *key_word)
     key_word[3] = temp;
 }
 
-// 基于S盒对输入字的每个字节进行代换
 void SubWord(uint8_t *key_word)
 {
     for (int i = 0; i < 4; i++)
         key_word[i] = S_BOX[key_word[i]];
+}
+
+void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
+{
+    uint8_t *text;
+    for (int i = 0; i < num_groups; i++)
+        text = input_text[i];
+    AddRoundKey(text, key_schedule[0]);
+    for (int round_num = 1; round_num < 10; round_num++)
+    {
+        subBytes(text);
+        shiftRows(text);
+        mixColumns(text);
+        AddRoundKey(text, key_schedule[round_num]);
+    }
+    subBytes(text);
+    shiftRows(text);
+    AddRoundKey(text, key_schedule[10]);
+}
+
+void AddRoundKey(uint8_t *text, uint8_t *key)
+{
+    for (int i = 0; i < 16; i++)
+        text[i] ^= key[i];
+}
+
+void subBytes(uint8_t *text)
+{
+    for (int i = 0; i < 16; i++)
+        text[i] = S_BOX[text[i]];
+}
+
+void shiftRows(uint8_t *text)
+{
+    uint8_t temp[16];
+    for (int i = 0; i < 16; i++)
+        temp[SHIFTROWS_TABLE[i]] = text[i];
+    memcpy(text, temp, 16 * sizeof(uint8_t));
+}
+
+void mixColumns(uint8_t *text)
+{
+    uint8_t temp[4][4];
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            uint8_t mixed_num = 0;
+            for (int k = 0; k < 4; k++)
+            {
+                if (MIXCOLUMNS_MATRIX[i][k] == 1)
+                    mixed_num ^= text[k * 4 + j];
+                else if (MIXCOLUMNS_MATRIX[i][k] == 2)
+                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B)) % 256;
+                else if (MIXCOLUMNS_MATRIX[i][k] == 3)
+                    mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B) ^ text[k * 4 + j]) % 256;
+            }
+            temp[i][j] = mixed_num;
+        }
+    }
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            text[i * 4 + j] = temp[i][j];
 }
