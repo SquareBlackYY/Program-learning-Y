@@ -4,6 +4,13 @@
 #include <string.h>
 #include <time.h>
 
+// 用于转置
+const int TRANSPOSE_TABLE[16] = {
+    1, 5, 9, 13,
+    2, 6, 10, 14,
+    3, 7, 11, 15,
+    4, 8, 12, 16};
+
 // 适用于字节代换的S盒
 const uint8_t S_BOX[256] = {
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -66,6 +73,8 @@ const uint8_t INV_MIXCOLUMNS_MATRIX[16] = {
 // 轮常量
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
+void read_input(uint8_t ***text, int *num_groups);
+void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
 void RotWord(uint8_t *);
 void SubWord(uint8_t *);
@@ -77,21 +86,14 @@ void mixColumns(uint8_t *);
 
 int main()
 {
-    uint8_t **key_schedule = (uint8_t **)malloc(11 * sizeof(uint8_t *));
-    for (int i = 0; i < 11; i++)
-        key_schedule[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+    uint8_t **text;
+    int num_groups;
+    read_input(&text, &num_groups);
 
+    uint8_t **key_schedule;
     char *seed_key = "1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e";
-    char hex_text[3];
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-        {
-            sscanf(seed_key + (i * 8 + j * 2), "%2s", hex_text);
-            key_schedule[0][j * 4 + i] = (uint8_t)strtol(hex_text, NULL, 16);
-        }
-    key_extend(key_schedule);
-    printf("密钥扩展完成。\n");
-    
+    generate_key_schedule(seed_key, &key_schedule);
+
     for (int i = 0; i < 11; i++)
     {
         for (int j = 0; j < 16; j++)
@@ -99,26 +101,6 @@ int main()
         printf("\n");
     }
 
-    FILE *input_file = fopen("input.txt", "r");
-    fseek(input_file, 0, SEEK_END);
-    const int num_groups = ftell(input_file) / 32;
-    rewind(input_file);
-
-    uint8_t **text = (uint8_t **)malloc(num_groups * sizeof(uint8_t *));
-    for (int i = 0; i < num_groups; i++)
-        text[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
-
-    for (int i = 0; i < num_groups; i++)
-        for (int j = 0; j < 4; j++)
-            for (int k = 0; k < 4; k++)
-            {
-                fread(hex_text, 2, 1, input_file);
-                hex_text[2] = '\0';
-                text[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
-            }
-
-    fclose(input_file);
-    printf("文件读取完成。\n");
 
     clock_t start_time, end_time;
     double execution_time;
@@ -159,6 +141,55 @@ int main()
     return 0;
 }
 
+void read_input(uint8_t ***text, int *num_groups)
+{
+    FILE *input_file = fopen("input.txt", "r");
+    fseek(input_file, 0, SEEK_END);
+    *num_groups = ftell(input_file) / 32;
+    rewind(input_file);
+
+    *text = (uint8_t **)malloc(*num_groups * sizeof(uint8_t *));
+    for (int i = 0; i < *num_groups; i++)
+        (*text)[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+
+    char hex_text[3];
+    for (int i = 0; i < *num_groups; i++)
+        for (int j = 0; j < 4; j++)
+            for (int k = 0; k < 4; k++)
+            {
+                fread(hex_text, 2, 1, input_file);
+                hex_text[2] = '\0';
+                (*text)[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
+            }
+
+    fclose(input_file);
+    printf("文件读取完成。\n");
+}
+
+void generate_key_schedule(char *seed_key, uint8_t ***key_schedule)
+{
+    char hex_text[3];
+    uint8_t temp[16];
+    *key_schedule = (uint8_t **)malloc(11 * sizeof(uint8_t *));
+    for (int i = 0; i < 11; i++)
+        (*key_schedule)[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+
+    for (int i = 0; i < 16; i++)
+    {
+        sscanf(seed_key + (i * 2), "%2s", hex_text);
+        (*key_schedule)[0][i] = (uint8_t)strtol(hex_text, NULL, 16);
+    }
+    key_extend(*key_schedule);
+
+    for (int i = 0; i < 11; i++)
+    {
+        for (int j = 0; j < 16; j++)
+            temp[j] = (*key_schedule)[i][TRANSPOSE_TABLE[j]];
+        memcpy((*key_schedule)[i], temp, 16 * sizeof(uint8_t));
+    }
+    printf("密钥扩展完成。\n");
+}
+
 void key_extend(uint8_t **key_schedule)
 {
     for (int round_num = 1; round_num < 11; round_num++)
@@ -194,9 +225,6 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
     {
         text = input_text[i];
         AddRoundKey(text, key_schedule[0]);
-        for (int i = 0; i < 16; i++)
-            printf("%3d ", text[i]);
-        printf("\n");
         for (int round_num = 1; round_num < 10; round_num++)
         {
             subBytes(text);
