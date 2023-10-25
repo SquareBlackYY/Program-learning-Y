@@ -53,7 +53,7 @@ for file_url in associated_files:
     save_path = os.path.join(folder_name, file_name)
     download_file(file_url, save_path)
     completed_files += 1
-    print(f'Downloaded file {completed_files}/{total_files}', end = '\r')
+    print(f'\rDownloaded file {completed_files}/{total_files}')
 
     # 添加延时
     time.sleep(random.uniform(0.5, 1.5))
