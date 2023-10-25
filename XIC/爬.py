@@ -1,5 +1,6 @@
 import os
 import requests
+import re
 
 def download_file(url, save_path):
     response = requests.get(url, stream=True)
@@ -32,12 +33,11 @@ associated_files = []
 lines = content.split('\n')
 for line in lines:
     if 'url(' in line:
-        start_index = line.index('url(') + 4
-        end_index = line.index(')', start_index)
-        url = line[start_index:end_index]
-        if url.startswith('../'):
-            url = f'https://kit-pro.fontawesome.com/releases/v{version}/' + url[3:]
-        associated_files.append(url)
+        urls = re.findall(r'url\((.*?)\)', line)
+        for url in urls:
+            if url.startswith('../'):
+                url = f'https://kit-pro.fontawesome.com/releases/v{version}/' + url[3:]
+            associated_files.append(url)
 
 # 下载关联文件到与源文件相同的文件夹中
 total_files = len(associated_files)
