@@ -2,11 +2,12 @@ import os
 import requests
 
 def download_file(url, save_path):
-    response = requests.get(url, stream=True)
+    response = requests.head(url)
     total_size = int(response.headers.get('content-length', 0))
     block_size = 1024  # 1 KB
     progress_bar_width = 40
 
+    response = requests.get(url, stream=True)
     with open(save_path, 'wb') as file:
         progress_bar = '[' + ' ' * progress_bar_width + ']'
         print(f'Downloading {save_path}: {progress_bar}', end='\r')
