@@ -259,7 +259,7 @@ def decrypt(ciphertext, k):
 
 
 if __name__ == "__main__":
-    Key = 0x1f1f1f1f0e0e0e0e1f1f1f1f0e0e0e0e
+    Key = 0x01010101010101010101010101010101
     k = key_schedule(Key)
     with open('input.txt', 'r') as file:
         text = file.read().strip()
