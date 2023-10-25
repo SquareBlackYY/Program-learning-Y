@@ -1,6 +1,8 @@
 import os
 import requests
 import re
+import time
+import random
 
 def download_file(url, save_path):
     response = requests.get(url, stream=True)
@@ -39,6 +41,9 @@ for line in lines:
                 url = f'https://kit-pro.fontawesome.com/releases/v{version}/' + url[3:]
             associated_files.append(url)
 
+# 随机化关联文件列表的顺序
+random.shuffle(associated_files)
+
 # 下载关联文件到与源文件相同的文件夹中
 total_files = len(associated_files)
 completed_files = 0
@@ -49,5 +54,8 @@ for file_url in associated_files:
     download_file(file_url, save_path)
     completed_files += 1
     print(f'Downloaded file {completed_files}/{total_files}')
+
+    # 添加延时
+    time.sleep(random.uniform(0.5, 1.5))
 
 print('Download completed')
