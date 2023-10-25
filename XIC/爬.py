@@ -9,11 +9,14 @@ def download_file(url, save_path):
         for data in response.iter_content(block_size):
             file.write(data)
 
+# 版本号
+version = '6.4.2'
+
 # 主文件的URL
-main_file_url = 'https://kit-pro.fontawesome.com/releases/v6.4.2/css/pro.min.css'
+main_file_url = f'https://kit-pro.fontawesome.com/releases/v{version}/css/pro.min.css'
 
 # 创建文件夹
-folder_name = '6.4.2 Pro'
+folder_name = f'FontAwesome {version} Pro'
 os.makedirs(folder_name, exist_ok=True)
 
 # 下载主文件
@@ -32,6 +35,8 @@ for line in lines:
         start_index = line.index('url(') + 4
         end_index = line.index(')', start_index)
         url = line[start_index:end_index]
+        if url.startswith('../'):
+            url = f'https://kit-pro.fontawesome.com/releases/v{version}/' + url[3:]
         associated_files.append(url)
 
 # 下载关联文件到与源文件相同的文件夹中
