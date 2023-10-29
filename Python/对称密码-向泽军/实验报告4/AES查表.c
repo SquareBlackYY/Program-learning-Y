@@ -47,6 +47,9 @@ const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
 // 轮常量
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
+// 查表
+const uint8_t PC_TABLE[4][256];
+
 void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
 void RotWord(uint8_t *);
@@ -58,6 +61,7 @@ void AddRoundKey(uint8_t *, uint8_t *);
 void subBytes(uint8_t *);
 void shiftRows(uint8_t *);
 void mixColumns(uint8_t *);
+void generate_pc_table(void);
 
 uint8_t *ta(uint8_t *array)
 {
@@ -266,8 +270,13 @@ void mixColumns(uint8_t *text)
                 else if (MIXCOLUMNS_MATRIX[i][k] == 3)
                     mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B) ^ text[k * 4 + j]) ^ 0xff; 
             }
-            result[i*4 +j] = mixed_num;
+            result[i * 4 + j] = mixed_num;
         }
     }
     memcpy(text, result, 16 * sizeof(uint8_t));
+}
+
+void generate_pc_table(void)
+{
+
 }
