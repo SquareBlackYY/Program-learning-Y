@@ -1,24 +1,33 @@
 import turtle
 
+
 def draw_sierpinski(n, x, y, size):
     if n == 0:
-        # 递归终止条件，当深度为0时，画一个等边三角形
-        draw_triangle(x, y, size)
+        draw_triangle(x + size / 4, y + size / 4 * pow(3, 0.5), size / 2)
     else:
-        # 递归调用，画三个小等边三角形
-        draw_sierpinski(n-1, x, y, size/2)  # 左下角的小三角形
-        draw_sierpinski(n-1, x + size/2, y, size/2)  # 右下角的小三角形
-        draw_sierpinski(n-1, x + size/4, y + size/2, size/2)  # 顶部的小三角形
+        # 中心
+        draw_triangle(x + size / 4, y + size / 4 * pow(3, 0.5), size / 2)
+        # 左下角
+        draw_sierpinski(n - 1, x, y, size / 2)
+        # 右下角
+        draw_sierpinski(n - 1, x + size / 2, y, size / 2)
+        # 顶部
+        draw_sierpinski(n - 1, x + size / 4, y + size / 4 * pow(3, 0.5), size / 2)
 
-def draw_triangle(x, y, size):
+
+def draw_triangle(x, y, size, direct=-1, color="white"):
     turtle.penup()
     turtle.goto(x, y)
     turtle.pendown()
-    for _ in range(3):
+    turtle.fillcolor(color)
+    turtle.begin_fill()
+    for i in range(3):
         turtle.forward(size)
-        turtle.right(120)
+        turtle.seth((i + 1) * 120 * direct)
+    turtle.end_fill()
 
-turtle.setup(800, 600)
+
 turtle.speed(0)
+draw_triangle(-200, -200, 400, 1, "red")
 draw_sierpinski(4, -200, -200, 400)
 turtle.done()
