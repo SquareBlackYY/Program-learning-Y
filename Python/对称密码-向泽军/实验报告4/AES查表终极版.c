@@ -126,18 +126,6 @@ void generate_table_encrypt(void)
         }
     }
     free(temp8);
-
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
-            for (int k = 0; k < 16; k++)
-                printf(" %08x", TE[i][j*16+k]);
-            printf("\n");
-        }
-        printf("\n");
-    }
-
     printf("加速表生成成功。\n");
 }
 
@@ -183,14 +171,13 @@ void SubWord(uint8_t *key_word)
 void AES_encrypt(int num_groups, uint8_t **input_text, uint32_t **key_schedule)
 {
     uint8_t *text;
-    // uint32_t text_word[4];
+    uint32_t text_word[4];
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
         AddRoundKey((uint32_t *)text, key_schedule[0]);
         for (int round_num = 1; round_num < 10; round_num++)
         {
-            /*
             for (int j = 0; j < 4; j++)
                 text_word[0] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
             for (int j = 0; j < 4; j++)
@@ -200,11 +187,6 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint32_t **key_schedule)
             for (int j = 0; j < 4; j++)
                 text_word[3] = TE[0][text[12]] ^ TE[1][text[1]] ^ TE[2][text[6]] ^ TE[3][text[11]] ^ key_schedule[round_num][3];
             memcpy(text, text_word, 4 * sizeof(uint32_t));
-            */
-            SubBytes(text);
-            ShiftRows(text);
-            MixColumns(text);
-            AddRoundKey((uint32_t *)text, key_schedule[round_num]);
         }
         SubBytes(text);
         ShiftRows(text);
