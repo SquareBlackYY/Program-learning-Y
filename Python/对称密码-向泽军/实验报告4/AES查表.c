@@ -48,7 +48,7 @@ const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
 const uint8_t R_CON[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 // 查表
-const uint8_t PC_TABLE[4][256];
+uint32_t TE[4][256];
 
 void generate_key_schedule(char *, uint8_t ***);
 void key_extend(uint8_t **);
@@ -61,7 +61,7 @@ void AddRoundKey(uint8_t *, uint8_t *);
 void subBytes(uint8_t *);
 void shiftRows(uint8_t *);
 void mixColumns(uint8_t *);
-void generate_pc_table(void);
+void generate_table_encrypt(void);
 
 uint8_t *ta(uint8_t *array)
 {
@@ -80,6 +80,8 @@ uint8_t *ta(uint8_t *array)
 
 int main()
 {
+    generate_table_encrypt();
+    
     uint8_t **key_schedule;
     char *seed_key = "01010101010101010101010101010101";
     generate_key_schedule(seed_key, &key_schedule);
@@ -217,16 +219,22 @@ void write_output(uint8_t **text, int num_groups)
 void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
 {
     uint8_t *text;
+    uint32_t text_word[4];
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
         AddRoundKey(text, key_schedule[0]);
         for (int round_num = 1; round_num < 10; round_num++)
         {
-            subBytes(text);
-            shiftRows(text);
-            mixColumns(text);
-            AddRoundKey(text, key_schedule[round_num]);
+            for (int j = 0; j < 4; j++)
+                text_word[0] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+            for (int j = 0; j < 4; j++)
+                text_word[1] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+            for (int j = 0; j < 4; j++)
+                text_word[2] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+            for (int j = 0; j < 4; j++)
+                text_word[3] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+            memcpy(text, text_word, )
         }
         subBytes(text);
         shiftRows(text);
@@ -276,7 +284,20 @@ void mixColumns(uint8_t *text)
     memcpy(text, result, 16 * sizeof(uint8_t));
 }
 
-void generate_pc_table(void)
+void generate_table_encrypt(void)
 {
-
+    uint8_t *temp8 = (uint8_t *)malloc(16 * sizeof(uint8_t));
+    uint32_t *temp32 = (uint32_t *)temp8;
+    for(int i = 0; i < 4; i++)
+    {
+        for (int x = 0; x < 256; x++)
+        {
+            memset(temp32, 0, sizeof(uint32_t));
+            temp8[i * 4 + i] = S_BOX[x];
+            mixColumns(temp8);
+            TE[i][x] = temp32[i];
+        }
+    }
+    free(temp8);
+    printf("加速表生成成功。\n");
 }
