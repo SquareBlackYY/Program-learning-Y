@@ -229,12 +229,12 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint8_t **key_schedule)
             for (int j = 0; j < 4; j++)
                 text_word[0] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
             for (int j = 0; j < 4; j++)
-                text_word[1] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+                text_word[1] = TE[0][text[4]] ^ TE[1][text[9]] ^ TE[2][text[14]] ^ TE[3][text[3]] ^ key_schedule[round_num][1];
             for (int j = 0; j < 4; j++)
-                text_word[2] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
+                text_word[2] = TE[0][text[8]] ^ TE[1][text[13]] ^ TE[2][text[2]] ^ TE[3][text[7]] ^ key_schedule[round_num][2];
             for (int j = 0; j < 4; j++)
-                text_word[3] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
-            memcpy(text, text_word, )
+                text_word[3] = TE[0][text[12]] ^ TE[1][text[1]] ^ TE[2][text[6]] ^ TE[3][text[11]] ^ key_schedule[round_num][3];
+            memcpy(text, text_word, 4 * sizeof(uint32_t));
         }
         subBytes(text);
         shiftRows(text);
