@@ -4,13 +4,6 @@
 #include <string.h>
 #include <time.h>
 
-// 转置表
-const int TRANSPOSE_TABLE[16] = {
-    0, 4, 8, 12,
-    1, 5, 9, 13,
-    2, 6, 10, 14,
-    3, 7, 11, 15};
-
 // 字节代换S盒
 const uint8_t S_BOX[256] = {
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -33,9 +26,9 @@ const uint8_t S_BOX[256] = {
 // 行移位映射表
 const int SHIFTROWS_TABLE[16] = {
     0, 5, 10, 15,
-    5, 9, 13, 1,
-    10, 14, 2, 6,
-    15, 3, 7, 11};
+    4, 9, 14, 3,
+    8, 13, 2, 7,
+    12, 1, 6, 11};
 
 // 列混淆矩阵
 const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
@@ -46,16 +39,11 @@ const uint8_t MIXCOLUMNS_MATRIX[4][4] = {
 
 // 轮常量
 const uint32_t R_CON[10] = {
-    0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
-    0x20000000, 0x40000000, 0x80000000, 0x1B000000, 0x36000000};
-
-// 查表
-uint32_t TE[4][256];
+    0x00000001, 0x00000002, 0x00000004, 0x00000008, 0x00000010,
+    0x00000020, 0x00000040, 0x00000080, 0x0000001B, 0x00000036};
 
 void read_input(uint8_t ***, int *); // 读入
 void write_output(uint8_t **, int);  // 输出
-
-void generate_table_encrypt(void); // 生成加速表
 
 void KeySchedule(char *, uint32_t ***); // 扩展密钥
 void RotWord(uint8_t *);
@@ -80,37 +68,28 @@ void ta(uint8_t *array)
 
 int main()
 {
-    // 生成加速表
-    generate_table_encrypt();
-
-    // 扩展密钥
     uint32_t **key_schedule;
-    char *seed_key = "2b7e151628aed2a6abf7158809cf4f3c";
+    char *seed_key = "01010101010101010101010101010101";
     KeySchedule(seed_key, &key_schedule);
 
-    // 读入
     uint8_t **text;
     int num_groups;
     read_input(&text, &num_groups);
 
     clock_t start_time, end_time;
     double execution_time;
-    // 开始计时
+
     start_time = clock();
 
-    // 函数执行
     AES_encrypt(num_groups, text, key_schedule);
 
-    // 计时结束
     end_time = clock();
     execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     printf("程序用时: %.2f s\n", execution_time);
     printf("平均速度: %.2f Mbps\n", 128 * num_groups / execution_time / 1024 / 1024);
 
-    // 输出
     write_output(text, num_groups);
 
-    // 释放空间
     for (int i = 0; i < 11; i++)
         free(key_schedule[i]);
     free(key_schedule);
@@ -119,24 +98,6 @@ int main()
     free(text);
 
     return 0;
-}
-
-void generate_table_encrypt(void)
-{
-    uint8_t *temp8 = (uint8_t *)malloc(16 * sizeof(uint8_t));
-    uint32_t *temp32 = (uint32_t *)temp8;
-    for (int i = 0; i < 4; i++)
-    {
-        for (int x = 0; x < 256; x++)
-        {
-            memset(temp32, 0, sizeof(uint32_t));
-            temp8[i * 4 + i] = S_BOX[x];
-            MixColumns(temp8);
-            TE[i][x] = temp32[i];
-        }
-    }
-    free(temp8);
-    printf("加速表生成成功。\n");
 }
 
 void KeySchedule(char *seed_key, uint32_t ***key_schedule)
@@ -181,7 +142,6 @@ void SubWord(uint8_t *key_word)
 void AES_encrypt(int num_groups, uint8_t **input_text, uint32_t **key_schedule)
 {
     uint8_t *text;
-    // uint32_t text_word[4];
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
@@ -194,18 +154,6 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint32_t **key_schedule)
         AddRoundKey((uint32_t *)text, key_schedule[0]);
         for (int round_num = 1; round_num < 10; round_num++)
         {
-            /*
-            for (int j = 0; j < 4; j++)
-                text_word[0] = TE[0][text[0]] ^ TE[1][text[5]] ^ TE[2][text[10]] ^ TE[3][text[15]] ^ key_schedule[round_num][0];
-            for (int j = 0; j < 4; j++)
-                text_word[1] = TE[0][text[4]] ^ TE[1][text[9]] ^ TE[2][text[14]] ^ TE[3][text[3]] ^ key_schedule[round_num][1];
-            for (int j = 0; j < 4; j++)
-                text_word[2] = TE[0][text[8]] ^ TE[1][text[13]] ^ TE[2][text[2]] ^ TE[3][text[7]] ^ key_schedule[round_num][2];
-            for (int j = 0; j < 4; j++)
-                text_word[3] = TE[0][text[12]] ^ TE[1][text[1]] ^ TE[2][text[6]] ^ TE[3][text[11]] ^ key_schedule[round_num][3];
-            memcpy(text, text_word, 4 * sizeof(uint32_t));
-            */
-
             printf("第%d轮 Start:\n", round_num);
             ta(text);
 
@@ -223,12 +171,13 @@ void AES_encrypt(int num_groups, uint8_t **input_text, uint32_t **key_schedule)
 
             printf("第%d轮 After MC:\n", round_num);
             ta(text);
+
             printf("第%d轮 Key:\n", round_num);
             ta((uint8_t *)key_schedule[round_num]);
 
             AddRoundKey((uint32_t *)text, key_schedule[round_num]);
         }
-        
+
         printf("第10轮 Start:\n");
         ta(text);
 
@@ -270,12 +219,22 @@ void MixColumns(uint8_t *text)
     uint8_t result[16];
     for (int i = 0; i < 4; i++)
     {
-        result[i] = MIXCOLUMNS_MATRIX[0][0] * text[i] ^ MIXCOLUMNS_MATRIX[0][1] * text[4 + i] ^ MIXCOLUMNS_MATRIX[0][2] * text[8 + i] ^ MIXCOLUMNS_MATRIX[0][3] * text[12 + i];
-        result[4 + i] = MIXCOLUMNS_MATRIX[1][0] * text[i] ^ MIXCOLUMNS_MATRIX[1][1] * text[4 + i] ^ MIXCOLUMNS_MATRIX[1][2] * text[8 + i] ^ MIXCOLUMNS_MATRIX[1][3] * text[12 + i];
-        result[8 + i] = MIXCOLUMNS_MATRIX[2][0] * text[i] ^ MIXCOLUMNS_MATRIX[2][1] * text[4 + i] ^ MIXCOLUMNS_MATRIX[2][2] * text[8 + i] ^ MIXCOLUMNS_MATRIX[2][3] * text[12 + i];
-        result[12 + i] = MIXCOLUMNS_MATRIX[3][0] * text[i] ^ MIXCOLUMNS_MATRIX[3][1] * text[4 + i] ^ MIXCOLUMNS_MATRIX[3][2] * text[8 + i] ^ MIXCOLUMNS_MATRIX[3][3] * text[12 + i];
+        for (int j = 0; j < 4; j++)
+        {
+            uint8_t mixed_num = 0;
+            for (int k = 0; k < 4; k++)
+            {
+                if (MIXCOLUMNS_MATRIX[j][k] == 1)
+                    mixed_num ^= text[i * 4 + k];
+                else if (MIXCOLUMNS_MATRIX[j][k] == 2)
+                    mixed_num ^= ((text[i * 4 + k] << 1) ^ ((text[i * 4 + k] >> 7) * 0x1B)) & 0xFF;
+                else if (MIXCOLUMNS_MATRIX[j][k] == 3)
+                    mixed_num ^= ((text[i * 4 + k] << 1) ^ ((text[i * 4 + k] >> 7) * 0x1B) ^ text[i * 4 + k]) & 0xFF;
+            }
+            result[i * 4 + j] = mixed_num;
+        }
     }
-    memcpy(text, result, 4 * sizeof(uint32_t));
+    memcpy(text, result, 16 * sizeof(uint8_t));
 }
 
 void AddRoundKey(uint32_t *text, uint32_t *key)
