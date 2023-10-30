@@ -98,19 +98,46 @@ int main()
 
 void generate_table_encrypt(void)
 {
-    uint8_t *temp8 = (uint8_t *)malloc(16 * sizeof(uint8_t));
+    uint8_t result[4];
+    uint8_t *temp8 = (uint8_t *)malloc(4 * sizeof(uint8_t));
     uint32_t *temp32 = (uint32_t *)temp8;
     for (int i = 0; i < 4; i++)
     {
         for (int x = 0; x < 256; x++)
         {
             memset(temp32, 0, sizeof(uint32_t));
-            temp8[i * 4 + i] = S_BOX[x];
-            MixColumns(temp8);
-            TE[i][x] = temp32[i];
+            temp8[i] = S_BOX[x];
+            for (int j = 0; j < 4; j++)
+            {
+                uint8_t mixed_num = 0;
+                for (int k = 0; k < 4; k++)
+                {
+                    if (MIXCOLUMNS_MATRIX[j][k] == 1)
+                        mixed_num ^= temp8[k];
+                    else if (MIXCOLUMNS_MATRIX[j][k] == 2)
+                        mixed_num ^= ((temp8[k] << 1) ^ ((temp8[k] >> 7) * 0x1B)) & 0xFF;
+                    else if (MIXCOLUMNS_MATRIX[j][k] == 3)
+                        mixed_num ^= ((temp8[k] << 1) ^ ((temp8[k] >> 7) * 0x1B) ^ temp8[k]) & 0xFF;
+                }
+                result[j] = mixed_num;
+            }
+            memcpy(temp32, result, sizeof(uint32_t));
+            TE[i][x] = *temp32;
         }
     }
     free(temp8);
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            for (int k = 0; k < 16; k++)
+                printf(" %08x", TE[i][j*16+k]);
+            printf("\n");
+        }
+        printf("\n");
+    }
+
     printf("加速表生成成功。\n");
 }
 
