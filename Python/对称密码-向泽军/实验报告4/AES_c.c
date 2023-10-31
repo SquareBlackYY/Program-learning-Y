@@ -59,21 +59,6 @@ void subBytes(uint8_t *);
 void shiftRows(uint8_t *);
 void mixColumns(uint8_t *);
 
-uint8_t *ta(uint8_t *array)
-{
-    uint8_t tda[16];
-    printf("转置前: ");
-    for (int i = 0; i < 16; i++)
-        printf("%3d ", array[i]);
-    printf("\n转置后: ");
-    for (int i = 0; i < 16; i++)
-    {
-        tda[i] = array[TRANSPOSE_TABLE[i]];
-        printf("%3d ", tda[i]);
-    }
-    printf("\n");
-}
-
 int main()
 {
     uint8_t **key_schedule;
