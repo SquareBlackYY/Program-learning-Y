@@ -253,22 +253,22 @@ def AES_decrypt(text, key_schedule):
     return text
 
 
-plain_text = 0x0123456789abcdeffedcba9876543210
+# plain_text = 0x0123456789abcdeffedcba9876543210
 
 seed_key = 0x01010101010101010101010101010101
-#key_schedule = generate_key_schedule(seed_key)
+# key_schedule = generate_key_schedule(seed_key)
 key_schedule = [[[31, 14, 31, 14], [31, 14, 31, 14], [31, 14, 31, 14], [31, 14, 31, 14]], [[181, 187, 164, 170], [180, 186, 165, 171], [180, 186, 165, 171], [180, 186, 165, 171]], [[213, 110, 202, 96], [214, 108, 201, 98], [214, 108, 201, 98], [24, 162, 7, 172]], [[123, 21, 223, 191], [124, 16, 217, 187], [71, 43, 226, 128], [200, 106, 109, 193]], [[153, 140, 83, 236], [177, 161, 120, 195], [63, 20, 246, 118], [192, 170, 199, 6]], [[167, 43, 120, 148], [137, 40, 80, 147], [80, 68, 178, 196], [14, 164, 99, 101]], [[91, 112, 8, 156], [149, 189, 237, 126], [29, 89, 235, 47], [44, 136, 235, 142]], [[232, 152, 144, 12], [128, 61, 208, 174], [4, 93, 182, 153], [242, 122, 145, 31]], [[140, 20, 132, 136], [110, 83, 131, 45], [196, 153, 47, 182], [12, 118, 231, 248]], [[79, 91, 223, 87], [32, 115, 240, 221], [133, 28, 51, 133], [200, 190, 89, 161]], [[184, 227, 60, 107], [183, 196, 52, 233], [183, 171, 152, 29], [147, 45, 116, 213]]]
 
-print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
+# print("明文:{:032x}\n密钥:{:032x}".format(plain_text, seed_key))
 
-cipher_text = AES_encrypt(plain_text, key_schedule)
-#print("加密结果:{}".format(cipher_text))
-print("加密结果:{}".format("592b336fbd751d3348c82d8bbe401784"))
+# cipher_text = AES_encrypt(plain_text, key_schedule)
+# print("加密结果:{}".format(cipher_text))
+# print("加密结果:{}".format("592b336fbd751d3348c82d8bbe401784"))
 
-decrypted_text = AES_decrypt(int(cipher_text, 16), key_schedule)
-print("解密结果:{}".format(decrypted_text))
+# decrypted_text = AES_decrypt(int(cipher_text, 16), key_schedule)
+# print("解密结果:{}".format(decrypted_text))
 
-'''
+
 # 读取文本
 with open('input.txt', 'r') as file:
     text = file.read().strip()
@@ -303,4 +303,3 @@ with open('output.txt', 'w') as file:
         file.write(result[i])
 
 print("{:=^23}".format(''))
-'''
