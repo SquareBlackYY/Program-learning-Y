@@ -79,7 +79,7 @@ void key_extend(uint32_t *key_schedule)
 
 uint32_t T_function(uint32_t word)
 {
-    uint8_t *p = &word;
+    uint8_t *p = (uint8_t *)&word;
     for (int i = 0; i < 4; i++)
         p[i] = S_BOX[p[i]];
     word = word ^ ((word << 13) | (word >> 19)) ^ ((word << 23) | (word >> 9));
