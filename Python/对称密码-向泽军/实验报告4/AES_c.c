@@ -251,7 +251,7 @@ void mixColumns(uint8_t *text)
                 else if (MIXCOLUMNS_MATRIX[i][k] == 3)
                     mixed_num ^= ((text[k * 4 + j] << 1) ^ ((text[k * 4 + j] >> 7) * 0x1B) ^ text[k * 4 + j]) ^ 0xff; 
             }
-            result[i*4 +j] = mixed_num;
+            result[i * 4 + j] = mixed_num;
         }
     }
     memcpy(text, result, 16 * sizeof(uint8_t));

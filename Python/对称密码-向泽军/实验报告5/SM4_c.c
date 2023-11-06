@@ -33,11 +33,13 @@ const uint8_t S_BOX[256] = {
     0x89, 0x69, 0x97, 0x4a, 0x0c, 0x96, 0x77, 0x7e, 0x65, 0xb9, 0xf1, 0x09, 0xc5, 0x6e, 0xc6, 0x84,
     0x18, 0xf0, 0x7d, 0xec, 0x3a, 0xdc, 0x4d, 0x20, 0x79, 0xee, 0x5f, 0x3e, 0xd7, 0xcb, 0x39, 0x48};
 
-void read_input(uint8_t ***, int *);
-void write_output(uint8_t **, int);
+void read_input(uint32_t ***, int *);
+//void write_output(uint32_t **, int);
 void generate_key_schedule(char *, uint32_t **);
 void key_extend(uint32_t *);
-uint32_t T_function(uint32_t);
+uint32_t T_function_for_key(uint32_t);
+void AES_encrypt(int, uint32_t **, uint32_t *);
+uint32_t T_function_for_word(uint32_t);
 
 int main()
 {
@@ -45,10 +47,11 @@ int main()
     char *MK = "01010101010101010101010101010101";
     generate_key_schedule(MK, &key_schedule);
     
-    uint8_t **text;
+    uint32_t **text;
     int num_groups;
     read_input(&text, &num_groups);
 
+    AES_encrypt(num_groups, text, key_schedule);
 
     free(key_schedule);
     for (int i = 0; i < num_groups; i++)
@@ -58,10 +61,34 @@ int main()
     return 0;
 }
 
+void AES_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
+{
+    uint32_t *text;
+    uint32_t temp;
+    uint32_t *rK = &key_schedule[4];
+    for (int i = 0; i < num_groups; i++)
+    {
+        text = input_text[i];
+        for (int round_num = 0; round_num < 32; round_num++)
+            temp = text[i] ^ T_function_for_word(text[i + 1] ^ text[i + 2] ^ text[i + 3] ^ rK[i] & 0xFFFFFFFF) & 0xFFFFFFFF;
+        memcpy(text, text + 1, 3 * sizeof(uint32_t));
+        text[3] = temp;
+    }
+}
+
+uint32_t T_function_for_word(uint32_t word)
+{
+    uint8_t *p = (uint8_t *)&word;
+    for (int i = 0; i < 4; i++)
+        p[i] = S_BOX[p[i]];
+    word = word ^ ((word << 2) | (word >> 30)) ^ ((word << 10) | (word >> 22)) ^ ((word << 18) | (word >> 14)) ^ ((word << 24) | (word >> 8)) & 0xFFFFFFFF;
+    return word;
+}
+
 void generate_key_schedule(char *MK, uint32_t **key_schedule)
 {
     char hex_text[9];
-    *key_schedule = (uint32_t *)malloc(16 * sizeof(uint32_t *));
+    *key_schedule = (uint32_t *)malloc(36 * sizeof(uint32_t));
 
     for (int i = 0; i < 4; i++)
     {
@@ -74,20 +101,19 @@ void generate_key_schedule(char *MK, uint32_t **key_schedule)
 void key_extend(uint32_t *key_schedule)
 {
     for (int i = 0; i < 32; i++)
-        key_schedule[i + 4] = key_schedule[i] ^ T_function(key_schedule[i + 1] ^ key_schedule[i + 2] ^ key_schedule[i + 3] ^ CK[i] & 0xFFFFFFFF);
+        key_schedule[i + 4] = key_schedule[i] ^ T_function_for_key(key_schedule[i + 1] ^ key_schedule[i + 2] ^ key_schedule[i + 3] ^ CK[i] & 0xFFFFFFFF) & 0xFFFFFFFF;
 }
 
-uint32_t T_function(uint32_t word)
+uint32_t T_function_for_key(uint32_t word)
 {
     uint8_t *p = (uint8_t *)&word;
     for (int i = 0; i < 4; i++)
         p[i] = S_BOX[p[i]];
-    word = word ^ ((word << 13) | (word >> 19)) ^ ((word << 23) | (word >> 9));
+    word = word ^ ((word << 13) | (word >> 19)) ^ ((word << 23) | (word >> 9)) & 0xFFFFFFFF;
     return word;
 }
 
-
-void read_input(uint8_t ***text, int *num_groups)
+void read_input(uint32_t ***text, int *num_groups)
 {
     FILE *input_file = fopen("input.txt", "r");
     fseek(input_file, 0, SEEK_END);
@@ -95,24 +121,25 @@ void read_input(uint8_t ***text, int *num_groups)
     rewind(input_file);
     printf("文件大小: %.2f MB\n", 16 * (*num_groups) / 1024.0 / 1024);
 
-    *text = (uint8_t **)malloc(*num_groups * sizeof(uint8_t *));
+    *text = (uint32_t **)malloc(*num_groups * sizeof(uint32_t *));
     for (int i = 0; i < *num_groups; i++)
-        (*text)[i] = (uint8_t *)malloc(16 * sizeof(uint8_t));
+        (*text)[i] = (uint32_t *)malloc(4 * sizeof(uint32_t));
 
-    char hex_text[3];
+    char hex_text[9];
     for (int i = 0; i < *num_groups; i++)
         for (int j = 0; j < 4; j++)
-            for (int k = 0; k < 4; k++)
-            {
-                fread(hex_text, 2, 1, input_file);
-                hex_text[2] = '\0';
-                (*text)[i][k * 4 + j] = (uint8_t)strtol(hex_text, NULL, 16);
-            }
+        {
+            fread(hex_text, 8, 1, input_file);
+            hex_text[8] = '\0';
+            (*text)[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
+        }
 
     fclose(input_file);
     printf("文件读取完成。\n");
 }
 
+// 没改好
+/*
 void write_output(uint8_t **text, int num_groups)
 {
     FILE *output_file = fopen("output.txt", "w");
@@ -134,3 +161,4 @@ void write_output(uint8_t **text, int num_groups)
     fclose(output_file);
     printf("文件写入完成。\n");
 }
+*/
