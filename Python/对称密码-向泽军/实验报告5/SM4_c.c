@@ -34,7 +34,7 @@ const uint8_t S_BOX[256] = {
     0x18, 0xf0, 0x7d, 0xec, 0x3a, 0xdc, 0x4d, 0x20, 0x79, 0xee, 0x5f, 0x3e, 0xd7, 0xcb, 0x39, 0x48};
 
 void read_input(uint32_t ***, int *);
-//void write_output(uint32_t **, int);
+void write_output(uint32_t **, int);
 void generate_key_schedule(char *, uint32_t **);
 void key_extend(uint32_t *);
 uint32_t T_function_for_key(uint32_t);
@@ -53,6 +53,8 @@ int main()
 
     AES_encrypt(num_groups, text, key_schedule);
 
+    write_output(text, num_groups);
+
     free(key_schedule);
     for (int i = 0; i < num_groups; i++)
         free(text[i]);
@@ -70,9 +72,17 @@ void AES_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
     {
         text = input_text[i];
         for (int round_num = 0; round_num < 32; round_num++)
+        {
             temp = text[i] ^ T_function_for_word(text[i + 1] ^ text[i + 2] ^ text[i + 3] ^ rK[i] & 0xFFFFFFFF) & 0xFFFFFFFF;
-        memcpy(text, text + 1, 3 * sizeof(uint32_t));
-        text[3] = temp;
+            memcpy(text, text + 1, 3 * sizeof(uint32_t));
+            text[3] = temp;
+        }
+        temp = text[3];
+        text[3] = text[0];
+        text[0] = temp;
+        temp = text[2];
+        text[2] = text[1];
+        text[1] = temp;
     }
 }
 
@@ -138,27 +148,23 @@ void read_input(uint32_t ***text, int *num_groups)
     printf("文件读取完成。\n");
 }
 
-// 没改好
-/*
-void write_output(uint8_t **text, int num_groups)
+
+void write_output(uint32_t **text, int num_groups)
 {
     FILE *output_file = fopen("output.txt", "w");
     for (int i = 0; i < num_groups; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            for (int k = 0; k < 4; k++)
+            uint32_t value = text[i][j];
+            for (int shift = 28; shift >= 0; shift -= 4)
             {
-                uint8_t value = text[i][k * 4 + j];
-                uint8_t high_nibble = (value >> 4) & 0xF;
-                uint8_t low_nibble = value & 0xF;
-                char high_hex = (high_nibble < 10) ? ('0' + high_nibble) : ('A' + high_nibble - 10);
-                char low_hex = (low_nibble < 10) ? ('0' + low_nibble) : ('A' + low_nibble - 10);
-                fprintf(output_file, "%c%c", high_hex, low_hex);
+                uint8_t nibble = (value >> shift) & 0xF;
+                char hex_digit = (nibble < 10) ? ('0' + nibble) : ('A' + nibble - 10);
+                fprintf(output_file, "%c", hex_digit);
             }
         }
     }
     fclose(output_file);
     printf("文件写入完成。\n");
 }
-*/
