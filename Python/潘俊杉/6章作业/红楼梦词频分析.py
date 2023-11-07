@@ -23,7 +23,7 @@ result_name = [result[i][0] for i in range(20)]
 result_count = [result[i][1] for i in range(20)]
 
 # 下面两段是网上的处理中文乱码，但是程序报错
-plt.rcParams['front.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 plt.bar(result_name, result_count)
 plt.title("红楼梦中 词频最高的前20个词汇")
