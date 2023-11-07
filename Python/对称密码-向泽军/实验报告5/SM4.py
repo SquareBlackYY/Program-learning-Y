@@ -119,6 +119,7 @@ if __name__ == "__main__":
     print("加密后密文：0x{}".format(ciphertext))
     decrypttext = decrypt(int(ciphertext, 16), keys)
     print("解密后明文：0x{}".format(decrypttext))
+    '''
     input = []
     output = []
     read_input(input)
@@ -128,3 +129,4 @@ if __name__ == "__main__":
     t = time.perf_counter() - t
     bps = 2 ** 16 * 128 / t / 1028 / 1028
     print("加密一串明文的时间为：{:.3f} s，加密速度为：{:.3f} Mbps".format(t, bps))
+    '''
