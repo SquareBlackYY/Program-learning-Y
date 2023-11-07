@@ -1,4 +1,3 @@
-#哈姆雷特词频统计
 import re
 characters = {
     "hamlet",
@@ -12,7 +11,7 @@ characters = {
     "marcellus"
 }
 count = {}
-txt = open('哈姆雷特.txt','r').read().lower()
+txt = open('Hamlet.txt','r').read().lower()
 txt = re.findall(r'[a-z]+',txt)
 for i in characters:
     count[i] = txt.count(i)
