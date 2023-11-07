@@ -2,9 +2,7 @@ import jieba
 import re
 import matplotlib.pyplot as plt
 
-text = open('红楼梦.txt', "r", encoding='utf-8').read()
-# new_text = re.findall(r"[\u4e00-\u9fa5]+", text)
-# new_text = ''.join(new_text)
+text = open('红楼梦 copy.txt', "r", encoding='utf-8').read()
 new_text = re.sub(r"[\u3000-\u303F|\uFF00-\uFFEF|\W]+", "", text)
 
 stopwords = open('stop_words.txt', 'r', encoding='utf-8').read()
@@ -22,8 +20,7 @@ result.sort(key=lambda x: x[1], reverse=True)
 result_name = [result[i][0] for i in range(20)]
 result_count = [result[i][1] for i in range(20)]
 
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['font.sans-serif'] = ['Microsoft Yahei']
 plt.bar(result_name, result_count)
-plt.title("红楼梦中 词频最高的前20个词汇")
+plt.title("《红楼梦》中词频最高的前20个词汇")
 plt.show()
