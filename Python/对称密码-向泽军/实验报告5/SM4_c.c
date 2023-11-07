@@ -51,7 +51,12 @@ int main()
     int num_groups;
     read_input(&text, &num_groups);
 
+
+    printf("%x\n", text[0][0]);
+
+
     AES_encrypt(num_groups, text, key_schedule);
+
 
     write_output(text, num_groups);
     
@@ -71,6 +76,12 @@ void AES_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
     for (int i = 0; i < num_groups; i++)
     {
         text = input_text[i];
+
+
+        //printf("%x\n", text[2]);
+        //exit(0);
+
+
         for (int round_num = 0; round_num < 32; round_num++)
         {
             temp = text[i] ^ T_function_for_word(text[i + 1] ^ text[i + 2] ^ text[i + 3] ^ rK[i] & 0xFFFFFFFF) & 0xFFFFFFFF;
@@ -141,7 +152,7 @@ void read_input(uint32_t ***text, int *num_groups)
         {
             fread(hex_text, 8, 1, input_file);
             hex_text[8] = '\0';
-            (*text)[i][j] = (uint8_t)strtol(hex_text, NULL, 16);
+            (*text)[i][j] = (uint32_t)strtol(hex_text, NULL, 16);
         }
 
     fclose(input_file);
