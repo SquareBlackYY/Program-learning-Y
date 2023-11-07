@@ -46,9 +46,7 @@ int main()
     uint32_t *key_schedule;
     char *MK = "01010101010101010101010101010101";
     generate_key_schedule(MK, &key_schedule);
-    //for (int i = 0; i < 36; i++)
-        printf("%ld\n", key_schedule[4]);
-    /*
+    
     uint32_t **text;
     int num_groups;
     read_input(&text, &num_groups);
@@ -61,7 +59,7 @@ int main()
     for (int i = 0; i < num_groups; i++)
         free(text[i]);
     free(text);
-    */
+    
     return 0;
 }
 
