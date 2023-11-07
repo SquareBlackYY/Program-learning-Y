@@ -46,8 +46,8 @@ int main()
     uint32_t *key_schedule;
     char *MK = "01010101010101010101010101010101";
     generate_key_schedule(MK, &key_schedule);
-    //for (int i = 0; i < 36; i++)\
-    //    printf("%ld\n", key_schedule[i]);
+    //for (int i = 0; i < 36; i++)
+        printf("%ld\n", key_schedule[4]);
     /*
     uint32_t **text;
     int num_groups;
@@ -107,7 +107,6 @@ void generate_key_schedule(char *MK, uint32_t **key_schedule)
         sscanf(MK + (i * 8), "%8s", hex_text);
         (*key_schedule)[i] = (uint32_t)strtol(hex_text, NULL, 16) ^ FK[i] & 0xFFFFFFFF;
     }
-    printf("%ld\n", key_schedule[0]);
     key_extend(*key_schedule);
 }
 
