@@ -1,18 +1,18 @@
 import re
 characters = {
-    "hamlet",
-    "claudius",
-    "polonius",
-    "ofelia",
-    "laertes",
-    "horatio",
-    "rosencrantz",
-    "guildenstern",
-    "marcellus"
+    "Hamlet",
+    "Claudius",
+    "Polonius",
+    "Ofelia",
+    "Laertes",
+    "Horatio",
+    "Rosencrantz",
+    "Guildenstern",
+    "Marcellus"
 }
 count = {}
-txt = open('Hamlet.txt','r').read().lower()
-txt = re.findall(r'[a-z]+',txt)
+txt = open('Hamlet.txt', 'r').read()
+txt = re.findall(r'[a-zA-Z]+', txt.lower())
 for i in characters:
-    count[i] = txt.count(i)
+    count[i] = txt.count(i.lower())
 print(dict(sorted(count.items())))
