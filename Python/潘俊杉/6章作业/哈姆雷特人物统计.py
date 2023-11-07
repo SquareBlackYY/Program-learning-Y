@@ -3,7 +3,7 @@ characters = {
     "Hamlet",
     "Claudius",
     "Polonius",
-    "Ofelia",
+    "Ophelia",
     "Laertes",
     "Horatio",
     "Rosencrantz",
