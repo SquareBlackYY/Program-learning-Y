@@ -114,9 +114,6 @@ if __name__ == "__main__":
     plaintext = 0x0123456789abcdeffedcba9876543210
     Key = 0x01010101010101010101010101010101
     keys = key_schedule(Key)
-    print(keys)
-
-    '''
     print("明文：0x{:032x}，密钥：0x{:032x}".format(plaintext, Key))
     ciphertext = encrypt(plaintext, keys)
     print("加密后密文：0x{}".format(ciphertext))
@@ -131,4 +128,3 @@ if __name__ == "__main__":
     t = time.perf_counter() - t
     bps = 2 ** 16 * 128 / t / 1028 / 1028
     print("加密一串明文的时间为：{:.3f} s，加密速度为：{:.3f} Mbps".format(t, bps))
-    '''
