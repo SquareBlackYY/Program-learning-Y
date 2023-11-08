@@ -2,7 +2,7 @@ import jieba
 import re
 import matplotlib.pyplot as plt
 
-text = open("红楼梦 copy.txt", "r", encoding="utf-8").read()
+text = open("红楼梦.txt", "r", encoding="utf-8").read()
 new_text = re.sub(r"[\u3000-\u303F|\uFF00-\uFFEF|\W]+", "", text)
 
 stopwords = open("stop_words.txt", "r", encoding="utf-8").read()
