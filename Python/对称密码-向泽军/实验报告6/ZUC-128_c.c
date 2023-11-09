@@ -68,25 +68,73 @@ int main()
 
     for (int i = 0; i < 16; i++)
         LFSR[i] = (key[i] << 23) | (D[i] << 8) | IV[i];
+
+    printf("线性反馈移位寄存器初态：\ni  ");
+    for (int i = 0; i < 8; i++)
+        printf("%*s%s%d%s%*s ", 2, "", "S", i, "+i", 2, "");
+    for (int i = 0; i < 16; i++)
+    {
+        if (i % 8 == 0)
+            printf("\n%d  ", i);
+        printf("%08x ", LFSR[i]);
+    }
+    printf("\n\nt  ");
+    for (int i = 0; i < 4; i++)
+        printf("%*s%s%d%*s ", 3, "", "X", i, 3, "");
+    printf("   R1       R2       W       S15\n");
+
     for (int i = 0; i < 32; i++)
     {
         BitReorganization();
         F();
         LFSRWithInitialisationMode(W >> 1);
+
+        if (i <= 9)
+        {
+            printf("%d  ", i);
+            for (int i = 0; i < 4; i++)
+                printf("%08x ", X[i]);
+            printf("%08x %08x %08x %08x\n", R1, R2, W, LFSR[15]);
+        }
     }
+
+    printf("\n初始化后线性反馈移位寄存器状态：\ni  ");
+    for (int i = 0; i < 8; i++)
+        printf("%*s%s%d%s%*s ", 2, "", "S", i, "+i", 2, "");
+    for (int i = 0; i < 16; i++)
+    {
+        if (i % 8 == 0)
+            printf("\n%d  ", i);
+        printf("%08x ", LFSR[i]);
+    }
+    printf("\n\n");
+    
+    printf("有限状态机内部状态：\n");
+    printf("    R1 = %8x\n    R2 = %8x\n\n", R1, R2);
 
     BitReorganization();
     F();
     LFSRWithWorkMode(W >> 1);
 
-    int L = 1;
+    int L = 3;
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
+
+    printf("密钥流：\nt  ");\
+    for (int i = 0; i < 4; i++)
+        printf("%*s%s%d%*s ", 3, "", "X", i, 3, "");
+    printf("   R1       R2       Z       S15\n");
+
     for (int i = 0; i < L; i++)
     {
         BitReorganization();
         F();
         Z[i] = W ^ X[3];
         LFSRWithWorkMode(W >> 1);
+        
+        printf("%d  ", i);
+        for (int i = 0; i < 4; i++)
+            printf("%08x ", X[i]);
+        printf("%08x %08x %08x %08x\n", R1, R2, Z[i], LFSR[15]);
     }
 
     return 0;
@@ -119,7 +167,7 @@ void F()
 {
     W = ((X[0] ^ R1) + R2) & 0xffffffff;
     uint32_t W1 = (R1 + X[1]) & 0xffffffff;
-    uint32_t W2 = R2 ^ X[2];
+    uint32_t W2 = R2 ^ X[2] & 0xffffffff;
     R1 = S(L1((W1 & 0xffff) << 16 | W2 >> 16));
     R2 = S(L2((W2 & 0xffff) << 16 | W1 >> 16));
 }
