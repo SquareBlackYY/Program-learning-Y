@@ -69,67 +69,26 @@ int main()
     for (int i = 0; i < 16; i++)
         LFSR[i] = (key[i] << 23) | (D[i] << 8) | IV[i];
 
-    printf("线性反馈移位寄存器初态：\ni  ");
-    for (int i = 0; i < 8; i++)
-        printf("%*s%s%d%s%*s ", 2, "", "S", i, "+i", 2, "");
-    for (int i = 0; i < 16; i++)
-    {
-        if (i % 8 == 0)
-            printf("\n%d  ", i);
-        printf("%08x ", LFSR[i]);
-    }
-    printf("\n\nt  ");
-    for (int i = 0; i < 4; i++)
-        printf("%*s%s%d%*s ", 3, "", "X", i, 3, "");
-    printf("   R1       R2       W       S15\n");
-
     for (int i = 0; i < 32; i++)
     {
         BitReorganization();
         F();
         LFSRWithInitialisationMode(W >> 1);
-
-        if (i <= 9)
-        {
-            printf("%d  ", i);
-            for (int i = 0; i < 4; i++)
-                printf("%08x ", X[i]);
-            printf("%08x %08x %08x %08x\n", R1, R2, W, LFSR[15]);
-        }
     }
 
-    printf("\n初始化后线性反馈移位寄存器状态：\ni  ");
-    for (int i = 0; i < 8; i++)
-        printf("%*s%s%d%s%*s ", 2, "", "S", i, "+i", 2, "");
-    for (int i = 0; i < 16; i++)
-    {
-        if (i % 8 == 0)
-            printf("\n%d  ", i);
-        printf("%08x ", LFSR[i]);
-    }
-    printf("\n\n");
-    
-    printf("有限状态机内部状态：\n");
-    printf("    R1 = %8x\n    R2 = %8x\n\n", R1, R2);
+    BitReorganization();
+    F();
+    LFSRWithWorkMode();
 
-    printf("密钥流：\nt  ");\
-    for (int i = 0; i < 4; i++)
-        printf("%*s%s%d%*s ", 3, "", "X", i, 3, "");
-    printf("   R1       R2       Z       S15\n");
-
-    int L = 3;
+    int L = 2;
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
     for (int i = 0; i < L; i++)
     {
         BitReorganization();
         F();
         Z[i] = W ^ X[3];
+        printf("%08x ", Z[i]);
         LFSRWithWorkMode();
-        
-        printf("%d  ", i);
-        for (int i = 0; i < 4; i++)
-            printf("%08x ", X[i]);
-        printf("%08x %08x %08x %08x\n", R1, R2, Z[i], LFSR[15]);
     }
 
     return 0;
