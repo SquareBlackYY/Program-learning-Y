@@ -114,7 +114,7 @@ int main()
 
     BitReorganization();
     F();
-    LFSRWithWorkMode(W >> 1);
+    LFSRWithWorkMode();
 
     int L = 3;
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
@@ -129,7 +129,7 @@ int main()
         BitReorganization();
         F();
         Z[i] = W ^ X[3];
-        LFSRWithWorkMode(W >> 1);
+        LFSRWithWorkMode();
         
         printf("%d  ", i);
         for (int i = 0; i < 4; i++)
@@ -160,7 +160,7 @@ uint32_t L2(uint32_t input)
 
 uint32_t S(uint32_t input)
 {
-    return (S0[(input >> 24) & 0xff] << 24) | (S1[(input >> 16) & 0xff] << 16) | (S0[(input >> 8) & 0xf]) << 8 | S1[input & 0xff];
+    return (S0[(input >> 24) & 0xff] << 24) | (S1[(input >> 16) & 0xff] << 16) | (S0[(input >> 8) & 0xff]) << 8 | S1[input & 0xff];
 }
 
 void F()
