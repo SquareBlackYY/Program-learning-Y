@@ -82,6 +82,7 @@ int main()
 
     int L = 2;
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
+    printf("密钥流：");
     for (int i = 0; i < L; i++)
     {
         BitReorganization();
