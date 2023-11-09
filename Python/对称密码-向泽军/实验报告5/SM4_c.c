@@ -38,7 +38,7 @@ void write_output(uint32_t **, int);
 void generate_key_schedule(char *, uint32_t **);
 void key_extend(uint32_t *);
 uint32_t T_function_for_key(uint32_t);
-void AES_encrypt(int, uint32_t **, uint32_t *);
+void SM4_encrypt(int, uint32_t **, uint32_t *);
 uint32_t T_function_for_word(uint32_t);
 
 int main()
@@ -51,7 +51,7 @@ int main()
     int num_groups;
     read_input(&text, &num_groups);
 
-    AES_encrypt(num_groups, text, key_schedule);
+    SM4_encrypt(num_groups, text, key_schedule);
 
     write_output(text, num_groups);
     
@@ -63,7 +63,7 @@ int main()
     return 0;
 }
 
-void AES_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
+void SM4_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
 {
     uint32_t *text;
     uint32_t temp;
