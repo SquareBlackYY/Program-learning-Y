@@ -112,18 +112,13 @@ int main()
     printf("有限状态机内部状态：\n");
     printf("    R1 = %8x\n    R2 = %8x\n\n", R1, R2);
 
-    BitReorganization();
-    F();
-    LFSRWithWorkMode();
-
-    int L = 3;
-    uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
-
     printf("密钥流：\nt  ");\
     for (int i = 0; i < 4; i++)
         printf("%*s%s%d%*s ", 3, "", "X", i, 3, "");
     printf("   R1       R2       Z       S15\n");
 
+    int L = 3;
+    uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
     for (int i = 0; i < L; i++)
     {
         BitReorganization();
