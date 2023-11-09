@@ -80,7 +80,7 @@ int main()
     F();
     LFSRWithWorkMode();
 
-    int L = 2;
+    int L = 100;
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
     printf("密钥流：");
     for (int i = 0; i < L; i++)
@@ -88,9 +88,12 @@ int main()
         BitReorganization();
         F();
         Z[i] = W ^ X[3];
+        if (i % 5 == 0)
+            printf("\n");
         printf("%08x ", Z[i]);
         LFSRWithWorkMode();
     }
+    printf("\n");
 
     return 0;
 }
