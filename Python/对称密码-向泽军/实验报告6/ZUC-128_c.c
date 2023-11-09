@@ -185,13 +185,13 @@ uint32_t add_mod(uint32_t a, uint32_t b)
 
 void LFSRWithInitialisationMode(uint32_t u)
 {
-    uint32_t v = add_mod(add_mod(add_mod(add_mod(multi_mod(15, LFSR[15]), multi_mod(17, LFSR[13])), multi_mod(21, LFSR[10])), multi_mod(8, LFSR[0])), LFSR[0]);
+    uint32_t v = add_mod(add_mod(add_mod(add_mod(add_mod(multi_mod(15, LFSR[15]), multi_mod(17, LFSR[13])), multi_mod(21, LFSR[10])), multi_mod(20, LFSR[4])), multi_mod(8, LFSR[0])), LFSR[0]);
     LFSR[16] = add_mod(v, u);
     memcpy(LFSR, LFSR + 1, 16 * sizeof(uint32_t));
 }
 
 void LFSRWithWorkMode()
 {
-    LFSR[16] = add_mod(add_mod(add_mod(add_mod(multi_mod(15, LFSR[15]), multi_mod(17, LFSR[13])), multi_mod(21, LFSR[10])), multi_mod(8, LFSR[0])), LFSR[0]);
+    LFSR[16] = add_mod(add_mod(add_mod(add_mod(add_mod(multi_mod(15, LFSR[15]), multi_mod(17, LFSR[13])), multi_mod(21, LFSR[10])), multi_mod(20, LFSR[4])), multi_mod(8, LFSR[0])), LFSR[0]);
     memcpy(LFSR, LFSR + 1, 16 * sizeof(uint32_t));
 }
