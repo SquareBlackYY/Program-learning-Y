@@ -114,7 +114,7 @@ if __name__ == "__main__":
     plaintext = 0x0123456789abcdeffedcba9876543210
     Key = 0x01010101010101010101010101010101
     keys = key_schedule(Key)
-    print("明文：0x{:032x}，密钥：0x{:032x}".format(plaintext, Key))
+    print("明文：0x{:032x}\n密钥：0x{:032x}".format(plaintext, Key))
     ciphertext = encrypt(plaintext, keys)
     print("加密后密文：0x{}".format(ciphertext))
     decrypttext = decrypt(int(ciphertext, 16), keys)
