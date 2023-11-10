@@ -25,7 +25,6 @@ count = 0
 for key, value in word.items():
     if value > 50:
         count += 1
-print(count)
 
 wordcloud = WordCloud(
     background_color="white",
@@ -35,7 +34,6 @@ wordcloud = WordCloud(
     width=500,
     height=500,
 ).generate_from_frequencies(word)
-#plt.figure(figsize=(6, 6))
 plt.imshow(wordcloud, interpolation="bilinear")
 plt.axis("off")
 plt.show()
