@@ -80,7 +80,9 @@ int main()
     F();
     LFSRWithWorkMode();
 
-    int L = 100;
+    int L;
+    printf("请输入生成的密钥流数量:");
+    scanf("%d", &L);
     uint32_t *Z = (uint32_t *)malloc(L * sizeof(uint32_t));
     printf("密钥流：");
     for (int i = 0; i < L; i++)
