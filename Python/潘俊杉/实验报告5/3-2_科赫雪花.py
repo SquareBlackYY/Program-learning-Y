@@ -12,8 +12,7 @@ def koch(size, n):
         turtle.left(60)
         koch(size / 3, n - 1)
 
-turtle.setup(800, 800)
-turtle.speed(20)
+turtle.speed(0)
 turtle.penup()
 turtle.goto(-300, 200)
 turtle.pendown()
