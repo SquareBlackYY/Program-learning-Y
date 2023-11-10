@@ -104,10 +104,10 @@ def decrypt(ciphertext, keys):
     return text
 
 
-def read_input(input):
-    text = open("./input.txt", "r").read()
-    for i in range(2 ** 16):
-        input.append(int(text[32 * i: 32 * (i + 1)], 16))
+def read_input(input_text):
+    text = open("input.txt", "r").read()
+    for i in range(len(text) // 32):
+        input_text.append(int(text[32 * i: 32 * (i + 1)], 16))
 
 
 if __name__ == "__main__":
@@ -119,14 +119,13 @@ if __name__ == "__main__":
     print("加密后密文：0x{}".format(ciphertext))
     decrypttext = decrypt(int(ciphertext, 16), keys)
     print("解密后明文：0x{}".format(decrypttext))
-    '''
-    input = []
+
+    input_text = []
     output = []
-    read_input(input)
+    read_input(input_text)
     t = time.perf_counter()
-    for words in input:
+    for words in input_text:
         output.append(encrypt(words, keys))
     t = time.perf_counter() - t
-    bps = 2 ** 16 * 128 / t / 1028 / 1028
-    print("加密一串明文的时间为：{:.3f} s，加密速度为：{:.3f} Mbps".format(t, bps))
-    '''
+    bps = len(input_text) * 128 / t / 1024 / 1024
+    print("加密耗时：{:.3f} s\n加密速度：{:.3f} Mbps".format(t, bps))

@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 const uint32_t FK[4] = {0xA3B1BAC6, 0x56AA3350, 0x677D9197, 0xB27022DC};
 
@@ -51,8 +52,17 @@ int main()
     int num_groups;
     read_input(&text, &num_groups);
 
+    clock_t start_time, end_time;
+    double execution_time;
+    start_time = clock();
+
     SM4_encrypt(num_groups, text, key_schedule);
 
+    end_time = clock();
+    execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    printf("程序用时: %.2f s\n", execution_time);
+    printf("平均速度: %.2f Mbps\n", 128 * num_groups / execution_time / 1024 / 1024);
+    
     write_output(text, num_groups);
     
     free(key_schedule);
@@ -73,7 +83,7 @@ void SM4_encrypt(int num_groups, uint32_t **input_text, uint32_t *key_schedule)
         text = input_text[i];
         for (int round_num = 0; round_num < 32; round_num++)
         {
-            temp = text[i] ^ T_function_for_word(text[i + 1] ^ text[i + 2] ^ text[i + 3] ^ rK[round_num] & 0xFFFFFFFF) & 0xFFFFFFFF;
+            temp = text[0] ^ T_function_for_word(text[1] ^ text[2] ^ text[3] ^ rK[round_num] & 0xFFFFFFFF) & 0xFFFFFFFF;
             memcpy(text, text + 1, 3 * sizeof(uint32_t));
             text[3] = temp;
         }
@@ -106,6 +116,7 @@ void generate_key_schedule(char *MK, uint32_t **key_schedule)
         (*key_schedule)[i] = (uint32_t)strtol(hex_text, NULL, 16) ^ FK[i] & 0xFFFFFFFF;
     }
     key_extend(*key_schedule);
+    printf("密钥扩展完成。\n");
 }
 
 void key_extend(uint32_t *key_schedule)
