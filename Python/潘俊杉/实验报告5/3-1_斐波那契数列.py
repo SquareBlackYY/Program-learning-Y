@@ -3,5 +3,9 @@ def fibonacci(n):
         return 1
     return fibonacci(n - 1) + fibonacci(n - 2)
 
-for i in range(1000):
-    print(fibonacci(i + 1))
+i = 1
+result = fibonacci(i)
+while result <= 1000:
+    print(result)
+    i += 1
+    result = fibonacci(i)
