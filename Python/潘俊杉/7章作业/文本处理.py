@@ -4,7 +4,7 @@ import csv
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
-with open("蒲公英海的狐狸.txt", "r", encoding="utf-8") as file:
+with open("红楼梦.txt", "r", encoding="utf-8") as file:
     words = jieba.lcut(re.sub(r"[^\u4e00-\u9fa5]", "", file.read()))
 
 with open("stop_words.txt", "r", encoding="utf-8") as file:
@@ -25,6 +25,7 @@ count = 0
 for key, value in word.items():
     if value > 50:
         count += 1
+print(count)
 
 wordcloud = WordCloud(
     background_color="white",
@@ -34,7 +35,7 @@ wordcloud = WordCloud(
     width=500,
     height=500,
 ).generate_from_frequencies(word)
-plt.figure(figsize=(8, 8))
+#plt.figure(figsize=(6, 6))
 plt.imshow(wordcloud, interpolation="bilinear")
 plt.axis("off")
 plt.show()
