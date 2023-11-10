@@ -37,4 +37,3 @@ result.sort(key=lambda x: x[1], reverse=True)
 for i in range(12):
     word, count = result[i]
     print("{:10}\t{:>5}".format(word, count))
-    
