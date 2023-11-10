@@ -17,12 +17,10 @@ digit = {
     "d": [(15, 0)]
 }
 
-
 def drawDigit(d, n):
     for point in digit[d]:
         turtle.goto(point[0] - 300 + 60 * n, point[1])
         turtle.pendown()
-
 
 turtle.setup(800, 350, 200, 200)
 turtle.pensize(5)
