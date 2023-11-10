@@ -4,7 +4,7 @@ import csv
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
-with open("野猪公主.txt", "r", encoding="utf-8") as file:
+with open("蒲公英海的狐狸.txt", "r", encoding="utf-8") as file:
     words = jieba.lcut(re.sub(r"[^\u4e00-\u9fa5]", "", file.read()))
 
 with open("stop_words.txt", "r", encoding="utf-8") as file:
