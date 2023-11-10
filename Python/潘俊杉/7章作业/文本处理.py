@@ -7,9 +7,11 @@ from wordcloud import WordCloud
 text = open('野猪公主.txt', "r", encoding='utf-8').read()
 txt = re.sub(r'[^\u4e00-\u9fa5]', '', text)
 words = jieba.lcut(txt)
+
 stopwords = open("stop_words.txt", 'r', encoding='utf-8').read()
 item = list(set(words))
 word = {}
+
 for i in words:
     if i not in stopwords:
         word[i] = word.get(i, 0) + 1
