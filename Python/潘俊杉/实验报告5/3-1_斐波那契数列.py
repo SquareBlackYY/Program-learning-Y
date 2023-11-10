@@ -6,6 +6,6 @@ def fibonacci(n):
 i = 1
 result = fibonacci(i)
 while result <= 1000:
-    print(result)
+    print(result, end = ' ')
     i += 1
     result = fibonacci(i)
