@@ -19,7 +19,7 @@ int subByte(int);
 int main()
 {
     generate_sbox_diff_table();
-    for (difference = 0x0001; difference <= 0x0001; difference++)
+    for (difference = 0x0001; difference <= 0xffff; difference++)
         round_f(difference, 4, 0, 1, 0);
     return 0;
 }
