@@ -28,6 +28,7 @@ int main()
         outfile << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << endl;
         round_f(difference, 4, 0, 1, 0);
     }
+    outfile.close();
     return 0;
 }
 
