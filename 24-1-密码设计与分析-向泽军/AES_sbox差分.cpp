@@ -29,8 +29,7 @@ int main()
     for(x = 0x00; x <= 0xff; x++)
         for(i = 0x00; i <= 0xff; i++)
             table[x][S_BOX[i] ^ S_BOX[i ^ x]]++;
-    
-    std::ofstream outfile("AES_sbox_diff_table.csv");
+    ofstream outfile("AES_sbox_diff_table.csv");
     for (int i = 0; i < 256; i++)
     {
         for (int j = 0; j < 256; j++)
