@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <iomanip>
 #include <cmath>
 using namespace std;
@@ -10,7 +12,8 @@ unsigned long long power_16[17];
 int sbox_diff_table[sbox_length][sbox_length] = {0};
 int difference;
 int path_line[8];
-double probability = 1e-10;
+double probability = 1e-12;
+ofstream outfile("max_porbability.txt");
 
 void generate_sbox_diff_table();
 void round_f(int, int, int, unsigned long long, int);
@@ -20,7 +23,11 @@ int main()
 {
     generate_sbox_diff_table();
     for (difference = 0x0001; difference <= 0xffff; difference++)
+    {
+        cout << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << ",";
+        outfile << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << ",";
         round_f(difference, 4, 0, 1, 0);
+    }
     return 0;
 }
 
@@ -46,10 +53,15 @@ void round_f(int m, int round_num, int sbox_num, unsigned long long pro_Numerato
         if (new_probability > probability)
         {
             probability = new_probability;
-            cout << hex << setfill('0') << setw(4) << difference << ",";
+            cout << "，当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
+            outfile << "，当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
             for (i = 0; i < 8; i++)
+            {
                 cout << hex << setfill('0') << setw(4) << path_line[i] << ",";
+                outfile << hex << setfill('0') << setw(4) << path_line[i] << ",";
+            }
             cout << probability << endl;
+            outfile << probability << endl;
         }
         return;
     }
