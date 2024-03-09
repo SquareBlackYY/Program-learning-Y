@@ -53,8 +53,8 @@ void round_f(int m, int round_num, int sbox_num, unsigned long long pro_Numerato
         if (new_probability > probability)
         {
             probability = new_probability;
-            cout << "，当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
-            outfile << "，当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
+            cout << "当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
+            outfile << "当前概率最高差分、路径、概率：" << hex << setfill('0') << setw(4) << difference << ",";
             for (i = 0; i < 8; i++)
             {
                 cout << hex << setfill('0') << setw(4) << path_line[i] << ",";
