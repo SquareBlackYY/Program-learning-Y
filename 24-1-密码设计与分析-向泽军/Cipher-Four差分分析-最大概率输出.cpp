@@ -24,8 +24,8 @@ int main()
     generate_sbox_diff_table();
     for (difference = 0x0001; difference <= 0xffff; difference++)
     {
-        cout << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << ",";
-        outfile << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << ",";
+        cout << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << endl;
+        outfile << "开始计算差分：" << hex << setfill('0') << setw(4) << difference << endl;
         round_f(difference, 4, 0, 1, 0);
     }
     return 0;
