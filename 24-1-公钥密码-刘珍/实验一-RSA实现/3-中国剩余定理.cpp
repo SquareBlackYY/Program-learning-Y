@@ -2,11 +2,9 @@
 #include <gmpxx.h>
 using namespace std;
 
-#define length 1
-
 void ExEuclid(mpz_class &, const mpz_class &, const mpz_class &);
-void RSA_encrypt(mpz_class[], mpz_class[], mpz_class, mpz_class);
-void RSA_decrypt(mpz_class[], mpz_class, mpz_class, mpz_class, mpz_class);
+void RSA_encrypt(mpz_class, mpz_class, mpz_class, mpz_class);
+void RSA_decrypt(mpz_class, mpz_class, mpz_class, mpz_class, mpz_class);
 
 int main()
 {
@@ -23,16 +21,14 @@ int main()
     ExEuclid(d, e, fn);
 
     
-    mpz_class m[length], c[length];
-    m[0] = 513;
+    mpz_class m, c;
+    m = 513;
 
     // 加密
     RSA_encrypt(m, c, e, n);
 
     // 输出加密结果
-    for (int i = 0; i < length; i++)
-        cout << c[i] << " ";
-    cout << endl;
+    cout << c << endl;
 
     // 解密
     RSA_decrypt(c, d, e, p, q);
@@ -71,15 +67,14 @@ void ExEuclid(mpz_class &result, const mpz_class &a, const mpz_class &b)
         result += b;
 }
 
-void RSA_encrypt(mpz_class m[], mpz_class c[], mpz_class e, mpz_class n)
+void RSA_encrypt(mpz_class m, mpz_class c, mpz_class e, mpz_class n)
 {
-    for (int i = 0; i < length; i++)
-        c[i] = mpz_powm(m[i].get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
+    c = mpz_powm(m.get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
 }
 
-void RSA_decrypt(mpz_class c[], mpz_class d, mpz_class e, mpz_class p, mpz_class q)
+void RSA_decrypt(mpz_class c, mpz_class d, mpz_class e, mpz_class p, mpz_class q)
 {
-    mpz_class q_inv, dp, dq, m1, m2, h;
+    mpz_class q_inv, dp, dq, m1, m2, h, m;
     ExEuclid(q_inv, p, q);
 
     dp = p - 1;
@@ -88,20 +83,16 @@ void RSA_decrypt(mpz_class c[], mpz_class d, mpz_class e, mpz_class p, mpz_class
     ExEuclid(dp, dp, e);
     ExEuclid(dq, dq, e);
 
-    for (int i = 0; i < length; i++)
-    {
-        mpz_class m1 = mpz_powm(c[i].get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
-        mpz_class m2 = mpz_powm(c[i].get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
 
-        h = m1 - m2;
-        h = abs(h);
-        h = h * q_inv % p;
+    mpz_class m1 = mpz_powm(c[i].get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
+    mpz_class m2 = mpz_powm(c[i].get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
 
-        h = h * q;
-        m[i] = m2 + h;
-    }
+    h = m1 - m2;
+    h = abs(h);
+    h = h * q_inv % p;
 
-    for (int i = 0; i < length; i++)
-        cout << m[i] << " ";
-    cout << endl;
+    h = h * q;
+    m = m2 + h;
+
+    cout << m << endl;
 }
