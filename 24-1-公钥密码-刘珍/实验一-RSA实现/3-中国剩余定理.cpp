@@ -3,8 +3,8 @@
 using namespace std;
 
 void ExEuclid(mpz_class &, const mpz_class &, const mpz_class &);
-void RSA_encrypt(mpz_class, mpz_class, mpz_class, mpz_class);
-void RSA_decrypt(mpz_class, mpz_class, mpz_class, mpz_class, mpz_class);
+void RSA_encrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &);
+void RSA_decrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &);
 
 int main()
 {
@@ -20,8 +20,7 @@ int main()
     // 扩展欧几里得算法求模逆
     ExEuclid(d, e, fn);
 
-    
-    mpz_class m, c;
+    mpz_class m, c, m_decrypt;
     m = 513;
 
     // 加密
@@ -31,8 +30,10 @@ int main()
     cout << c << endl;
 
     // 解密
-    RSA_decrypt(c, d, e, p, q);
-    
+    RSA_decrypt(c, m_decrypt, d, e, p, q);
+
+    // 输出解密结果
+    cout << m_decrypt << endl;
 
     return 0;
 }
@@ -67,32 +68,25 @@ void ExEuclid(mpz_class &result, const mpz_class &a, const mpz_class &b)
         result += b;
 }
 
-void RSA_encrypt(mpz_class m, mpz_class c, mpz_class e, mpz_class n)
+// RSA加密 明文m 密文c 公钥e 大整数n
+void RSA_encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
 {
-    c = mpz_powm(m.get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
+    mpz_powm(c.get_mpz_t(), m.get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
 }
 
-void RSA_decrypt(mpz_class c, mpz_class d, mpz_class e, mpz_class p, mpz_class q)
+// RSA解密 密文c 解密结果m 私钥d 公钥e 整数分解p,q
+void RSA_decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
 {
-    mpz_class q_inv, dp, dq, m1, m2, h, m;
-    ExEuclid(q_inv, p, q);
+    mpz_class q_inv, dp, dq, m1, m2, h;
+    ExEuclid(q_inv, q, p);
 
-    dp = p - 1;
-    dq = q - 1;
+    ExEuclid(dp, e, p - 1);
+    ExEuclid(dq, e, q - 1);
 
-    ExEuclid(dp, dp, e);
-    ExEuclid(dq, dq, e);
+    mpz_powm(m1.get_mpz_t(), c.get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
+    mpz_powm(m2.get_mpz_t(), c.get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
 
+    h = q_inv * abs(m1.get_mpz_t(), m2.get_mpz_t()) % p;
 
-    mpz_class m1 = mpz_powm(c[i].get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
-    mpz_class m2 = mpz_powm(c[i].get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
-
-    h = m1 - m2;
-    h = abs(h);
-    h = h * q_inv % p;
-
-    h = h * q;
-    m = m2 + h;
-
-    cout << m << endl;
+    m = m2 + h * q;
 }
