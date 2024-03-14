@@ -25,7 +25,7 @@ int main()
     ExEuclid(d, fn, e);
 
     cout << d << endl;
-
+    /*
     mpz_class m[length], c[length];
     m[0] = 513;
 
@@ -39,6 +39,7 @@ int main()
 
     // 解密
     RSA_decrypt(c, d, e, p, q);
+    */
 
     return 0;
 }
@@ -68,7 +69,7 @@ void ExEuclid(mpz_class &result, mpz_class &f, mpz_class &d)
 
     result = (a1 % f + f) % f;
 }
-
+/*
 void RSA_encrypt(mpz_class m[], mpz_class c[], mpz_class e, mpz_class n)
 {
     for (int i = 0; i < length; i++)
@@ -103,3 +104,4 @@ void RSA_decrypt(mpz_class c[], mpz_class d, mpz_class e, mpz_class p, mpz_class
         cout << m[i] << " ";
     cout << endl;
 }
+*/
