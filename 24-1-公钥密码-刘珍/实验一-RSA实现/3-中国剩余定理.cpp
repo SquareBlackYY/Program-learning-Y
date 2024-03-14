@@ -1,5 +1,6 @@
 #include <iostream>
-#include <gmpxx.h>
+#include <gmpxx.h> //编译时添加参数-lgmp -lgmpxx
+#include <cmath>
 using namespace std;
 
 void ExEuclid(mpz_class &, const mpz_class &, const mpz_class &);
@@ -77,7 +78,7 @@ void RSA_encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz
 // RSA解密 密文c 解密结果m 私钥d 公钥e 整数分解p,q
 void RSA_decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
 {
-    mpz_class q_inv, dp, dq, m1, m2, h;
+    mpz_class q_inv, dp, dq, m1, m2, h, m_abs;
     ExEuclid(q_inv, q, p);
 
     ExEuclid(dp, e, p - 1);
@@ -86,7 +87,9 @@ void RSA_decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz
     mpz_powm(m1.get_mpz_t(), c.get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
     mpz_powm(m2.get_mpz_t(), c.get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
 
-    h = q_inv * abs(m1.get_mpz_t(), m2.get_mpz_t()) % p;
+    h = q_inv * (m1 - m2) % p;
+    if (h < 0)
+        h += p;
 
     m = m2 + h * q;
 }
