@@ -4,7 +4,7 @@ using namespace std;
 
 #define length 1
 
-void ExEuclid(mpz_class&, mpz_class&, mpz_class&);
+void ExEuclid(mpz_class &, mpz_class &, mpz_class &);
 void RSA_encrypt(mpz_class[], mpz_class[], mpz_class, mpz_class);
 void RSA_decrypt(mpz_class[], mpz_class, mpz_class, mpz_class, mpz_class);
 
@@ -43,30 +43,30 @@ int main()
     return 0;
 }
 
-void ExEuclid(mpz_class& result, mpz_class& f, mpz_class& d)
+void ExEuclid(mpz_class &result, mpz_class &f, mpz_class &d)
 {
-    mpz_class x = 1, y = 0, t = f, q;
+    mpz_class a1 = 1, b1 = 0, a2 = 0, b2 = 1;
+    mpz_class q, r, x, y;
 
-    while (1)
+    while (d != 0)
     {
-        q = x / y;
-        t -= q * y;
-        x = y;
-        y = t;
+        q = f / d;
 
-        if (y == 1)
-        {
-            result = y % f;
-            if (result < 0)
-                result += f;
-            break;
-        }
-        else if (y == 0)
-        {
-            result = 0;
-            break;
-        }
+        r = f % d;
+        f = d;
+        d = r;
+
+        x = a2;
+        y = b2;
+
+        a2 = a1 - q * a2;
+        b2 = b1 - q * b2;
+
+        a1 = x;
+        b1 = y;
     }
+
+    result = (a1 % f + f) % f;
 }
 
 void RSA_encrypt(mpz_class m[], mpz_class c[], mpz_class e, mpz_class n)
