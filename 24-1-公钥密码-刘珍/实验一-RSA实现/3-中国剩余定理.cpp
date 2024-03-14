@@ -4,7 +4,7 @@ using namespace std;
 
 #define length 1
 
-void ExEuclid(mpz_class &, mpz_class &, mpz_class &);
+void ExEuclid(mpz_class &, const mpz_class &, const mpz_class &);
 void RSA_encrypt(mpz_class[], mpz_class[], mpz_class, mpz_class);
 void RSA_decrypt(mpz_class[], mpz_class, mpz_class, mpz_class, mpz_class);
 
@@ -12,20 +12,17 @@ int main()
 {
     mpz_class p(137);
     mpz_class q(131);
-    mpz_class n = p * q;
 
-    mpz_class p_1 = p - 1;
-    mpz_class q_1 = q - 1;
-    mpz_class fn = p_1 * q_1;
+    mpz_class n = p * q;
+    mpz_class fn = (p - 1)  * (q - 1);
 
     mpz_class e(3);
     mpz_class d;
 
     // 扩展欧几里得算法求模逆
-    ExEuclid(d, fn, e);
+    ExEuclid(d, e, fn);
 
-    cout << d << endl;
-    /*
+    
     mpz_class m[length], c[length];
     m[0] = 513;
 
@@ -39,37 +36,41 @@ int main()
 
     // 解密
     RSA_decrypt(c, d, e, p, q);
-    */
+    
 
     return 0;
 }
 
-void ExEuclid(mpz_class &result, mpz_class &f, mpz_class &d)
+// 扩展到欧里几得算法求模逆 result = a^-1 mod b
+void ExEuclid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 {
-    mpz_class a1 = 1, b1 = 0, a2 = 0, b2 = 1;
+    mpz_class a_copy = a;
+    mpz_class b_copy = b;
+    
+    mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
     mpz_class q, r, x, y;
 
-    while (d != 0)
+    while (b_copy != 0)
     {
-        q = f / d;
+        q = a_copy / b_copy;
+        r = a_copy % b_copy;
 
-        r = f % d;
-        f = d;
-        d = r;
+        x = x0 - q * x1;
+        y = y0 - q * y1;
 
-        x = a2;
-        y = b2;
-
-        a2 = a1 - q * a2;
-        b2 = b1 - q * b2;
-
-        a1 = x;
-        b1 = y;
+        a_copy = b_copy;
+        b_copy = r;
+        x0 = x1;
+        y0 = y1;
+        x1 = x;
+        y1 = y;
     }
 
-    result = (a1 % f + f) % f;
+    result = x0;
+    if (result < 0)
+        result += b;
 }
-/*
+
 void RSA_encrypt(mpz_class m[], mpz_class c[], mpz_class e, mpz_class n)
 {
     for (int i = 0; i < length; i++)
@@ -104,4 +105,3 @@ void RSA_decrypt(mpz_class c[], mpz_class d, mpz_class e, mpz_class p, mpz_class
         cout << m[i] << " ";
     cout << endl;
 }
-*/
