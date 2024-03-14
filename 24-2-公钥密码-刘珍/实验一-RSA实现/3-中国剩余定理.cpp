@@ -1,5 +1,6 @@
 #include <iostream>
 #include <gmpxx.h>
+using namespace std;
 
 #define length 1
 
@@ -20,23 +21,23 @@ int main()
     mpz_class e(3);
     mpz_class d;
 
-    // Extended Euclidean Algorithm to find the modular inverse of e
+    // 扩展欧几里得算法求模逆
     ExEuclid(d, fn, e);
 
-    std::cout << d << std::endl;
+    cout << d << endl;
 
     mpz_class m[length], c[length];
     m[0] = 513;
 
-    // Encryption
+    // 加密
     RSA_encrypt(m, c, e, n);
 
-    // Output encrypted result
+    // 输出加密结果
     for (int i = 0; i < length; i++)
-        std::cout << c[i] << " ";
-    std::cout << std::endl;
+        cout << c[i] << " ";
+    cout << endl;
 
-    // Decryption
+    // 解密
     RSA_decrypt(c, d, e, p, q);
 
     return 0;
@@ -99,6 +100,6 @@ void RSA_decrypt(mpz_class c[], mpz_class d, mpz_class e, mpz_class p, mpz_class
     }
 
     for (int i = 0; i < length; i++)
-        std::cout << m[i] << " ";
-    std::cout << std::endl;
+        cout << m[i] << " ";
+    cout << endl;
 }
