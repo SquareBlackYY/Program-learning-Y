@@ -27,6 +27,7 @@ bool Miller_Rabin(int n)
         d /= 2;
     }
 
+    // 5轮测试
     for (int i = 0; i < 5; i++)
     {
         long long a = rand() % (n - 1) + 1;
