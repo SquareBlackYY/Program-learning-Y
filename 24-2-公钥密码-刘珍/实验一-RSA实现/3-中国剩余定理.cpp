@@ -11,7 +11,7 @@ void RSA_decrypt(mpz_t[], mpz_t, mpz_t, mpz_t, mpz_t);
 int main()
 {
     mpz_t p, q, n, fn, e, d, p_1, q_1;
-    mpz_inits(p, q, n, fn, e, d, NULL);
+    mpz_inits(p, q, n, fn, e, d, p_1, q_1, NULL);
 
     mpz_set_ui(p, 137);
     mpz_set_ui(q, 131);
