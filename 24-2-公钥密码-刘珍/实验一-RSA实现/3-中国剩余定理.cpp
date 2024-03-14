@@ -1,71 +1,135 @@
 #include <iostream>
-#include <cmath>
+#include <gmp.h>
 using namespace std;
 
-#define length 3
+#define length 1
 
-int ExEuclid(int, int);
-void RSA_encrypt(int [], int [], int, int);
-void RSA_decrypt(int [], int, int, int, int);
+void ExEuclid(mpz_t, mpz_t, mpz_t);
+void RSA_encrypt(mpz_t[], mpz_t[], mpz_t, mpz_t);
+void RSA_decrypt(mpz_t[], mpz_t, mpz_t, mpz_t, mpz_t);
 
 int main()
 {
-    int p = 5, q = 7;
-    int n = p * q, fn = (p - 1) * (q - 1);
-    int e = 5;
-    int d = ExEuclid(fn, e);
-    int m[length] = {'b', 'e', 'd'};
-    int c[length];
-    
+    mpz_t p, q, n, fn, e, d, p_1, q_1;
+    mpz_inits(p, q, n, fn, e, d, NULL);
+
+    mpz_set_ui(p, 137);
+    mpz_set_ui(q, 131);
+
+    mpz_mul(n, p, q);
+
+    mpz_sub_ui(p_1, p, 1);
+    mpz_sub_ui(q_1, q, 1);
+    mpz_mul(fn, p_1, q_1);
+
+    mpz_set_ui(e, 3);
+
+    // 辗转相除法求e的逆
+    ExEuclid(d, fn, e);
+
+    mpz_t m[length], c[length];
+    for (int i = 0; i < length; i++)
+    {
+        mpz_init(m[i]);
+        mpz_init(c[i]);
+    }
+
+    mpz_set_ui(m[0], 513);
+
+    // 加密
     RSA_encrypt(m, c, e, n);
 
+    // 输出加密结果
     for (int i = 0; i < length; i++)
-        cout << static_cast<char>(c[i] + 'a' - 1) << " ";
+        gmp_printf("%Zd ", c[i]);
     cout << endl;
 
+    // 解密
     RSA_decrypt(c, d, e, p, q);
-    
+
+    for (int i = 0; i < length; i++)
+    {
+        mpz_clear(m[i]);
+        mpz_clear(c[i]);
+    }
+    mpz_clears(p, q, n, fn, e, d, NULL);
+
     return 0;
 }
 
-int ExEuclid(int f, int d)
+void ExEuclid(mpz_t result, mpz_t f, mpz_t d)
 {
-    int x[3] = {1, 0, f}, y[3] = {0, 1, d}, t[3];
-    int q, i;
+    mpz_t x, y, t, q;
+    mpz_inits(x, y, t, q, NULL);
+
+    mpz_set_ui(x, 1);
+    mpz_set_ui(y, 0);
+    mpz_set(t, f);
+
     while (1)
     {
-        q = x[2] / y[2];
-        for (i = 0; i < 3; i++)
-            t[i] = x[i] - q * y[i];
-        for (i = 0; i < 3; i++)
-            x[i] = y[i];
-        for (i = 0; i < 3; i++)
-            y[i] = t[i];
-        if (y[2] == 1)
-            return y[1] < 0 ? y[1] : y[1] + f;
-        else if (y[2] == 0)
-            return 0;
+        mpz_fdiv_q(q, x, y);
+        mpz_submul(t, q, y);
+        mpz_set(x, y);
+        mpz_set(y, t);
+
+        if (mpz_cmp_ui(y, 1) == 0)
+        {
+            mpz_mod(result, y, f);
+            if (mpz_sgn(result) < 0)
+            {
+                mpz_add(result, result, f);
+            }
+            break;
+        }
+        else if (mpz_cmp_ui(y, 0) == 0)
+        {
+            mpz_set_ui(result, 0);
+            break;
+        }
     }
+
+    mpz_clears(x, y, t, q, NULL);
 }
 
-void RSA_encrypt(int m[], int c[], int e, int n)
+void RSA_encrypt(mpz_t m[], mpz_t c[], mpz_t e, mpz_t n)
 {
     for (int i = 0; i < length; i++)
-        c[i] = static_cast<int>(pow(static_cast<int>(m[i] - 'a') + 1, e)) % n;
+        mpz_powm(c[i], m[i], e, n);
 }
 
-void RSA_decrypt(int c[], int d, int e, int p, int q)
+void RSA_decrypt(mpz_t c[], mpz_t d, mpz_t e, mpz_t p, mpz_t q)
 {
-    int m[length];
-    int q_inv = ExEuclid(p, q), dp = ExEuclid(p - 1, e), dq = ExEuclid(q - 1, e), m1, m2, h;
+    mpz_t m[length], q_inv, dp, dq, m1, m2, h;
+    mpz_inits(q_inv, dp, dq, m1, m2, h, NULL);
+
+    ExEuclid(q_inv, p, q);
+
+    mpz_sub_ui(dp, p, 1);
+    mpz_sub_ui(dq, q, 1);
+
+    ExEuclid(dp, dp, e);
+    ExEuclid(dq, dq, e);
+
     for (int i = 0; i < length; i++)
     {
-        m1 = static_cast<int>(pow(c[i] , dp)) % p;
-        m2 = static_cast<int>(pow(c[i] , dq)) % q;
-        h = (q_inv * abs(m1 - m2)) % p;
-        m[i] = m2 + h * q;
+        mpz_init(m[i]);
+
+        mpz_powm(m1, c[i], dp, p);
+        mpz_powm(m2, c[i], dq, q);
+
+        mpz_sub(h, m1, m2);
+        mpz_abs(h, h);
+        mpz_mul(h, h, q_inv);
+        mpz_mod(h, h, p);
+
+        mpz_mul(h, h, q);
+        mpz_add(m[i], m2, h);
     }
+
     for (int i = 0; i < length; i++)
-        cout << static_cast<char>(m[i] + 'a' - 1) << " ";
+        gmp_printf("%Zd ", m[i]);
     cout << endl;
+
+    mpz_clears(q_inv, dp, dq, m1, m2, h, NULL);
 }
