@@ -5,6 +5,7 @@ long long quick_pow(long long, long long, long long);
 
 int main()
 {
+    cout << quick_pow(123, 234, 1234) << endl;
     return 0;
 }
 
