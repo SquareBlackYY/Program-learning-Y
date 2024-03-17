@@ -1,4 +1,7 @@
-typedef int ElemType;
+#ifndef SQLIST_H
+#define SQLIST_H
+
+typedef char ElemType;
 
 const int MaxSize = 100;
 typedef struct
@@ -17,3 +20,5 @@ bool GetElem(SqList *L, int i, ElemType &e);
 int LocateElem(SqList *L, ElemType e);
 bool ListInsert(SqList *&L, int i, ElemType e);
 bool ListDelete(SqList *&L, int i, ElemType &e);
+
+#endif
