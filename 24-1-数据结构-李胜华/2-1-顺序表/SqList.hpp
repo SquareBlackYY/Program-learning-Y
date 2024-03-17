@@ -10,7 +10,6 @@ typedef struct
     int length;
 } SqList;
 
-void CreateList(SqList *&L, ElemType a[], int n);
 void InitList(SqList *&L);
 void DestroyList(SqList *&L);
 bool ListEmpty(SqList *L);

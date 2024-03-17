@@ -2,19 +2,6 @@
 #include <iostream>
 using namespace std;
 
-void CreateList(SqList *&L, ElemType a[], int n)
-{
-    int i = 0, k = 0;
-    L = (SqList *)malloc(sizeof(SqList));
-    while (i < n)
-    {
-        L->data[k] = a[i];
-        k++;
-        i++;
-    }
-    L->length = k;
-}
-
 void InitList(SqList *&L)
 {
     L = (SqList *)malloc(sizeof(SqList));
