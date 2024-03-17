@@ -2,70 +2,87 @@
 #include <iostream>
 using namespace std;
 
+void CreateList(SqList *&L, ElemType a[], int n)
+{
+    int i = 0, k = 0;
+    L = (SqList *)malloc(sizeof(SqList));
+    while (i < n)
+    {
+        L->data[k] = a[i];
+        k++;
+        i++;
+    }
+    L->length = k;
+}
+
 void InitList(SqList *&L)
 {
     L = (SqList *)malloc(sizeof(SqList));
     L->length = 0;
 }
 
-void DestroyList(List *&L)
+void DestroyList(SqList *&L)
 {
     delete L;
 }
 
-bool ListEmpty(List L)
+bool ListEmpty(SqList *L)
 {
-    return (L.length == 0);
+    return (L->length == 0);
 }
 
-int ListLength(List L)
+int ListLength(SqList *L)
 {
-    int sum = 0;
-    for (int i : L.a)
-        sum++;
-    return sum;
+    return (L->length);
 }
 
-bool DispList(List L)
+void DispList(SqList *L)
 {
-    if (L.length==0)
-		return false;
-    for (int i : L.a)
-        cout << i << ' ';
-    return ture;
+    for (int i = 0; i < L->length; i++)
+        cout << L->data[i] << ' ';
+    cout << endl;
 }
 
-bool GetElem(List L, int i, int &e)
+bool GetElem(SqList *L, int i, ElemType &e)
 {
-    if (i > L.length)
+    if (i < 1 || i > L->length)
         return false;
-    e = L.a[i - 1];
-    return ture;
+    e = L->data[i - 1];
+    return true;
 }
 
-int LocateElem(List L, int e)
+int LocateElem(SqList *L, ElemType e)
 {
-    int i;
-    for (i = 0; i < L.length; i++)
-        if (L.a[i] == e)
-            return i;
-    return -1;
+    int i = 0;
+    while (i < L->length && L->data[i] != e)
+        i++;
+    if (i >= L->length)
+        return 0;
+    return i + 1;
 }
 
-void ListInsert(List &L, int i, int e)
+bool ListInsert(SqList *&L, int i, ElemType e)
 {
-    int j = L.length;
-    for (; j > i - 1; j--)
-        L.a[j] = L.a[j - 1];
-    L.a[i - 1] = e;
-    L.length++;
+    int j;
+    if (i < 1 || i > L->length + 1 || L->length == MaxSize)
+        return false;
+    i--;
+    for (j = L->length; j > i; j--)
+        L->data[j] = L->data[j - 1];
+    L->data[i] = e;
+    L->length++;
+    return true;
 }
 
-void ListDelete(List &L, int i, int &e)
+bool ListDelete(SqList *&L, int i, ElemType &e)
 {
-    int j = 0;
-    e = L.a[i];
-    for (j = i; j < L.length; j++)
-        L.a[j] = L.a[j + 1];
-    L.length--;
+    int j;
+    if (i < 1 || i > L->length)
+        return false;
+    i--;
+    e = L->data[i];
+    for (j = i; j < L->length - 1; j++)
+        L->data[j] = L->data[j + 1];
+    L->length--;
+    return true;
 }
