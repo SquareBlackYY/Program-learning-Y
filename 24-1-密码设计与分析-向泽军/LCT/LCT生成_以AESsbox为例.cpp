@@ -24,11 +24,25 @@ const uint8_t S_BOX[256] = {
 
 int main()
 {
-    int i, j, x = 0xff, table[256][256];
+    int i, j, a, b, a_x, b_sx, x, table[256][256];
     memset(table, 0, 65536 * sizeof(int));
-    for(x = 0x00; x <= 0xff; x++)
-        for(i = 0x00; i <= 0xff; i++)
-            table[x][S_BOX[i] ^ S_BOX[i ^ x]]++;
+    for (a = 0x00; a <= 0xff; a++)
+        for (b = 0x00; b <= 0xff; b++)
+            for (x = 0x00; x <= 0xff; x++)
+            {
+                a_x = 0x00, b_sx = 0x00;
+                for (i = 0; i < 8; i++)
+                {
+                    a_x ^= ((a >> i) & 1) & ((x >> i) & 1);
+                    b_sx ^= ((b >> i) & 1) & ((S_BOX[x] >> i) & 1);
+                }
+                if (a_x == b_sx)
+                    table[a][b]++;
+            }
+    for (a = 0x00; a <= 0xff; a++)
+        for (b = 0x00; b <= 0xff; b++)
+            if (table[a][b] != 0)
+                table[a][b] -= 128;
     ofstream outfile("LCT_AESsbox.csv");
     for (int i = 0; i < 256; i++)
     {
