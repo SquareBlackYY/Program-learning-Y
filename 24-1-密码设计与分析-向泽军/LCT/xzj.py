@@ -24,4 +24,11 @@ for in_mask in range(256):
         for x in range(256):
             if (format((in_mask & x), "08b").count("1") + format((out_mask & sbox[x]), "08b").count("1")) % 2 == 0:
                 lct[in_mask][out_mask] += 1
-print(lct)
+#print(lct)
+
+for i in range(256):
+    for j in range(256):
+        lct[i][j] = (lct[i][j] / 128) ** 2
+
+for i in range(256):
+    print(max(lct[i]))

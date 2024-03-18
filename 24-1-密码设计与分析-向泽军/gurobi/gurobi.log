@@ -1,0 +1,36 @@
+
+Gurobi 11.0.1 (win64, Python) logging started Mon Mar 18 20:14:21 2024
+
+Set parameter LogFile to value "gurobi.log"
+
+Gurobi 11.0.1 (win64, Python) logging started Mon Mar 18 20:24:06 2024
+
+Set parameter LogFile to value "gurobi.log"
+Read LP format model from file demo.lp
+Reading time = 0.00 seconds
+: 4 rows, 2 columns, 6 nonzeros
+Gurobi Optimizer version 11.0.1 build v11.0.1rc0 (win64 - Windows 11.0 (22631.2))
+
+CPU model: AMD Ryzen 7 5800H with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+
+Optimize a model with 4 rows, 2 columns and 6 nonzeros
+Model fingerprint: 0xcb8bc3df
+Variable types: 0 continuous, 2 integer (0 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [0e+00, 0e+00]
+  RHS range        [4e+00, 1e+02]
+Found heuristic solution: objective 50.0000000
+Presolve removed 4 rows and 2 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 1 (of 16 available processors)
+
+Solution count 2: 100 50 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+02, best bound 1.000000000000e+02, gap 0.0000%
