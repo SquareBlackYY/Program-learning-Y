@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-#include "sqList.hpp"
+#include "SqList.hpp"
 
 int main()
 {
