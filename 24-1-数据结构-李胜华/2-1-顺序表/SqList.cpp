@@ -1,5 +1,5 @@
-#include "SqList.hpp"
 #include <iostream>
+#include "SqList.hpp"
 using namespace std;
 
 void InitList(SqList *&L)

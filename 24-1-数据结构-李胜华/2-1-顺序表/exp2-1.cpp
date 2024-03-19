@@ -1,7 +1,6 @@
 #include <iostream>
-using namespace std;
-
 #include "SqList.hpp"
+using namespace std;
 
 int main()
 {
