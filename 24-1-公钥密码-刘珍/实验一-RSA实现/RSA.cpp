@@ -38,7 +38,7 @@ int main()
     mpz_class d;
 
     // 扩展欧几里得算法求模逆
-    ExEuclid(d, e, fn);
+    ExEculid(d, e, fn);
 
     mpz_class m, c, m_decrypt;
     m = 513;
@@ -50,7 +50,7 @@ int main()
     cout << c << endl;
 
     // 解密
-    RSA_Decrypt(c, m_decrypt, d, e, p, q);
+    RSA_Decrypt(c, m_decrypt, d, n);
 
     // 输出解密结果
     cout << m_decrypt << endl;
@@ -69,7 +69,7 @@ void RSA_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz
 }
 
 // （2）扩展到欧里几得算法求模逆 result = a^-1 mod b
-void ExEuclid(mpz_class &result, const mpz_class &a, const mpz_class &b)
+void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a;
     mpz_class b_copy = b;
@@ -139,10 +139,10 @@ bool Miller_Rabin(const mpz_class &n)
 void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
 {
     mpz_class q_inv, dp, dq, m1, m2, h, m_abs;
-    ExEuclid(q_inv, q, p);
+    ExEculid(q_inv, q, p);
 
-    ExEuclid(dp, e, p - 1);
-    ExEuclid(dq, e, q - 1);
+    ExEculid(dp, e, p - 1);
+    ExEculid(dq, e, q - 1);
 
     mpz_powm(m1.get_mpz_t(), c.get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
     mpz_powm(m2.get_mpz_t(), c.get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
