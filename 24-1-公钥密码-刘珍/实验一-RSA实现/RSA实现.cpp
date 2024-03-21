@@ -120,7 +120,7 @@ void quick_pow_mod_1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_cla
 }
 void quick_pow_mod_2()
 {
-    ;
+    
 }
 
 // Miller-Rabin素性检测
@@ -183,10 +183,26 @@ void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const
 
 //（7）RSA-OAEP
 // 掩码生成
+void MGF()
+{
+    
+}
+// 编码
+void RSA_OAEP_Encode()
+{
+    
+}
+// 解码
+void RSA_OAEP_Decode()
+{
+    
+}
+// 加密
 void RSA_OAEP_Encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
 {
 
 }
+// 解密
 void RSA_OAEP_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &n)
 {
 
