@@ -75,7 +75,7 @@ void RSA_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz
     mpz_powm(m.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), n.get_mpz_t());
 }
 
-// （2）扩展到欧里几得算法求模逆 result = a^-1 mod b
+// （2）扩展欧里几得算法求模逆 result = a^-1 mod b
 void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a;
