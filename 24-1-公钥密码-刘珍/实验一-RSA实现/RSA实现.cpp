@@ -40,7 +40,7 @@ int main()
     mpz_class e(3);
     mpz_class d;
 
-    // 扩展欧几里得算法求模逆
+    // 计算私钥
     ExEculid(d, e, fn);
 
     mpz_class m, c, m_decrypt;
@@ -48,8 +48,6 @@ int main()
 
     // 加密
     RSA_Encrypt(m, c, e, n);
-
-    // 输出加密结果
     cout << c << endl;
 
     // 解密
