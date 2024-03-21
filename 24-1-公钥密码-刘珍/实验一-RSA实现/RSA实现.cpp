@@ -10,7 +10,7 @@ void RSA_Decrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_cl
 // （2）实现扩展的欧几里得算法
 void ExEculid(mpz_class &, const mpz_class &, const mpz_class &);
 
-// （3）实现中国剩余定理（实现在RSA快速实现中）
+// （3）实现中国剩余定理（实现在（6）RSA快速实现中）
 
 // （4）实现快速指数幂模运算
 void quick_pow_mod_1(mpz_class, mpz_class, const mpz_class &, mpz_class &);
