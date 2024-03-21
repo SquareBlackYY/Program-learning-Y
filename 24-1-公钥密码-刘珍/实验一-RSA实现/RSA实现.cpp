@@ -23,6 +23,9 @@ bool Miller_Rabin(const mpz_class &);
 void RSA_FastDecrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &);
 
 // （7）RSA-OAEP
+void MGF();
+void RSA_OAEP_Encode();
+void RSA_OAEP_Decode();
 void RSA_OAEP_Encrypt();
 void RSA_OAEP_Decrypt();
 
@@ -60,11 +63,13 @@ int main()
     return 0;
 }
 
-// （1）RSA加解密
+// （1）RSA简单实现
+// RSA简单加密
 void RSA_Encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
 {
     mpz_powm(c.get_mpz_t(), m.get_mpz_t(), e.get_mpz_t(), n.get_mpz_t());
 }
+// RSA简单解密
 void RSA_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &n)
 {
     mpz_powm(m.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), n.get_mpz_t());
@@ -176,7 +181,8 @@ void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const
     m = m2 + h * q;
 }
 
-//（7）RSA-OAEP加解密
+//（7）RSA-OAEP
+// 掩码生成
 void RSA_OAEP_Encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
 {
 
