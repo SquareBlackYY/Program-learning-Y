@@ -51,8 +51,10 @@ int main()
 
     // 解密
     RSA_Decrypt(c, m_decrypt, d, n);
+    cout << m_decrypt << endl;
 
-    // 输出解密结果
+    // 快速解密
+    RSA_FastDecrypt(c, m_decrypt, d, e, p, q);
     cout << m_decrypt << endl;
 
     return 0;
