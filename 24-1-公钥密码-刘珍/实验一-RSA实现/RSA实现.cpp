@@ -13,8 +13,8 @@ void ExEculid(mpz_class &, const mpz_class &, const mpz_class &);
 // （3）实现中国剩余定理（实现在RSA快速实现中）
 
 // （4）实现快速指数幂模运算
-void quick_pow1(mpz_class, mpz_class, const mpz_class &, mpz_class &);
-void quick_pow2();
+void quick_pow_mod_1(mpz_class, mpz_class, const mpz_class &, mpz_class &);
+void quick_pow_mod_2();
 
 // （5）实现Miller-Rabin算法
 bool Miller_Rabin(const mpz_class &);
@@ -101,7 +101,7 @@ void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 }
 
 // 快速幂取模
-void quick_pow1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &result)
+void quick_pow_mod_1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &result)
 {
     result = 1;
     n %= mod;
@@ -113,7 +113,7 @@ void quick_pow1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &r
         mpz_fdiv_q_2exp(power.get_mpz_t(), power.get_mpz_t(), 1);
     }
 }
-void quick_pow2()
+void quick_pow_mod_2()
 {
     ;
 }
@@ -139,7 +139,7 @@ bool Miller_Rabin(const mpz_class &n)
     for (int i = 0; i < 5; i++)
     {
         mpz_class a = rand() % (n - 1) + 1, x;
-        quick_pow1(a, d, n, x);
+        quick_pow_mod_1(a, d, n, x);
         if (x == 1 || x == n - 1)
             continue;
         for (int j = 1; j < s; j++)
