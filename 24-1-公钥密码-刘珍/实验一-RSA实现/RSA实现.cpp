@@ -4,6 +4,7 @@
 using namespace std;
 
 // （1）RSA基本实现
+void RSA_key_gen(mpz_class &, mpz_class &, mpz_class &, mpz_class &, mpz_class &);
 void RSA_Encrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &);
 void RSA_Decrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &);
 
@@ -31,17 +32,9 @@ void RSA_OAEP_Decrypt();
 
 int main()
 {
-    mpz_class p(137);
-    mpz_class q(131);
-
-    mpz_class n = p * q;
-    mpz_class fn = (p - 1) * (q - 1);
-
-    mpz_class e(3);
-    mpz_class d;
-
-    // 计算私钥
-    ExEculid(d, e, fn);
+    // 密钥生成
+    mpz_class p, q, n, e, d;
+    RSA_key_gen(p, q, n, e, d);
 
     mpz_class m, c, m_decrypt;
     m = 513;
@@ -62,6 +55,16 @@ int main()
 }
 
 // （1）RSA简单实现
+// 密钥生成
+void RSA_key_gen(mpz_class &p, mpz_class &q, mpz_class &n, mpz_class &e, mpz_class &d)
+{
+    p = 137, q = 131;
+    n = p * q;
+    mpz_class fn = (p - 1) * (q - 1);
+    e = 3;
+    // 计算私钥
+    ExEculid(d, e, fn);
+}
 // RSA简单加密
 void RSA_Encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
 {
