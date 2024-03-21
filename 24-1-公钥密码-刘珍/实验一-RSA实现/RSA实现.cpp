@@ -1,6 +1,5 @@
 #include <iostream>
 #include <gmpxx.h>
-#include <cstdlib>
 using namespace std;
 
 // （1）RSA基本实现
