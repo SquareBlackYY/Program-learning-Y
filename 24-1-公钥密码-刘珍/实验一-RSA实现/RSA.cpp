@@ -44,13 +44,13 @@ int main()
     m = 513;
 
     // 加密
-    RSA_encrypt(m, c, e, n);
+    RSA_Encrypt(m, c, e, n);
 
     // 输出加密结果
     cout << c << endl;
 
     // 解密
-    RSA_decrypt(c, m_decrypt, d, e, p, q);
+    RSA_Decrypt(c, m_decrypt, d, e, p, q);
 
     // 输出解密结果
     cout << m_decrypt << endl;
@@ -103,12 +103,12 @@ void quick_pow1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &r
 {
     result = 1;
     n %= mod;
-    while (power)
+    while (power > 0)
     {
-        if (power & 1)
-            result = result * n % mod;
-        n = n * n % mod;
-        power >>= 1;
+        if (mpz_odd_p(power.get_mpz_t()))
+            result = (result * n) % mod;
+        n = (n * n) % mod;
+        mpz_fdiv_q_2exp(power.get_mpz_t(), power.get_mpz_t(), 1); // Equivalent to power >>= 1
     }
 }
 void quick_pow2()
