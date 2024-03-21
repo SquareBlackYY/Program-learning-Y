@@ -108,7 +108,7 @@ void quick_pow1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &r
         if (mpz_odd_p(power.get_mpz_t()))
             result = (result * n) % mod;
         n = (n * n) % mod;
-        mpz_fdiv_q_2exp(power.get_mpz_t(), power.get_mpz_t(), 1); // Equivalent to power >>= 1
+        mpz_fdiv_q_2exp(power.get_mpz_t(), power.get_mpz_t(), 1);
     }
 }
 void quick_pow2()
