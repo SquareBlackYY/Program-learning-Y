@@ -134,6 +134,26 @@ bool Miller_Rabin(const mpz_class &n)
         s++;
         d /= 2;
     }
+
+    // 5轮测试
+    for (int i = 0; i < 5; i++)
+    {
+        mpz_class a = rand() % (n - 1) + 1, x;
+        quick_pow1(a, d, n, x);
+        if (x == 1 || x == n - 1)
+            continue;
+        for (int j = 1; j < s; j++)
+        {
+            x = x * x % n;
+            if (x == 1)
+                return false;
+            if (x == n - 1)
+                break;
+        }
+        if (x != n - 1)
+            return false;
+    }
+
     return true;
 }
 
