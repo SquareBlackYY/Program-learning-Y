@@ -198,12 +198,12 @@ void RSA_OAEP_Decode()
     
 }
 // 加密
-void RSA_OAEP_Encrypt(const mpz_class &m, mpz_class &c, const mpz_class &e, const mpz_class &n)
+void RSA_OAEP_Encrypt()
 {
 
 }
 // 解密
-void RSA_OAEP_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &n)
+void RSA_OAEP_Decrypt()
 {
 
 }
