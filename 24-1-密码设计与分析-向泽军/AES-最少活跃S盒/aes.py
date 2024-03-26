@@ -1,6 +1,6 @@
 from gurobipy import *
 
-ROUND = 40
+ROUND = 4
 
 def get_state_vars(r):
     return [["_".join(["a", str(r), str(i), str(j)]) for j in range(4)] for i in range(4)]
