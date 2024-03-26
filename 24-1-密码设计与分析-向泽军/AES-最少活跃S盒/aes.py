@@ -27,7 +27,7 @@ with open("aes.lp", "w") as f:
     f.write("Minimize\n")
     f.write(get_obj() + "\n")
     f.write("Subject To\n")
-    f.write(" + ".join((["_".join(["a_0", str(i), str(j)]) for i in range(4) for j in range(4)])) + " >= 1\n")
+    f.write(" + ".join(["_".join(["a_0", str(i), str(j)]) for i in range(4) for j in range(4)]) + " >= 1\n")
     state_in = get_state_vars(0)
     for i in range(ROUND):
         state_in = shift_row(state_in)
