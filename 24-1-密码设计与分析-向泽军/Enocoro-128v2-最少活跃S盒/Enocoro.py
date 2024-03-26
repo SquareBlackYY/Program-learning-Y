@@ -1,5 +1,3 @@
-# L函数还没写
-
 from gurobipy import *
 
 ROUND = 1
@@ -114,3 +112,4 @@ with open("enocoro.lp", "w") as f:
 
     f.write("END")
     
+read("enocoro.lp").optimize()
