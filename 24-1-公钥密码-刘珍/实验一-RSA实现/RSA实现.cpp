@@ -65,9 +65,8 @@ int main()
 void RSA_key_gen(mpz_class &p, mpz_class &q, mpz_class &n, mpz_class &e, mpz_class &d)
 {
     srand(time(0));
-    //p = 137, q = 131;
     // 生成p, q
-    int bit_length = 1024;
+    int bit_length = 512;
     int bit_length_diff = 16;
 
     do
@@ -88,7 +87,7 @@ void RSA_key_gen(mpz_class &p, mpz_class &q, mpz_class &n, mpz_class &e, mpz_cla
     mpz_class fn = (p - 1) * (q - 1);
 
     // 生成公钥
-    e = 3;
+    e = 65537;
 
     // 计算私钥
     ExEculid(d, e, fn);
@@ -160,8 +159,6 @@ void quick_pow_mod(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class
 // （5）实现Miller-Rabin算法
 bool Miller_Rabin(const mpz_class &n)
 {
-    srand(time(0));
-
     if (n < 2)
         return false;
     if (n == 2)
