@@ -4,20 +4,20 @@
 const int MaxSize = 100;
 
 typedef char ElemType;
-typedef struct
+typedef struct LNode
 {
-    ElemType data[MaxSize];
-    int length;
-} LinkList;
+    ElemType data;
+    struct LNode *next;
+} LinkNode;
 
-void InitList(LinkList *&L);
-void DestroyList(LinkList *&L);
-bool ListEmpty(LinkList *L);
-int ListLength(LinkList *L);
-void DispList(LinkList *L);
-bool GetElem(LinkList *L, int i, ElemType &e);
-int LocateElem(LinkList *L, ElemType e);
-bool ListInsert(LinkList *&L, int i, ElemType e);
-bool ListDelete(LinkList *&L, int i, ElemType &e);
+void InitList(LinkNode *&L);
+void DestroyList(LinkNode *&L);
+bool ListEmpty(LinkNode *L);
+int ListLength(LinkNode *L);
+void DispList(LinkNode *L);
+bool GetElem(LinkNode *L, int i, ElemType &e);
+int LocateElem(LinkNode *L, ElemType e);
+bool ListInsert(LinkNode *&L, int i, ElemType e);
+bool ListDelete(LinkNode *&L, int i, ElemType &e);
 
 #endif

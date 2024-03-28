@@ -12,7 +12,7 @@ void InitList(SqList *&L)
 // 销毁线性表，释放为线性表L分配的内存空间。
 void DestroyList(SqList *&L)
 {
-    delete L;
+    free(L);
 }
 
 // 判断线性表是否为空表，若L为空表，则返回真，否则返回假。
@@ -24,7 +24,7 @@ bool ListEmpty(SqList *L)
 // 求线性表的长度，返回L中元素的个数。
 int ListLength(SqList *L)
 {
-    return (L->length);
+    return L->length;
 }
 
 // 输出线性表，当线性表L不为空时顺序输出L中各元素值。
