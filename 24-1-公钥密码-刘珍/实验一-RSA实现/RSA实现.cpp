@@ -10,11 +10,11 @@ void RSA_Decrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_cl
 // （2）实现扩展的欧几里得算法
 void ExEculid(mpz_class &, const mpz_class &, const mpz_class &);
 
-// （3）实现中国剩余定理（实现在（6）RSA快速实现中）
+// （3）实现中国剩余定理
+void CRT(const mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &, mpz_class &);
 
 // （4）实现快速指数幂模运算
-void quick_pow_mod_1(mpz_class, mpz_class, const mpz_class &, mpz_class &);
-void quick_pow_mod_2();
+void quick_pow_mod(mpz_class, mpz_class, const mpz_class &, mpz_class &);
 
 // （5）实现Miller-Rabin算法
 bool Miller_Rabin(const mpz_class &);
@@ -78,9 +78,7 @@ void RSA_Decrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz
 // （2）扩展欧里几得算法求模逆 result = a^-1 mod b
 void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 {
-    mpz_class a_copy = a;
-    mpz_class b_copy = b;
-    
+    mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
     mpz_class q, r, x, y;
 
@@ -105,8 +103,19 @@ void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
         result += b;
 }
 
-// 快速幂取模
-void quick_pow_mod_1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &result)
+// （3）实现中国剩余定理 x = r_1 mod p, x = r_2 mod q, x = result mod p * q
+void CRT(const mpz_class &p, const mpz_class &q, const mpz_class &r_1, const mpz_class &r_2, mpz_class &result)
+{
+    mpz_class p_inv, q_inv;
+
+    ExEculid(p_inv, p, q);
+    ExEculid(q_inv, q, p);
+
+    result = (q_inv * q * r_1 + p_inv * p * r_2) % (p * q);
+}
+
+// （4）实现快速指数幂模运算
+void quick_pow_mod(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class &result)
 {
     result = 1;
     n %= mod;
@@ -118,12 +127,8 @@ void quick_pow_mod_1(mpz_class n, mpz_class power, const mpz_class &mod, mpz_cla
         mpz_fdiv_q_2exp(power.get_mpz_t(), power.get_mpz_t(), 1);
     }
 }
-void quick_pow_mod_2()
-{
-    
-}
 
-// Miller-Rabin素性检测
+// （5）实现Miller-Rabin算法
 bool Miller_Rabin(const mpz_class &n)
 {
     if (n < 2)
@@ -144,7 +149,7 @@ bool Miller_Rabin(const mpz_class &n)
     for (int i = 0; i < 5; i++)
     {
         mpz_class a = rand() % (n - 1) + 1, x;
-        quick_pow_mod_1(a, d, n, x);
+        quick_pow_mod(a, d, n, x);
         if (x == 1 || x == n - 1)
             continue;
         for (int j = 1; j < s; j++)
@@ -162,23 +167,13 @@ bool Miller_Rabin(const mpz_class &n)
     return true;
 }
 
-// （6）RSA解密快速实现 使用扩展欧里几德算法及（3）中国剩余定理
+// （6）RSA解密快速实现
 void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
 {
-    mpz_class q_inv, dp, dq, m1, m2, h;
-    ExEculid(q_inv, q, p);
-
-    ExEculid(dp, e, p - 1);
-    ExEculid(dq, e, q - 1);
-
-    mpz_powm(m1.get_mpz_t(), c.get_mpz_t(), dp.get_mpz_t(), p.get_mpz_t());
-    mpz_powm(m2.get_mpz_t(), c.get_mpz_t(), dq.get_mpz_t(), q.get_mpz_t());
-
-    h = q_inv * (m1 - m2) % p;
-    if (h < 0)
-        h += p;
-
-    m = m2 + h * q;
+    mpz_class v_p, v_q;
+    mpz_powm(v_p.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), p.get_mpz_t());
+    mpz_powm(v_q.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), q.get_mpz_t());
+    CRT(m, p, q, v_p, v_q);
 }
 
 //（7）RSA-OAEP

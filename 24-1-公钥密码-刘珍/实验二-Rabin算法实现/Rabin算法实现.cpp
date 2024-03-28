@@ -94,7 +94,7 @@ void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
 // x = r_1 mod p, x = r_2 mod q, x = result mod p * q
 void CRT(const mpz_class &p, const mpz_class &q, const mpz_class &r_1, const mpz_class &r_2, mpz_class &result)
 {
-    mpz_class p_inv, q_inv, m;
+    mpz_class p_inv, q_inv;
 
     ExEculid(p_inv, p, q);
     ExEculid(q_inv, q, p);
