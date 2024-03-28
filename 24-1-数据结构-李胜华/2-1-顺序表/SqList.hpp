@@ -1,9 +1,9 @@
 #ifndef SQLIST_H
 #define SQLIST_H
 
-typedef char ElemType;
-
 const int MaxSize = 100;
+
+typedef char ElemType;
 typedef struct
 {
     ElemType data[MaxSize];
