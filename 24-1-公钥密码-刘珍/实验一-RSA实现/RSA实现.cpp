@@ -1,5 +1,7 @@
 #include <iostream>
 #include <gmpxx.h>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 // （1）RSA基本实现
@@ -20,7 +22,7 @@ void quick_pow_mod(mpz_class, mpz_class, const mpz_class &, mpz_class &);
 bool Miller_Rabin(const mpz_class &);
 
 // （6）RSA快速实现
-void RSA_FastDecrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &);
+void RSA_FastDecrypt(const mpz_class &, mpz_class &, const mpz_class &, const mpz_class &, const mpz_class &);
 
 // （7）RSA-OAEP
 void MGF();
@@ -34,21 +36,26 @@ int main()
     // 密钥生成
     mpz_class p, q, n, e, d;
     RSA_key_gen(p, q, n, e, d);
+    cout << "p = " << p << endl;
+    cout << "q = " << q << endl;
+    cout << "e = " << e << endl;
+    cout << "d = " << d << endl;
 
     mpz_class m, c, m_decrypt;
     m = 513;
+    cout << "明文:" << m << endl;
 
     // 加密
     RSA_Encrypt(m, c, e, n);
-    cout << c << endl;
+    cout << "密文:" << c << endl;
 
     // 解密
     RSA_Decrypt(c, m_decrypt, d, n);
-    cout << m_decrypt << endl;
+    cout << "解密结果:" << m_decrypt << endl;
 
     // 快速解密
-    RSA_FastDecrypt(c, m_decrypt, d, e, p, q);
-    cout << m_decrypt << endl;
+    RSA_FastDecrypt(c, m_decrypt, d, p, q);
+    cout << "快速解密结果:" << m_decrypt << endl;
 
     return 0;
 }
@@ -57,10 +64,32 @@ int main()
 // 密钥生成
 void RSA_key_gen(mpz_class &p, mpz_class &q, mpz_class &n, mpz_class &e, mpz_class &d)
 {
-    p = 137, q = 131;
+    srand(time(0));
+    //p = 137, q = 131;
+    // 生成p, q
+    int bit_length = 1024;
+    int bit_length_diff = 16;
+
+    do
+    {
+        p = 1;
+        for (int i = 1; i < bit_length; i++)
+            p = (p << 1) + (rand() % 2);
+    } while (!Miller_Rabin(p));
+
+    do
+    {
+        q = 0;
+        for (int i = 1; i < bit_length; i++)
+            q = (q << 1) + (rand() % 2);
+    } while (!Miller_Rabin(q) || abs((int)(bit_length - mpz_sizeinbase(q.get_mpz_t(), 2))) > bit_length_diff || p == q);
+
     n = p * q;
     mpz_class fn = (p - 1) * (q - 1);
+
+    // 生成公钥
     e = 3;
+
     // 计算私钥
     ExEculid(d, e, fn);
 }
@@ -131,6 +160,8 @@ void quick_pow_mod(mpz_class n, mpz_class power, const mpz_class &mod, mpz_class
 // （5）实现Miller-Rabin算法
 bool Miller_Rabin(const mpz_class &n)
 {
+    srand(time(0));
+
     if (n < 2)
         return false;
     if (n == 2)
@@ -138,18 +169,18 @@ bool Miller_Rabin(const mpz_class &n)
     if (n % 2 == 0)
         return false;
 
-    mpz_class s = 0, d = n - 1;
-    while (d % 2 == 0)
+    mpz_class s = 0, k = n - 1;
+    while (k % 2 == 0)
     {
         s++;
-        d /= 2;
+        k /= 2;
     }
 
-    // 5轮测试
-    for (int i = 0; i < 5; i++)
+    int round = 5;
+    for (int i = 0; i < round; i++)
     {
         mpz_class a = rand() % (n - 1) + 1, x;
-        quick_pow_mod(a, d, n, x);
+        quick_pow_mod(a, k, n, x);
         if (x == 1 || x == n - 1)
             continue;
         for (int j = 1; j < s; j++)
@@ -168,37 +199,34 @@ bool Miller_Rabin(const mpz_class &n)
 }
 
 // （6）RSA解密快速实现
-void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
+void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &p, const mpz_class &q)
 {
     mpz_class v_p, v_q;
+
     mpz_powm(v_p.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), p.get_mpz_t());
     mpz_powm(v_q.get_mpz_t(), c.get_mpz_t(), d.get_mpz_t(), q.get_mpz_t());
+
     CRT(m, p, q, v_p, v_q);
 }
 
-//（7）RSA-OAEP
-// 掩码生成
+// （7）RSA-OAEP
+//  掩码生成
 void MGF()
 {
-    
 }
 // 编码
 void RSA_OAEP_Encode()
 {
-    
 }
 // 解码
 void RSA_OAEP_Decode()
 {
-    
 }
 // 加密
 void RSA_OAEP_Encrypt()
 {
-
 }
 // 解密
 void RSA_OAEP_Decrypt()
 {
-
 }
