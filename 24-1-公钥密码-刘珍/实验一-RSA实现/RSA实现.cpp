@@ -165,7 +165,7 @@ bool Miller_Rabin(const mpz_class &n)
 // （6）RSA解密快速实现 使用扩展欧里几德算法及（3）中国剩余定理
 void RSA_FastDecrypt(const mpz_class &c, mpz_class &m, const mpz_class &d, const mpz_class &e, const mpz_class &p, const mpz_class &q)
 {
-    mpz_class q_inv, dp, dq, m1, m2, h, m_abs;
+    mpz_class q_inv, dp, dq, m1, m2, h;
     ExEculid(q_inv, q, p);
 
     ExEculid(dp, e, p - 1);
