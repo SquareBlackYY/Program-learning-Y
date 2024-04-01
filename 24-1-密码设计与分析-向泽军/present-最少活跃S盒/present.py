@@ -1,5 +1,4 @@
-from gurobipy import *
-
+import gurobipy as gp
 
 class PRESENT:
     def __init__(self, round):
@@ -67,7 +66,7 @@ class PRESENT:
             f.write("END")
 
     def solve_model(self):
-        m = read(self.model_name, env=Env(params={"OutputFlag": 0}))
+        m = gp.read(self.model_name, env=gp.Env(params={"OutputFlag": 0}))
         m.optimize()
         if m.Status == 2:
             return int(m.ObjVal)
