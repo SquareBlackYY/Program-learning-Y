@@ -16,9 +16,12 @@ int main()
 
     mpz_class m, c, m_decrypt;
     m = 20;
+    cout << "明文:" << endl;
+    cout << m << endl;
 
     // 加密
     Rabin_Encrypt(n, e, m, c);
+    cout << "加密结果：" << endl;
     cout << c << endl;
 
     // 解密
@@ -53,8 +56,9 @@ void Rabin_Decrypt(const mpz_class &p, const mpz_class &q, const mpz_class &n, c
     CRT(p, q, a_1, b_1, m_1);
     CRT(p, q, a_1, b_2, m_2);
     CRT(p, q, a_2, b_1, m_3);
-    CRT(p, q, b_2, b_2, m_4);
+    CRT(p, q, a_2, b_2, m_4);
 
+    cout << "解密结果:" << endl;
     cout << m_1 << endl;
     cout << m_2 << endl;
     cout << m_3 << endl;
