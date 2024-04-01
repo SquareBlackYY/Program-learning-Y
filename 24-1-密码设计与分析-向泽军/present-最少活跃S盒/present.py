@@ -4,7 +4,7 @@ class PRESENT:
 	def __init__(self, round):
 		self.r = round
 		self.var_container = set()
-		self.model_name = ".\present\present_" + str(self.r) + ".lp" 
+		self.model_name = ".\\present\\present_" + str(self.r) + ".lp" 
 		self.var_obj = []
 
 	def get_vars(self, var, r, num):
