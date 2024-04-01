@@ -16,7 +16,7 @@ class PRESENT:
 
 	def get_sbox_constrains(self, var_in, var_out, var_a, var_d):
 		s = ""
-		coef = ["4"] *4
+		coef = ["4"] * 4
 		tmp = " + ".join([" ".join(item) for item in zip(coef, var_in)])
 		s += " - ".join([tmp] + var_out) + " >= 0\n"
 		tmp = " + ".join([" ".join(item) for item in zip(coef, var_out)])
