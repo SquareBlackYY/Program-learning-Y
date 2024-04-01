@@ -44,14 +44,20 @@ void Rabin_Encrypt(const mpz_class &n, const mpz_class &e, const mpz_class &m, m
 
 void Rabin_Decrypt(const mpz_class &p, const mpz_class &q, const mpz_class &n, const mpz_class &e, const mpz_class &c)
 {
-    mpz_class p_pow, q_pow, a_1, a_2, b_1, b_2, m_1, m_2, m_3, m_4;
+    mpz_class p_inv_2, q_inv_2, pow_base, p_pow, q_pow, a_1, a_2, b_1, b_2, m_1, m_2, m_3, m_4;
+    
+    ExEculid(p_inv_2, 2, p);
+    ExEculid(q_inv_2, 2, q);
+    pow_base = e * e + 4 * c;
     p_pow = (p + 1) / 4;
     q_pow = (q + 1) / 4;
 
-    mpz_powm(a_1.get_mpz_t(), c.get_mpz_t(), p_pow.get_mpz_t(), p.get_mpz_t());
-    a_2 = p - a_1;
-    mpz_powm(b_1.get_mpz_t(), c.get_mpz_t(), q_pow.get_mpz_t(), q.get_mpz_t());
-    b_2 = q - b_1;
+    mpz_powm(a_1.get_mpz_t(), pow_base.get_mpz_t(), p_pow.get_mpz_t(), p.get_mpz_t());
+    a_2 = (((p - a_1 - e) * p_inv_2) % p + p) % p;
+    a_1 = (((a_1 - e) * p_inv_2) % p + p) % p;
+    mpz_powm(b_1.get_mpz_t(), pow_base.get_mpz_t(), q_pow.get_mpz_t(), q.get_mpz_t());
+    b_2 = (((q - b_1 - e) * q_inv_2) % q + q) % q;
+    b_1 = (((b_1 - e) * q_inv_2) % q + q) % q;
 
     CRT(p, q, a_1, b_1, m_1);
     CRT(p, q, a_1, b_2, m_2);
