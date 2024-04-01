@@ -1,5 +1,4 @@
 from gurobipy import *
-#import gurobipy as gp
 
 class PRESENT:
 	def __init__(self, round):
@@ -69,7 +68,7 @@ class PRESENT:
 
 if __name__ == "__main__":
 	R = 20
-for i in range(1, R):
-    present = PRESENT(i)
+for i in range(R):
+    present = PRESENT(i + 1)
     present.get_model()
-    print(f"{i}\t{present.solve_model()}")
+    print(f"{i + 1}\t{present.solve_model()}")
