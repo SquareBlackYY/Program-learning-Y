@@ -62,7 +62,7 @@ class PRESENT:
 			f.write("END")
 
 	def solve_model(self):
-		m = read(self.model_name)
+		m = read(self.model_name, env = Env(params={"OutputFlag":0}))
 		m.optimize()
 		if m.Status == 2:
 			return m.ObjVal
