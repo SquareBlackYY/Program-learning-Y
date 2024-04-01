@@ -65,12 +65,11 @@ class PRESENT:
 		m = read(self.model_name, env = Env(params={"OutputFlag":0}))
 		m.optimize()
 		if m.Status == 2:
-			return m.ObjVal
+			return int(m.ObjVal)
 
 if __name__ == "__main__":
 	R = 20
-	with open("present_result.txt", "w") as f:
-		for i in range(1, 20):
-			present = PRESENT(i)
-			present.get_model()
-			f.write("number of active Sboxes for the" + str(i) + "-th roud = " + str(present.solve_model()) + "\n")
+for i in range(1, R):
+    present = PRESENT(i)
+    present.get_model()
+    print(f"{i}\t{present.solve_model()}")
