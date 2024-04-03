@@ -105,9 +105,10 @@ int main()
     MH_Knapsack_Public_Key pk1 = key1.get_public_key();
     MH_Knapsack_Private_Key sk1 = key1.get_private_key();
     
-    mpz_class m = 0b011011, c;
+    mpz_class m = 0b011011;
     std::cout << "明文:\t\t" << m << std::endl;
     
+    mpz_class c;
     MH_Knapsack_Encrypt(c, m, pk1);
     std::cout << "加密结果:\t" << c << std::endl;
 
