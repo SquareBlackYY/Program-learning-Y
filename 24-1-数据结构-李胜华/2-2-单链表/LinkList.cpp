@@ -40,7 +40,7 @@ int ListLength(LinkNode *L)
 void DispList(LinkNode *L)
 {
     LinkNode *p = L->next;
-    while (p->next != NULL)
+    while (p != NULL)
     {
         cout << p->data << " ";
         p = p->next;
@@ -104,14 +104,15 @@ bool ListInsert(LinkNode *&L, int i, ElemType e)
         p->next = s;
         return true;
     }
-    return false;
 }
 
 bool ListDelete(LinkNode *&L, int i, ElemType &e)
 {
     int j = 0;
     LinkNode *p = L, *q;
-    if (j < i - 1 && p != NULL)
+    if (i <= 0)
+        return false;
+    while (j < i - 1 && p != NULL)
     {
         j++;
         p = p->next;

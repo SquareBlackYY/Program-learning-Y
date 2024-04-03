@@ -11,7 +11,7 @@ int main()
     InitList(L);
 
     // (2) 依次插入a、b、c、d、e元素
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 5; i++)
         ListInsert(L, i + 1, a[i]);
 
     // (3) 输出顺序表L
