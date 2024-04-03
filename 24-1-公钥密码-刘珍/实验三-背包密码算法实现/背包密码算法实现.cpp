@@ -3,24 +3,23 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-using namespace std;
 
-void MH_Knapsack_key_gen(int &, vector<mpz_class> &, vector<mpz_class> &, mpz_class &, mpz_class &, mpz_class &);
-mpz_class MH_Knapsack_Encrypt(const int, const mpz_class &, const vector<mpz_class> &);
-mpz_class MH_Knapsack_Decrypt(const int, const mpz_class &, const mpz_class &, const mpz_class &, const vector<mpz_class> &);
-mpz_class MH_Knapsack_Decrypt_ES(const int, const mpz_class &, const vector<mpz_class> &);
+void MH_Knapsack_key_gen(int &, std::vector<mpz_class> &, std::vector<mpz_class> &, mpz_class &, mpz_class &, mpz_class &);
+mpz_class MH_Knapsack_Encrypt(const int, const mpz_class &, const std::vector<mpz_class> &);
+mpz_class MH_Knapsack_Decrypt(const int, const mpz_class &, const mpz_class &, const mpz_class &, const std::vector<mpz_class> &);
+mpz_class MH_Knapsack_Decrypt_ES(const int, const mpz_class &, const std::vector<mpz_class> &);
 mpz_class Eculid(const mpz_class &, const mpz_class &);
-void ExEculid(mpz_class &, const mpz_class &, const mpz_class &);
+mpz_class ExEculid(const mpz_class &, const mpz_class &);
 
 int main()
 {
-    vector<mpz_class> A, B;
+    std::vector<mpz_class> A, B;
     mpz_class k, t, v;
     int Knapsack_length;
 
     // 单一明文
     mpz_class m = 0b011011;
-    cout << "明文:" << m << endl;
+    std::cout << "明文:" << m << std::endl;
 
     // 密钥生成
     A.insert(A.end(), {2, 3, 6, 13, 27, 52});
@@ -30,20 +29,20 @@ int main()
     // 加密
     mpz_class c;
     c = MH_Knapsack_Encrypt(Knapsack_length, m, B);
-    cout << "加密结果:" << c << endl;
+    std::cout << "加密结果:" << c << std::endl;
 
     // 解密
     mpz_class m_decrypt;
     m_decrypt = MH_Knapsack_Decrypt(Knapsack_length, k, v, c, A);
-    cout << "解密结果:" << m_decrypt << endl;
+    std::cout << "解密结果:" << m_decrypt << std::endl;
 
     // 穷搜法
     m_decrypt = MH_Knapsack_Decrypt_ES(Knapsack_length, c, B);
-    cout << "穷搜法解密结果:" << m_decrypt << endl;
+    std::cout << "穷搜法解密结果:" << m_decrypt << std::endl;
 
     // 字符串明文
-    string m_str = "KNAPSACK PROBLEM";
-    cout << "字符串明文:\t" << m_str << endl;
+    std::string m_str = "KNAPSACK PROBLEM";
+    std::cout << "字符串明文:\t" << m_str << std::endl;
     int str_length = m_str.size();
 
     // 密钥生成
@@ -55,7 +54,7 @@ int main()
     int block_size = Knapsack_length / 5;
 
     // 字符串加密
-    vector<mpz_class> c_str;
+    std::vector<mpz_class> c_str;
     int c_length = (str_length + block_size - 1) / block_size;
     c_str.resize(c_length);
 
@@ -68,13 +67,13 @@ int main()
         c_str[i] = MH_Knapsack_Encrypt(Knapsack_length, ch, B);
     }
 
-    cout << "加密结果:";
+    std::cout << "加密结果:";
     for (mpz_class ch : c_str)
-        cout << ch << " ";
-    cout << endl;
+        std::cout << ch << " ";
+    std::cout << std::endl;
 
     // 字符串解密
-    string m_decrypt_str;
+    std::string m_decrypt_str;
     mpz_class m_decrypt_block;
     int m_decrypt_length = c_length * block_size;
     m_decrypt_str.resize(m_decrypt_length);
@@ -89,12 +88,12 @@ int main()
         }
     }
 
-    cout << "解密结果:\t" << m_decrypt_str << endl;
+    std::cout << "解密结果:\t" << m_decrypt_str << std::endl;
 
     return 0;
 }
 
-void MH_Knapsack_key_gen(int &Knapsack_length, vector<mpz_class> &A, vector<mpz_class> &B, mpz_class &k, mpz_class &t, mpz_class &v)
+void MH_Knapsack_key_gen(int &Knapsack_length, std::vector<mpz_class> &A, std::vector<mpz_class> &B, mpz_class &k, mpz_class &t, mpz_class &v)
 {
     srand(time(0));
     mpz_class s = 0;
@@ -124,7 +123,7 @@ void MH_Knapsack_key_gen(int &Knapsack_length, vector<mpz_class> &A, vector<mpz_
         } while (Eculid(t, k) != 1);
     }
 
-    ExEculid(v, t, k);
+    v = ExEculid(t, k);
 
     B.clear();
     B.resize(Knapsack_length);
@@ -132,7 +131,7 @@ void MH_Knapsack_key_gen(int &Knapsack_length, vector<mpz_class> &A, vector<mpz_
         B[i] = (t * A[i]) % k;
 }
 
-mpz_class MH_Knapsack_Encrypt(const int Knapsack_length, const mpz_class &m, const vector<mpz_class> &B)
+mpz_class MH_Knapsack_Encrypt(const int Knapsack_length, const mpz_class &m, const std::vector<mpz_class> &B)
 {
     mpz_class c = 0;
     for (int i = 0; i < Knapsack_length; i++)
@@ -140,11 +139,9 @@ mpz_class MH_Knapsack_Encrypt(const int Knapsack_length, const mpz_class &m, con
     return c;
 }
 
-mpz_class MH_Knapsack_Decrypt(const int Knapsack_length, const mpz_class &k, const mpz_class &v, const mpz_class &c, const vector<mpz_class> &A)
+mpz_class MH_Knapsack_Decrypt(const int Knapsack_length, const mpz_class &k, const mpz_class &v, const mpz_class &c, const std::vector<mpz_class> &A)
 {
-    mpz_class m = 0;
-    int bit;
-    mpz_class s = (v * c) % k;
+    mpz_class m = 0, s = (v * c) % k;
     for (int i = Knapsack_length - 1; s != 0; i--)
         if (s - A[i] >= 0)
         {
@@ -154,7 +151,7 @@ mpz_class MH_Knapsack_Decrypt(const int Knapsack_length, const mpz_class &k, con
     return m;
 }
 
-mpz_class MH_Knapsack_Decrypt_ES(const int Knapsack_length, const mpz_class &c, const vector<mpz_class> &B)
+mpz_class MH_Knapsack_Decrypt_ES(const int Knapsack_length, const mpz_class &c, const std::vector<mpz_class> &B)
 {
     int Max = 1 << Knapsack_length;
     mpz_class m, result = 0;
@@ -174,13 +171,9 @@ mpz_class Eculid(const mpz_class &a, const mpz_class &b)
     return result;
 }
 
-void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
+mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
 {
-    mpz_class a_copy = a;
-    mpz_class b_copy = b;
-    
-    mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
-    mpz_class q, r, x, y;
+    mpz_class a_copy = a, b_copy = b, x0 = 1, y0 = 0, x1 = 0, y1 = 1, q, r, x, y;
 
     while (b_copy != 0)
     {
@@ -198,7 +191,5 @@ void ExEculid(mpz_class &result, const mpz_class &a, const mpz_class &b)
         y1 = y;
     }
 
-    result = x0;
-    if (result < 0)
-        result += b;
+    return (x0 + b) % b;
 }
