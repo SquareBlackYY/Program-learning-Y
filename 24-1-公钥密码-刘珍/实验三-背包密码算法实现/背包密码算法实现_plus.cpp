@@ -120,7 +120,7 @@ int main()
     std::cout << "穷搜法解密结果:\t" << m_decrypt << std::endl;
 
     // 2.利用ppt中的英文字母，空格与数字之间的关系，生成一个长为20的超递增背包，加密消息KNAPSACK PROBLEM后，再解密。
-    MH_Knapsack_Key key2(20);
+    MH_Knapsack_Key key2(35);
     MH_Knapsack_Public_Key pk2 = key2.get_public_key();
     MH_Knapsack_Private_Key sk2 = key2.get_private_key();
 
@@ -149,10 +149,8 @@ void MH_Knapsack_Encrypt(mpz_class &c, const mpz_class &m, const MH_Knapsack_Pub
 
 void MH_Knapsack_Encrypt(std::vector<mpz_class> &c, const std::string &m, const MH_Knapsack_Public_Key &pk)
 {
-    int m_str_length = m.size();
     int block_size = pk.size / 5;
-
-    int c_str_length = (m_str_length + block_size - 1) / block_size;
+    int c_str_length = (m.size() + block_size - 1) / block_size;
     c.resize(c_str_length);
 
     mpz_class ch;
@@ -160,7 +158,8 @@ void MH_Knapsack_Encrypt(std::vector<mpz_class> &c, const std::string &m, const 
     {
         ch = 0;
         for (int j = 0; j < block_size; j++)
-            ch += (((i * block_size + j > m_str_length - 1) || m[i * block_size + j] == ' ') ? 0 : (m[i * block_size + j] - 'A' + 1)) << ((3 - j) * 5);
+            if (i * block_size + j < m.size() && m[i * block_size + j] != ' ')
+                ch += ((m[i * block_size + j] - 'A' + 1) << ((block_size - 1 - j) * 5));
         MH_Knapsack_Encrypt(c[i], ch, pk);
     }
 }
@@ -169,7 +168,7 @@ void MH_Knapsack_Decrypt(mpz_class &m, const mpz_class &c, const MH_Knapsack_Pri
 {
     m = 0;
     mpz_class s = (sk.v * c) % sk.k;
-    for (int i = sk.size - 1; s != 0; i--)
+    for (int i = sk.size - 1; s != 0; i--) 
         if (s - sk.A[i] >= 0)
         {
             m += 1 << (sk.size - i - 1);
@@ -189,7 +188,7 @@ void MH_Knapsack_Decrypt(std::string &m, const std::vector<mpz_class> &c, const 
         MH_Knapsack_Decrypt(block, c[i], sk);
         for (int j = block_size - 1; j >= 0; j--)
         {
-            ch = (block >> (j * 5)) & ((1 << 5) - 1);
+            ch = ((block >> (j * 5)) & ((1 << 5) - 1));
             m[(i + 1) * block_size - j - 1] = ch.get_ui() == 0 ? ' ' : (char)(ch.get_ui() + 'A' - 1);
         }
     }
