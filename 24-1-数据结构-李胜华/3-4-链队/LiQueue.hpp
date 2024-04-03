@@ -11,8 +11,9 @@ typedef struct
 {
     DataNode *front;
     DataNode *rear;
-} LinkQiNode;
+} LinkQuNode;
 
+void InitQueue(LinkQuNode *&q);
 void EnQueue(LinkQuNode *&q, ElemType e);
 
 #endif
