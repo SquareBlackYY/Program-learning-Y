@@ -1,5 +1,5 @@
-#ifndef SQLIST_H
-#define SQLIST_H
+#ifndef SQLIST_HPP
+#define SQLIST_HPP
 
 const int MaxSize = 100;
 

@@ -1,5 +1,5 @@
-#ifndef LINKLIST_H
-#define LINKLIST_H
+#ifndef LINKLIST_HPP
+#define LINKLIST_HPP
 
 const int MaxSize = 100;
 
