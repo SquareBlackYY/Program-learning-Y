@@ -101,8 +101,7 @@ public:
 int main()
 {
     // 1. 背包密码算法中，超递增序列为(2,3,6,13,27,52)，k=105，t=31，明文数据为011011，实现密文的生成和解密（用穷搜法）。
-    std::vector<mpz_class> A = {2, 3, 6, 13, 27, 52};
-    MH_Knapsack_Key key1(5, A, 105, 31);
+    MH_Knapsack_Key key1(5, {2, 3, 6, 13, 27, 52}, 105, 31);
     MH_Knapsack_Public_Key pk1 = key1.get_public_key();
     MH_Knapsack_Private_Key sk1 = key1.get_private_key();
     
