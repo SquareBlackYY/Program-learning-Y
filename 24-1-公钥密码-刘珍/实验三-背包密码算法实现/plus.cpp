@@ -45,7 +45,7 @@ private:
 
 public:
     // 初始化
-    MH_Knapsack_Key(const std::vector<mpz_class> Sequence_SI = std::vector<mpz_class>(), mpz_class k = 0, mpz_class t = 0)
+    MH_Knapsack_Key(std::vector<mpz_class> Sequence_SI = std::vector<mpz_class>(), mpz_class k = 0, mpz_class t = 0)
     {
         srand(time(0));
 
@@ -58,7 +58,9 @@ public:
         Knapsack_Size = Sequence_SI.size();
         for (int i = 0; i < Knapsack_Size; i++)
             s += Sequence_SI[i];
-        this->Sequence_SI = Sequence_SI;
+        //this->Sequence_SI = Sequence_SI;
+
+        Sequence_SI[0] = 1;
 
         if (k < s)
             k = s + rand();
@@ -121,6 +123,8 @@ int main()
     MH_Knapsack_Key key1({2, 3, 6, 13, 27, 52}, 105, 31);
     MH_Knapsack_Public_Key pk1 = key1.get_public_key();
     MH_Knapsack_Private_Key sk1 = key1.get_private_key();
+
+    std::cout << sk1.A[0] << std::endl;
 
     mpz_class m = 0b011011;
     std::cout << "明文:\t\t" << m << std::endl;
