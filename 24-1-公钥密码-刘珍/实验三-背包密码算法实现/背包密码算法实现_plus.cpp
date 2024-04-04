@@ -75,7 +75,7 @@ public:
         if (k < s)
             k = s + rand();
         this->k = k;
-        
+
         while (!isCoprime(t, k))
             t = rand();
         this->t = t;
@@ -104,10 +104,10 @@ int main()
     MH_Knapsack_Key key1(5, {2, 3, 6, 13, 27, 52}, 105, 31);
     MH_Knapsack_Public_Key pk1 = key1.get_public_key();
     MH_Knapsack_Private_Key sk1 = key1.get_private_key();
-    
+
     mpz_class m = 0b011011;
     std::cout << "明文:\t\t" << m << std::endl;
-    
+
     mpz_class c;
     MH_Knapsack_Encrypt(c, m, pk1);
     std::cout << "加密结果:\t" << c << std::endl;
@@ -168,7 +168,7 @@ void MH_Knapsack_Decrypt(mpz_class &m, const mpz_class &c, const MH_Knapsack_Pri
 {
     m = 0;
     mpz_class s = (sk.v * c) % sk.k;
-    for (int i = sk.size - 1; s != 0; i--) 
+    for (int i = sk.size - 1; s != 0; i--)
         if (s - sk.A[i] >= 0)
         {
             m += (mpz_class)1 << (sk.size - i - 1);
@@ -196,7 +196,7 @@ void MH_Knapsack_Decrypt(std::string &m, const std::vector<mpz_class> &c, const 
 
 void MH_Knapsack_Decrypt_ES(mpz_class &m, const mpz_class &c, const MH_Knapsack_Public_Key &pk)
 {
-    int Max = 1 << pk.size;
+    mpz_class Max = (mpz_class)1 << pk.size;
     mpz_class result = 0;
     for (m = 0; m < Max && result != c; m++)
     {
