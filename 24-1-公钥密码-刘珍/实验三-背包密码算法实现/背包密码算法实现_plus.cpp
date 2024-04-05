@@ -52,7 +52,11 @@ public:
 
         Knapsack_Size = Sequence_SI.size();
         for (int i = 0; i < Knapsack_Size; i++)
+        {
+            if (Sequence_SI[i] < s)
+                exit(1);
             s += Sequence_SI[i];
+        }
 
         if (k < s)
             k = s + rand();
