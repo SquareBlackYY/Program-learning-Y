@@ -45,7 +45,7 @@ private:
 
 public:
     // 初始化
-    MH_Knapsack_Key_gen(std::vector<mpz_class> input_Sequence_SI = std::vector<mpz_class>(), mpz_class input_k = 0, mpz_class input_t = 0)
+    MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI = std::vector<mpz_class>(), const mpz_class input_k = 0, const mpz_class input_t = 0)
         : Sequence_SI(input_Sequence_SI), k(input_k), t(input_t)
     {
         srand(time(0));
