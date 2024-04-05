@@ -43,7 +43,7 @@ private:
     mpz_class v = 0;                                                // 陷门信息的逆 v 要求 v = t ^ -1 mod k
 
 public:
-    MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI = std::vector<mpz_class>(), const mpz_class input_k = 0, const mpz_class input_t = 0)
+    MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI, const mpz_class input_k = 0, const mpz_class input_t = 0)
         : Sequence_SI(input_Sequence_SI), k(input_k), t(input_t)
     {
         srand(time(0));
@@ -70,7 +70,7 @@ public:
         for (int i = 0; i < Knapsack_Size; i++)
             Sequence_nSI[i] = (t * Sequence_SI[i]) % k;
     }
-    MH_Knapsack_Key_gen(const int input_Knapsack_Size = 0)
+    MH_Knapsack_Key_gen(const int input_Knapsack_Size)
         : Knapsack_Size(input_Knapsack_Size)
     {
         srand(time(0));
@@ -208,8 +208,8 @@ std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsa
 mpz_class MH_Knapsack_Decrypt_ES(const mpz_class &c, const MH_Knapsack_Public_Key &pk)
 {
     const mpz_class Max = (mpz_class)1 << pk.size;
-    mpz_class m, result = 0;
-    for (m = 0; result != c && ++m < Max;)
+    mpz_class m = 0, result = 0;
+    while (result != c && ++m < Max)
     {
         result = 0;
         for (int i = 0; i < pk.size; i++)
