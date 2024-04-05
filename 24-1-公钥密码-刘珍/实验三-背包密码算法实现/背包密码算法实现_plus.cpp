@@ -33,13 +33,13 @@ mpz_class ExEculid(const mpz_class &, const mpz_class &);
 class MH_Knapsack_Key_gen
 {
 private:
-    int Knapsack_Size = 0;                                          // 背包容量
-    std::vector<mpz_class> Sequence_SI = std::vector<mpz_class>();  // 超递增背包序列 super-increasing sequence
-    std::vector<mpz_class> Sequence_nSI = std::vector<mpz_class>(); // 非超递增背包序列 non-super-increasing sequence
-    mpz_class s = 0;                                                // 超递增背包中所有元素的和 s
-    mpz_class k = 0;                                                // 模数 k 要求 k > 超递增背包中所有元素的和 s
-    mpz_class t = 0;                                                // 陷门信息 t 要求 gcd(t, k) == 1
-    mpz_class v = 0;                                                // 陷门信息的逆 v 要求 v = t ^ -1 mod k
+    int Knapsack_Size = 0;               // 背包容量
+    std::vector<mpz_class> Sequence_SI;  // 超递增背包序列 super-increasing sequence
+    std::vector<mpz_class> Sequence_nSI; // 非超递增背包序列 non-super-increasing sequence
+    mpz_class s = 0;                     // 超递增背包中所有元素的和 s
+    mpz_class k = 0;                     // 模数 k 要求 k > 超递增背包中所有元素的和 s
+    mpz_class t = 0;                     // 陷门信息 t 要求 gcd(t, k) == 1
+    mpz_class v = 0;                     // 陷门信息的逆 v 要求 v = t ^ -1 mod k
 
 public:
     MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI, const mpz_class input_k = 0, const mpz_class input_t = 0)
