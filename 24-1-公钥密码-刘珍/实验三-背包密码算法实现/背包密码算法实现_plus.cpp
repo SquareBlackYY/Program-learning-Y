@@ -148,8 +148,9 @@ int main()
 mpz_class MH_Knapsack_Encrypt(const mpz_class &m, const MH_Knapsack_Public_Key &pk)
 {
     mpz_class c;
-    for (int i = 0; i < pk.size; i++)
-        c += ((m >> i) & 1) * pk.B[pk.size - i - 1];
+    if (mpz_sizeinbase(m.get_mpz_t(), 2) <= pk.size)
+        for (int i = 0; i < pk.size; i++)
+            c += ((m >> i) & 1) * pk.B[pk.size - i - 1];
     return c;
 }
 
