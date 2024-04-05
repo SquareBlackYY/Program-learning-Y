@@ -31,7 +31,6 @@ mpz_class MH_Knapsack_Decrypt_ES(const mpz_class &, const MH_Knapsack_Public_Key
 bool isCoprime(const mpz_class &, const mpz_class &);
 mpz_class ExEculid(const mpz_class &, const mpz_class &);
 
-// MH背包密钥体系
 class MH_Knapsack_Key_gen
 {
 private:
@@ -44,7 +43,6 @@ private:
     mpz_class v = 0;                                                // 陷门信息的逆 v 要求 v = t ^ -1 mod k
 
 public:
-    // 初始化
     MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI = std::vector<mpz_class>(), const mpz_class input_k = 0, const mpz_class input_t = 0)
         : Sequence_SI(input_Sequence_SI), k(input_k), t(input_t)
     {
@@ -101,12 +99,10 @@ public:
             Sequence_nSI[i] = (t * Sequence_SI[i]) % k;
     }
 
-    // 获取公钥
     MH_Knapsack_Public_Key get_public_key()
     {
         return MH_Knapsack_Public_Key(Knapsack_Size, Sequence_nSI, k);
     }
-    // 获取私钥
     MH_Knapsack_Private_Key get_private_key()
     {
         return MH_Knapsack_Private_Key(Knapsack_Size, Sequence_SI, k, v);
