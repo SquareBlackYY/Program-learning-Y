@@ -49,10 +49,7 @@ public:
         srand(time(0));
 
         if (Sequence_SI.empty())
-        {
-            std::cout << "没有合适的参数用于生成超递增背包序列" << std::endl;
             exit(1);
-        }
 
         Knapsack_Size = Sequence_SI.size();
         for (int i = 0; i < Knapsack_Size; i++)
@@ -76,10 +73,7 @@ public:
         srand(time(0));
 
         if (Knapsack_Size <= 4)
-        {
-            std::cout << "没有合适的参数用于生成超递增背包序列" << std::endl;
             exit(1);
-        }
 
         Sequence_SI.resize(Knapsack_Size);
 
