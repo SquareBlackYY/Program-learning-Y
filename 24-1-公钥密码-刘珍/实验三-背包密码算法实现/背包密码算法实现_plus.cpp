@@ -17,16 +17,15 @@ struct MH_Knapsack_Private_Key
 {
     int size;
     std::vector<mpz_class> A;
-    mpz_class k;
     mpz_class v;
 
-    MH_Knapsack_Private_Key(const int size, const std::vector<mpz_class> &A, const mpz_class &k, const mpz_class &v) : size(size), A(A), k(k), v(v) {}
+    MH_Knapsack_Private_Key(const int size, const std::vector<mpz_class> &A, const mpz_class &v) : size(size), A(A), v(v) {}
 };
 
 mpz_class MH_Knapsack_Encrypt(const mpz_class &, const MH_Knapsack_Public_Key &);
 std::vector<mpz_class> MH_Knapsack_Encrypt(const std::string &, const MH_Knapsack_Public_Key &);
-mpz_class MH_Knapsack_Decrypt(const mpz_class &, const MH_Knapsack_Private_Key &);
-std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &, const MH_Knapsack_Private_Key &);
+mpz_class MH_Knapsack_Decrypt(const mpz_class &, const MH_Knapsack_Public_Key &, const MH_Knapsack_Private_Key &);
+std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &, const MH_Knapsack_Public_Key &, const MH_Knapsack_Private_Key &);
 mpz_class MH_Knapsack_Decrypt_ES(const mpz_class &, const MH_Knapsack_Public_Key &);
 bool isCoprime(const mpz_class &, const mpz_class &);
 mpz_class ExEculid(const mpz_class &, const mpz_class &);
@@ -99,7 +98,7 @@ public:
     }
     MH_Knapsack_Private_Key get_private_key()
     {
-        return MH_Knapsack_Private_Key(Knapsack_Size, Sequence_SI, k, v);
+        return MH_Knapsack_Private_Key(Knapsack_Size, Sequence_SI, v);
     }
 };
 
@@ -116,7 +115,7 @@ int main()
     mpz_class c = MH_Knapsack_Encrypt(m, pk1);
     std::cout << "加密结果:\t" << c << std::endl;
 
-    mpz_class m_decrypt = MH_Knapsack_Decrypt(c, sk1);
+    mpz_class m_decrypt = MH_Knapsack_Decrypt(c, pk1, sk1);
     std::cout << "解密结果:\t" << m_decrypt << std::endl;
 
     m_decrypt = MH_Knapsack_Decrypt_ES(c, pk1);
@@ -136,7 +135,7 @@ int main()
         std::cout << ch << " ";
     std::cout << std::endl;
 
-    std::string m_decrypt_str = MH_Knapsack_Decrypt(c_str, sk2);
+    std::string m_decrypt_str = MH_Knapsack_Decrypt(c_str, pk2, sk2);
     std::cout << "解密结果:\t" << m_decrypt_str << std::endl;
 
     return 0;
@@ -168,9 +167,9 @@ std::vector<mpz_class> MH_Knapsack_Encrypt(const std::string &m, const MH_Knapsa
     return c;
 }
 
-mpz_class MH_Knapsack_Decrypt(const mpz_class &c, const MH_Knapsack_Private_Key &sk)
+mpz_class MH_Knapsack_Decrypt(const mpz_class &c, const MH_Knapsack_Public_Key &pk, const MH_Knapsack_Private_Key &sk)
 {
-    mpz_class m = 0, s = (sk.v * c) % sk.k;
+    mpz_class m = 0, s = (sk.v * c) % pk.k;
     for (int i = sk.size - 1; s != 0; i--)
         if (s - sk.A[i] >= 0)
         {
@@ -180,7 +179,7 @@ mpz_class MH_Knapsack_Decrypt(const mpz_class &c, const MH_Knapsack_Private_Key 
     return m;
 }
 
-std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsack_Private_Key &sk)
+std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsack_Public_Key &pk, const MH_Knapsack_Private_Key &sk)
 {
     const int block_size = sk.size / 5;
     const int m_str_length = c.size() * block_size;
@@ -189,7 +188,7 @@ std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsa
     mpz_class block, ch;
     for (int i = 0; i < c.size(); i++)
     {
-        block = MH_Knapsack_Decrypt(c[i], sk);
+        block = MH_Knapsack_Decrypt(c[i], pk, sk);
         for (int j = block_size - 1; j >= 0; j--)
         {
             ch = ((block >> (j * 5)) & ((1 << 5) - 1));
