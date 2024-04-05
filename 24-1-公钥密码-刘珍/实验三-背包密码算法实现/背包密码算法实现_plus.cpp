@@ -46,10 +46,10 @@ public:
     MH_Knapsack_Key_gen(const std::vector<mpz_class> input_Sequence_SI, const mpz_class input_k = 0, const mpz_class input_t = 0)
         : Sequence_SI(input_Sequence_SI), k(input_k), t(input_t)
     {
-        srand(time(0));
-
         if (Sequence_SI.empty())
             exit(1);
+
+        srand(time(0));
 
         Knapsack_Size = Sequence_SI.size();
         for (int i = 0; i < Knapsack_Size; i++)
@@ -70,10 +70,10 @@ public:
     MH_Knapsack_Key_gen(const int input_Knapsack_Size)
         : Knapsack_Size(input_Knapsack_Size)
     {
-        srand(time(0));
-
         if (Knapsack_Size <= 4)
             exit(1);
+
+        srand(time(0));
 
         Sequence_SI.resize(Knapsack_Size);
 
