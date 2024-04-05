@@ -77,7 +77,7 @@ public:
     {
         srand(time(0));
 
-        if (Knapsack_Size <= 0)
+        if (Knapsack_Size <= 4)
         {
             std::cout << "没有合适的参数用于生成超递增背包序列" << std::endl;
             exit(1);
