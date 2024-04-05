@@ -10,7 +10,7 @@ struct MH_Knapsack_Public_Key
     std::vector<mpz_class> B;
     mpz_class k;
 
-    MH_Knapsack_Public_Key(int size, const std::vector<mpz_class> &B, const mpz_class &k) : size(size), B(B), k(k) {}
+    MH_Knapsack_Public_Key(const int size, const std::vector<mpz_class> &B, const mpz_class &k) : size(size), B(B), k(k) {}
 };
 
 struct MH_Knapsack_Private_Key
@@ -20,7 +20,7 @@ struct MH_Knapsack_Private_Key
     mpz_class k;
     mpz_class v;
 
-    MH_Knapsack_Private_Key(int size, const std::vector<mpz_class> &A, const mpz_class &k, const mpz_class &v) : size(size), A(A), k(k), v(v) {}
+    MH_Knapsack_Private_Key(const int size, const std::vector<mpz_class> &A, const mpz_class &k, const mpz_class &v) : size(size), A(A), k(k), v(v) {}
 };
 
 mpz_class MH_Knapsack_Encrypt(const mpz_class &, const MH_Knapsack_Public_Key &);
