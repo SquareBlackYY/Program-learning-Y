@@ -162,8 +162,8 @@ mpz_class MH_Knapsack_Encrypt(const mpz_class &m, const MH_Knapsack_Public_Key &
 
 std::vector<mpz_class> MH_Knapsack_Encrypt(const std::string &m, const MH_Knapsack_Public_Key &pk)
 {
-    int block_size = pk.size / 5;
-    int c_str_length = (m.size() + block_size - 1) / block_size;
+    const int block_size = pk.size / 5;
+    const int c_str_length = (m.size() + block_size - 1) / block_size;
     std::vector<mpz_class> c(c_str_length);
 
     mpz_class block;
@@ -192,8 +192,8 @@ mpz_class MH_Knapsack_Decrypt(const mpz_class &c, const MH_Knapsack_Private_Key 
 
 std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsack_Private_Key &sk)
 {
-    int block_size = sk.size / 5;
-    int m_str_length = c.size() * block_size;
+    const int block_size = sk.size / 5;
+    const int m_str_length = c.size() * block_size;
     std::string m(m_str_length, ' ');
 
     mpz_class block, ch;
@@ -211,7 +211,8 @@ std::string MH_Knapsack_Decrypt(const std::vector<mpz_class> &c, const MH_Knapsa
 
 mpz_class MH_Knapsack_Decrypt_ES(const mpz_class &c, const MH_Knapsack_Public_Key &pk)
 {
-    mpz_class m, Max = (mpz_class)1 << pk.size, result = 0;
+    const mpz_class Max = (mpz_class)1 << pk.size;
+    mpz_class m, result = 0;
     for (m = 0; m < Max && result != c; m++)
     {
         result = 0;
