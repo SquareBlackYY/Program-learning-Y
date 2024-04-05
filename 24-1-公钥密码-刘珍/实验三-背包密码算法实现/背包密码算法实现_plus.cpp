@@ -175,7 +175,7 @@ std::vector<mpz_class> MH_Knapsack_Encrypt(const std::string &m, const MH_Knapsa
 mpz_class MH_Knapsack_Decrypt(const mpz_class &c, const MH_Knapsack_Public_Key &pk, const MH_Knapsack_Private_Key &sk)
 {
     mpz_class m = 0, s = (sk.v * c) % pk.k;
-    for (int i = sk.size - 1; s > 0; i--)
+    for (int i = sk.size - 1; i >= 0 && s > 0; i--)
         if (s - sk.A[i] >= 0)
         {
             m += (mpz_class)1 << (sk.size - i - 1);
