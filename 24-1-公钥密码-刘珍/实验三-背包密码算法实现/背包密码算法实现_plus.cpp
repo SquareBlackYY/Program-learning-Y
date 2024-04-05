@@ -106,8 +106,8 @@ int main()
 {
     // 1. 背包密码算法中，超递增序列为(2,3,6,13,27,52)，k=105，t=31，明文数据为011011，实现密文的生成和解密（用穷搜法）。
     MH_Knapsack_Key_gen key1({2, 3, 6, 13, 27, 52}, 105, 31);
-    MH_Knapsack_Public_Key pk1 = key1.get_public_key();
-    MH_Knapsack_Private_Key sk1 = key1.get_private_key();
+    const MH_Knapsack_Public_Key pk1 = key1.get_public_key();
+    const MH_Knapsack_Private_Key sk1 = key1.get_private_key();
 
     mpz_class m = 0b011011;
     std::cout << "明文:\t\t" << m << std::endl;
@@ -123,8 +123,8 @@ int main()
 
     // 2.利用ppt中的英文字母，空格与数字之间的关系，生成一个长为20的超递增背包，加密消息KNAPSACK PROBLEM后，再解密。
     MH_Knapsack_Key_gen key2(20);
-    MH_Knapsack_Public_Key pk2 = key2.get_public_key();
-    MH_Knapsack_Private_Key sk2 = key2.get_private_key();
+    const MH_Knapsack_Public_Key pk2 = key2.get_public_key();
+    const MH_Knapsack_Private_Key sk2 = key2.get_private_key();
 
     std::string m_str = "KNAPSACK PROBLEM";
     std::cout << "字符串明文:\t" << m_str << std::endl;
