@@ -209,13 +209,13 @@ mpz_class MH_Knapsack_Decrypt_ES(const mpz_class &c, const MH_Knapsack_Public_Ke
 {
     const mpz_class Max = (mpz_class)1 << pk.size;
     mpz_class m, result = 0;
-    for (m = 0; m < Max && result != c; m++)
+    for (m = 0; result != c && ++m < Max;)
     {
         result = 0;
         for (int i = 0; i < pk.size; i++)
             result += ((m >> i) & 1) * pk.B[pk.size - i - 1];
     }
-    return --m;
+    return m;
 }
 
 bool isCoprime(const mpz_class &a, const mpz_class &b)
