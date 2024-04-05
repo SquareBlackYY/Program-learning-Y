@@ -48,8 +48,6 @@ public:
         if (Sequence_SI.empty())
             exit(1);
 
-        srand(time(0));
-
         Knapsack_Size = Sequence_SI.size();
         for (int i = 0; i < Knapsack_Size; i++)
         {
@@ -57,6 +55,8 @@ public:
                 exit(1);
             s += Sequence_SI[i];
         }
+
+        srand(time(0));
 
         if (k < s)
             k = s + rand();
