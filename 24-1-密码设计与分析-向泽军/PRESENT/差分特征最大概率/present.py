@@ -380,3 +380,36 @@ while len(cpoints) > 0:
             new_cpoints.append(p)
     cpoints = new_cpoints
 print(res)
+
+def get_u():
+    s = ""
+    for i in range(16):
+        s += " + ".join([f"2 u_{i}_1 + u_{i}_0"])
+    return s
+
+def get_ineq(input, output, ineq):
+    x = ["x_0", "x_1", "x_2", "x_3"]
+    y = ["y_0", "y_1", "y_2", "y_3"]
+    tmp = [" ".join(item) for item in list(zip(map(str, ineq[0:-1]), x + y))]
+    tmp = " + ".join(tmp)
+    tmp = tmp.replace("+ -", "- ")
+    tmp += " >= " + str(-ineq[-1])
+    return tmp
+
+def get_var(input):
+    s = []
+    for i in range(16):
+        for j in range(4):
+            s.append(f"{input}_{i}_{j}")
+    return s
+
+with open("present.lp", "w") as f:
+    # 目标函数
+    f.write("Minimize\n")
+    f.write(get_u())
+
+    # 约束条件
+    f.write("Subject To\n")
+
+    # 变量约束
+    f.write("Binary\n")
