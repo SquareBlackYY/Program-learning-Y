@@ -388,28 +388,33 @@ def get_u():
     return s
 
 def get_ineq(input, output, ineq):
-    x = ["x_0", "x_1", "x_2", "x_3"]
-    y = ["y_0", "y_1", "y_2", "y_3"]
-    tmp = [" ".join(item) for item in list(zip(map(str, ineq[0:-1]), x + y))]
+    tmp = [" ".join(item) for item in list(zip(map(str, ineq[0:-1]), input + output))]
     tmp = " + ".join(tmp)
     tmp = tmp.replace("+ -", "- ")
     tmp += " >= " + str(-ineq[-1])
     return tmp
 
-def get_var(input):
+def get_var(input, i):
     s = []
-    for i in range(16):
-        for j in range(4):
-            s.append(f"{input}_{i}_{j}")
+    for j in range(4):
+        s.append(f"{input}_{i}_{j}")
     return s
 
 with open("present.lp", "w") as f:
     # 目标函数
     f.write("Minimize\n")
     f.write(get_u())
-
+    
+    x = [get_var("x", i) for i in range(16)]
+    y = [get_var("y", i) for i in range(16)]
+    print(x)
     # 约束条件
     f.write("Subject To\n")
+    get_ineq(x, y, res)
 
     # 变量约束
     f.write("Binary\n")
+    for item in x:
+        f.write(item + "\n")
+    for item in y:
+        f.write(item + "\n")
