@@ -408,14 +408,23 @@ with open("present.lp", "w") as f:
     
     x = [get_var('x', i) for i in range(16)]
     y = [get_var('y', i) for i in range(16)]
+
     # 约束条件
     f.write("Subject To\n")
     for i in range(16):
-        print(get_ineq(get_var('x', i), get_var('y', i), res[i]))
+        f.write(get_ineq(get_var('x', i), get_var('y', i), res[i]) + "\n")
 
     # 变量约束
     f.write("Binary\n")
-    # for item in x:
-    #     f.write((item + "\n"))
-    # for item in y:
-    #     f.write((item + "\n"))
+    f.write(("".join([(x[i][j] + "\n") for i in range(16) for j in range(4)])))
+    f.write(("".join([(y[i][j] + "\n") for i in range(16) for j in range(4)])))
+    f.write(("".join([f"u_{i}_0\nu_{i}_1\n" for i in range(16)])))
+
+    f.write("END")
+
+model = gp.read("present.lp")
+model.optimize()
+# model = gp.read("present.lp", env = gp.Env(params={"OutputFlag":0}))
+# model.optimize()
+# best_obj = int(model.objVal)
+# print(best_obj)
