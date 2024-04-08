@@ -360,15 +360,21 @@ for i in range(256):
         cpoints.append(tmp)
 
 res = []
-counter = -1
-index = -1
-for i in range(len(ineqs)):
-    t = 0
+while len(cpoints) > 0:
+    counter = -1
+    index = -1
+    for i in range(len(ineqs)):
+        t = 0
+        for p in cpoints:
+            if not evaluate(p, ineqs[i]):
+                t += 1
+        if t > counter:
+            index = i
+            counter = t
+    res.append([ineqs[index]])
+    ineqs.pop(index)
+    new_cpoints = []
     for p in cpoints:
-        if not evaluate(p, ineqs[i]):
-            t += 1
-    if t > counter:
-        index = i
-        counter = t
-res.append([ineqs[index]])
-ineqs.pop(index)
+        if evaluate(p, res[-1]):
+            new_cpoints.append(p)
+    cpoints = new_cpoints
