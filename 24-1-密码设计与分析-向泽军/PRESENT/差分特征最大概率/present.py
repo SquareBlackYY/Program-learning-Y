@@ -1,3 +1,5 @@
+import gurobipy as gp
+
 sbox = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2]
 
 ineqs = [
@@ -379,12 +381,11 @@ while len(cpoints) > 0:
         if evaluate(p, res[-1]):
             new_cpoints.append(p)
     cpoints = new_cpoints
-print(res)
+# print(res)
 
 def get_u():
     s = ""
-    for i in range(16):
-        s += " + ".join([f"2 u_{i}_1 + u_{i}_0"])
+    s += " + ".join([f"2 u_{i}_1 + u_{i}_0" for i in range(16)]) + "\n"
     return s
 
 def get_ineq(input, output, ineq):
@@ -405,16 +406,16 @@ with open("present.lp", "w") as f:
     f.write("Minimize\n")
     f.write(get_u())
     
-    x = [get_var("x", i) for i in range(16)]
-    y = [get_var("y", i) for i in range(16)]
-    print(x)
+    x = [get_var('x', i) for i in range(16)]
+    y = [get_var('y', i) for i in range(16)]
     # 约束条件
     f.write("Subject To\n")
-    get_ineq(x, y, res)
+    for i in range(16):
+        print(get_ineq(get_var('x', i), get_var('y', i), res[i]))
 
     # 变量约束
     f.write("Binary\n")
-    for item in x:
-        f.write(item + "\n")
-    for item in y:
-        f.write(item + "\n")
+    # for item in x:
+    #     f.write((item + "\n"))
+    # for item in y:
+    #     f.write((item + "\n"))
