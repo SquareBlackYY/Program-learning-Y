@@ -1,4 +1,5 @@
 sbox = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2]
+
 ineqs = [
     [0, -1, 0, 0, 0, 0, 0, 0, 1],
     [-1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -329,13 +330,12 @@ ineqs = [
     [-2, -1, -1, 1, -2, 1, -2, -1, 7],
 ]
 
-
 ddt = [
     [sum([sbox[x] ^ sbox[x ^ i] == j for x in range(16)]) for j in range(16)]
     for i in range(16)
 ]
 # for item in ddt:
-# 	print(item)
+ 	# print(item)
 
 points = []
 for i in range(16):
@@ -344,7 +344,7 @@ for i in range(16):
             points.append(
                 list(map(int, list(format(i, "04b")))) + list(map(int, list(format(j, "04b"))))
             )
-
+# print(points)
 
 def evaluate(point, ineq):
     point.append(1)
@@ -380,5 +380,3 @@ while len(cpoints) > 0:
             new_cpoints.append(p)
     cpoints = new_cpoints
 print(res)
-
-print(len(res))
