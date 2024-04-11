@@ -11,9 +11,10 @@ int main()
     ElemType a[] = {2, 5, 8, 3, 6};
     CreateList(L, a, 5);
     MergeSort(L, 0, 4);
+    std::cout << "排序结果:" << std::endl;
     for (int i = 0; i < L->length; i++)
         std::cout << L->data[i] << " ";
-        
+    std::cout << std::endl;
     return 0;
 }
 
