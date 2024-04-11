@@ -31,8 +31,6 @@ ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &, const ElGamal_Public_Key &
 mpz_class ElGamal_Decrypt(const ElGamal_ciphertext &, const ElGamal_Public_Key &, const ElGamal_Private_Key &);
 bool is_primitive_root(const mpz_class &, const mpz_class &, const std::vector<mpz_class> &);
 mpz_class generate_primitive_root(const mpz_class &);
-mpz_class generate_subgroup_generator(const mpz_class &, const mpz_class &);
-mpz_class get_generator(const mpz_class &, const std::vector<mpz_class> &);
 
 class ElGamal_Key_gen
 {
@@ -205,29 +203,4 @@ mpz_class generate_primitive_root(const mpz_class &p)
     }
 
     return 1;
-}
-
-// 生成 Z_p^* 的 q 阶子群的生成元
-mpz_class generate_subgroup_generator(const mpz_class &p, const mpz_class &q)
-{
-    mpz_class primitive_root = generate_primitive_root(p);
-    mpz_class subgroup_generator = power_mod(primitive_root, (p - 1) / q, p);
-    return subgroup_generator;
-}
-
-mpz_class get_generator(const mpz_class &m, const std::vector<mpz_class> &m_factor)
-{
-    mpz_class i, result;
-    while (1)
-    {
-        i = generate_random_number(2, m - 1);
-        for (mpz_class factor : m_factor)
-        {
-            mpz_powm(result.get_mpz_t(), i.get_mpz_t(), factor.get_mpz_t(), m.get_mpz_t());
-            if (result == 1)
-                break;
-        }
-        if (result != 1)
-            return i;
-    }
 }
