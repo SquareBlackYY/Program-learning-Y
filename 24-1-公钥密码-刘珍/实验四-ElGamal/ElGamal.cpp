@@ -1,0 +1,234 @@
+#include <iostream>
+#include <gmpxx.h>
+#include <vector>
+
+struct ElGamal_Public_Key
+{
+    mpz_class p;
+    mpz_class g;
+    mpz_class beta;
+
+    ElGamal_Public_Key(const mpz_class p, const mpz_class g, const mpz_class beta) : p(p), g(g), beta(beta) {}
+};
+
+struct ElGamal_Private_Key
+{
+    mpz_class alpha;
+
+    ElGamal_Private_Key(const mpz_class alpha) : alpha(alpha) {}
+};
+
+struct ElGamal_ciphertext
+{
+    mpz_class r;
+    mpz_class s;
+};
+
+mpz_class generate_random_number(const mpz_class &, const mpz_class &);
+mpz_class get_generator(const mpz_class &, const std::vector<mpz_class> &);
+mpz_class power_mod(const mpz_class &, const mpz_class &, const mpz_class &);
+bool is_primitive_root(const mpz_class &, const mpz_class &, const std::vector<mpz_class> &);
+mpz_class sqrt(const mpz_class &);
+mpz_class generate_primitive_root(const mpz_class &);
+mpz_class generate_subgroup_generator(const mpz_class &, const mpz_class &);
+mpz_class ExEculid(const mpz_class &, const mpz_class &);
+ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &, const ElGamal_Public_Key &);
+mpz_class ElGamal_Decrypt(const ElGamal_ciphertext &, const ElGamal_Private_Key &, const ElGamal_Public_Key &);
+
+class ElGamal_Key_gen
+{
+private:
+    mpz_class p;
+    mpz_class g;
+    mpz_class beta;
+    mpz_class alpha;
+
+public:
+    ElGamal_Key_gen(const mpz_class &p_input, const mpz_class &g_input = 0) : p(p_input), g(g_input)
+    {
+        if (g == 0)
+            g = generate_primitive_root(p);
+        alpha = generate_random_number(2, p - 1);
+        mpz_powm(beta.get_mpz_t(), g.get_mpz_t(), alpha.get_mpz_t(), p.get_mpz_t());
+    }
+
+    ElGamal_Public_Key get_public_key()
+    {
+        return ElGamal_Public_Key(p, g, beta);
+    }
+    ElGamal_Private_Key get_private_key()
+    {
+        return ElGamal_Private_Key(alpha);
+    }
+};
+
+int main()
+{
+    mpz_class p("114613267282339829338903510180606894251700056873567053286214694567429338735367");
+    mpz_class q("57306633641169914669451755090303447125850028436783526643107347283714669367683");
+    mpz_class g("14777377999967849666226757901157577468444643860798182661856789517423526464749");
+
+    ElGamal_Key_gen key(p, g);
+    const ElGamal_Public_Key pk = key.get_public_key();
+    const ElGamal_Private_Key sk = key.get_private_key();
+
+    mpz_class m = 100;
+    std::cout << "明文:\t" << m << std::endl;
+
+    std::cout << pk.p << std::endl;
+    std::cout << pk.g << std::endl;
+    std::cout << pk.beta << std::endl;
+    std::cout << sk.alpha << std::endl;
+
+    ElGamal_ciphertext c = ElGamal_Encrypt(m, pk);
+    std::cout << "加密结果r:\t" << c.r << std::endl;
+    std::cout << "加密结果s:\t" << c.s << std::endl;
+
+    mpz_class m_decrypt = ElGamal_Decrypt(c, sk, pk);
+    std::cout << "解密结果:\t" << m_decrypt << std::endl;
+}
+
+// 生成随机数
+mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
+{
+    mpz_class randomNum;
+    gmp_randstate_t state;
+    gmp_randinit_default(state);
+
+    mpz_class range = upperBound - lowerBound;
+    mpz_urandomm(randomNum.get_mpz_t(), state, range.get_mpz_t());
+    randomNum += lowerBound;
+
+    gmp_randclear(state);
+
+    return randomNum;
+}
+
+mpz_class get_generator(const mpz_class &m, const std::vector<mpz_class> &m_factor)
+{
+    mpz_class i, result;
+    while (1)
+    {
+        i = generate_random_number(2, m - 1);
+        for (mpz_class factor : m_factor)
+        {
+            mpz_powm(result.get_mpz_t(), i.get_mpz_t(), factor.get_mpz_t(), m.get_mpz_t());
+            if (result == 1)
+                break;
+        }
+        if (result != 1)
+            return i;
+    }
+}
+
+// 计算幂模
+mpz_class power_mod(const mpz_class &base, const mpz_class &exp, const mpz_class &mod)
+{
+    mpz_class result;
+    mpz_powm(result.get_mpz_t(), base.get_mpz_t(), exp.get_mpz_t(), mod.get_mpz_t());
+    return result;
+}
+
+// 检查是否是本原根
+bool is_primitive_root(const mpz_class &g, const mpz_class &p, const std::vector<mpz_class> &primes)
+{
+    for (mpz_class q : primes)
+    {
+        if (power_mod(g, (p - 1) / q, p) == 1)
+            return false;
+    }
+    return true;
+}
+
+mpz_class sqrt(const mpz_class &n)
+{
+    mpz_class x = n, y = (x + 1) / 2;
+    while (y < x)
+    {
+        x = y;
+        y = (x + n / x) / 2;
+    }
+    return x;
+}
+
+// 生成 Z_p^* 的本原根
+mpz_class generate_primitive_root(const mpz_class &p)
+{
+    std::vector<mpz_class> primes;
+    mpz_class p_minus_1 = p - 1, p_square_root = sqrt(p_minus_1);
+
+    // 分解 p-1 为质因子
+    for (mpz_class i = 2; i <= p_square_root; i++)
+    {
+        if (p_minus_1 % i == 0)
+        {
+            primes.push_back(i);
+            while (p_minus_1 % i == 0)
+                p_minus_1 /= i;
+            for (mpz_class i : primes)
+                std::cout << "\n"
+                          << i << " "
+                          << p_minus_1 << " ";
+            std::cout << std::endl;
+        }
+    }
+    if (p_minus_1 > 1)
+        primes.push_back(p_minus_1);
+
+    // 逐个尝试找到本原根
+    for (mpz_class g = 2; g < p; ++g)
+    {
+        if (is_primitive_root(g, p, primes))
+            return g;
+    }
+
+    return 1;
+}
+
+// 生成 Z_p^* 的 q 阶子群的生成元
+mpz_class generate_subgroup_generator(const mpz_class &p, const mpz_class &q)
+{
+    mpz_class primitive_root = generate_primitive_root(p);
+    mpz_class subgroup_generator = power_mod(primitive_root, (p - 1) / q, p);
+    return subgroup_generator;
+}
+
+mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
+{
+    mpz_class a_copy = a, b_copy = b, x0 = 1, y0 = 0, x1 = 0, y1 = 1, q, r, x, y;
+
+    while (b_copy != 0)
+    {
+        mpz_divmod(q.get_mpz_t(), r.get_mpz_t(), a_copy.get_mpz_t(), b_copy.get_mpz_t());
+
+        x = x0 - q * x1;
+        y = y0 - q * y1;
+
+        a_copy = b_copy;
+        b_copy = r;
+        x0 = x1;
+        y0 = y1;
+        x1 = x;
+        y1 = y;
+    }
+
+    return (x0 + b) % b;
+}
+
+ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &m, const ElGamal_Public_Key &pk)
+{
+    ElGamal_ciphertext c;
+    mpz_class k = generate_random_number(2, pk.p - 1);
+
+    mpz_powm(c.r.get_mpz_t(), pk.g.get_mpz_t(), k.get_mpz_t(), pk.p.get_mpz_t());
+
+    mpz_powm(c.s.get_mpz_t(), pk.beta.get_mpz_t(), k.get_mpz_t(), pk.p.get_mpz_t());
+    c.s = (c.s * m) % pk.p;
+
+    return c;
+}
+
+mpz_class ElGamal_Decrypt(const ElGamal_ciphertext &c, const ElGamal_Private_Key &sk, const ElGamal_Public_Key &pk)
+{
+    return (c.s * ExEculid(c.r ^ sk.alpha, pk.p)) % pk.p;
+}
