@@ -37,8 +37,8 @@ class ElGamal_Key_gen
 private:
     mpz_class p;
     mpz_class g;
-    mpz_class beta;
     mpz_class alpha;
+    mpz_class beta;
 
 public:
     ElGamal_Key_gen(const mpz_class &p_input, const mpz_class &g_input = 0) : p(p_input), g(g_input)
@@ -46,7 +46,7 @@ public:
         if (g == 0)
             g = generate_primitive_root(p);
         alpha = generate_random_number(2, p - 1);
-        mpz_powm(beta.get_mpz_t(), g.get_mpz_t(), alpha.get_mpz_t(), p.get_mpz_t());
+        beta = power_mod(g, alpha, p);
     }
 
     ElGamal_Public_Key get_public_key()
@@ -81,13 +81,13 @@ int main()
     std::cout << "解密结果:\t" << m_decrypt << std::endl;
 
     // 推广到一般素数 p
-    p = 19;
+    p = 11;
 
     ElGamal_Key_gen key2(p);
     const ElGamal_Public_Key pk2 = key2.get_public_key();
     const ElGamal_Private_Key sk2 = key2.get_private_key();
 
-    m = 100;
+    m = 5;
     std::cout << "明文:\t\t" << m << std::endl;
 
     c = ElGamal_Encrypt(m, pk2);
@@ -170,7 +170,7 @@ bool is_primitive_root(const mpz_class &g, const mpz_class &p, const std::vector
 {
     for (mpz_class q : primes)
     {
-        if (power_mod(g, (p - 1) / q, p) == 1)
+        if (power_mod(g, q, p) == 1)
             return false;
     }
     return true;
@@ -180,21 +180,21 @@ bool is_primitive_root(const mpz_class &g, const mpz_class &p, const std::vector
 mpz_class generate_primitive_root(const mpz_class &p)
 {
     std::vector<mpz_class> primes;
-    mpz_class p_minus_1 = p - 1, p_square_root;
-    mpz_sqrt(p_square_root.get_mpz_t(), p_minus_1.get_mpz_t());
+    mpz_class phi_p = p - 1, p_square_root;
+    mpz_sqrt(p_square_root.get_mpz_t(), phi_p.get_mpz_t());
 
-    // 分解 p-1 为质因子
+    // 分解 p-1
     for (mpz_class i = 2; i <= p_square_root; i++)
     {
-        if (p_minus_1 % i == 0)
+        if (phi_p % i == 0)
         {
             primes.push_back(i);
-            while (p_minus_1 % i == 0)
-                p_minus_1 /= i;
+            while (phi_p % i == 0)
+                phi_p /= i;
         }
     }
-    if (p_minus_1 > 1)
-        primes.push_back(p_minus_1);
+    if (phi_p > 1)
+        primes.push_back(phi_p);
 
     // 逐个尝试找到本原根
     for (mpz_class g = 2; g < p; g++)
