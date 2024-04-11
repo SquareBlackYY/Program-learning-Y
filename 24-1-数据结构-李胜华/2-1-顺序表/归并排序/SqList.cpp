@@ -1,6 +1,19 @@
 #include "SqList.hpp"
 #include <iostream>
 
+void CreateList(SqList *&L, ElemType a[], int n)
+{
+    int i = 0, k = 0;
+    L = (SqList *)malloc(sizeof(SqList));
+    while (i < n)
+    {
+        L->data[k] = a[i];
+        k++;
+        i++;
+    }
+    L->length = k;
+}
+
 // 初始化线性表，构造一个空的线性表L。
 void InitList(SqList *&L)
 {

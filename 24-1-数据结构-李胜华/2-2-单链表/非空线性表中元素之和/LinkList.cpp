@@ -1,6 +1,21 @@
 #include "LinkList.hpp"
 #include <iostream>
 
+void CreateListR(LinkNode *&L, ElemType a[], int n)
+{
+    LinkNode *s, *r;
+    L = (LinkNode *)malloc(sizeof(LinkNode));
+    r = L;
+    for (int i = 0; i < n; i++)
+    {
+        s = (LinkNode *)malloc(sizeof(LinkNode));
+        s->data = a[i];
+        r->next = s;
+        r = s;
+    }
+    r->next = NULL;
+}
+
 void InitList(LinkNode *&L)
 {
     L = (LinkNode *)malloc(sizeof(LinkNode));
