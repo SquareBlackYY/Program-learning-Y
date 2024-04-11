@@ -44,7 +44,7 @@ public:
     ElGamal_Key_gen(const mpz_class &p_input, const mpz_class &g_input = 0) : p(p_input), g(g_input)
     {
         if (g == 0)
-            g = generate_subgroup_generator(p, generate_random_number(2, p - 1));
+            g = generate_primitive_root(p);
         alpha = generate_random_number(2, p - 1);
         mpz_powm(beta.get_mpz_t(), g.get_mpz_t(), alpha.get_mpz_t(), p.get_mpz_t());
     }
@@ -124,6 +124,7 @@ mpz_class power_mod(const mpz_class &base, const mpz_class &exp, const mpz_class
     return result;
 }
 
+// 扩展欧里几德计算 a^-1 mod b
 mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b, x0 = 1, y0 = 0, x1 = 0, y1 = 1, q, r, x, y;
