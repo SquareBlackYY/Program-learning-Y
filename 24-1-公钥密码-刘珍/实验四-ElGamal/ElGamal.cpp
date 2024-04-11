@@ -196,7 +196,7 @@ mpz_class generate_primitive_root(const mpz_class &p)
     if (phi_p > 1)
         primes.push_back(phi_p);
 
-    // 逐个尝试找到本原根
+    // 顺序遍历返回首个本原根
     for (mpz_class g = 2; g < p; g++)
     {
         if (is_primitive_root(g, p, primes))
