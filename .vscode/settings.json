@@ -49,6 +49,7 @@
         "typeinfo": "cpp",
         "ctime": "cpp",
         "bitset": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "set": "cpp"
     }
 }
