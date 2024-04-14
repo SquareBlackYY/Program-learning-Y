@@ -6,11 +6,7 @@ void CreateList(SqList *&L, ElemType a[], int n)
     int i = 0, k = 0;
     L = (SqList *)malloc(sizeof(SqList));
     while (i < n)
-    {
-        L->data[k] = a[i];
-        k++;
-        i++;
-    }
+        L->data[k++] = a[i++];
     L->length = k;
 }
 
@@ -84,6 +80,20 @@ bool ListDelete(SqList *&L, int i, ElemType &e)
         L->data[j] = L->data[j + 1];
     L->length--;
     return true;
+}
+
+void Reverse(SqList *&L)
+{
+    int left = 0, right = L->length - 1;
+    while (left < right)
+        std::swap(L->data[left++], L->data[right--]);
+}
+
+ElemType MidElem(SqList *&L)
+{
+    if (ListEmpty)
+        return -1;
+    return L->data[L->length / 2];
 }
 
 ElemType Sum_Recursion(SqList *L, int n)
