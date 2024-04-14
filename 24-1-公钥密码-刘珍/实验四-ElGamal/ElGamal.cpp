@@ -62,6 +62,7 @@ public:
 int main()
 {
     // 示例
+    std::cout << "示例" << std::endl;
     mpz_class p("114613267282339829338903510180606894251700056873567053286214694567429338735367");
     mpz_class q("57306633641169914669451755090303447125850028436783526643107347283714669367683");
     mpz_class g("14777377999967849666226757901157577468444643860798182661856789517423526464749");
@@ -81,13 +82,14 @@ int main()
     std::cout << "解密结果:\t" << m_decrypt << std::endl;
 
     // 推广到一般素数 p
-    p = 11;
+    std::cout << "推广到一般素数 p" << std::endl;
+    p = 101;
 
     ElGamal_Key_gen key2(p);
     const ElGamal_Public_Key pk2 = key2.get_public_key();
     const ElGamal_Private_Key sk2 = key2.get_private_key();
 
-    m = 5;
+    m = 100;
     std::cout << "明文:\t\t" << m << std::endl;
 
     c = ElGamal_Encrypt(m, pk2);
