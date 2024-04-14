@@ -1,32 +1,40 @@
 #include "SqList.hpp"
 #include <iostream>
 
-// 初始化线性表，构造一个空的线性表L。
+void CreateList(SqList *&L, ElemType a[], int n)
+{
+    int i = 0, k = 0;
+    L = (SqList *)malloc(sizeof(SqList));
+    while (i < n)
+    {
+        L->data[k] = a[i];
+        k++;
+        i++;
+    }
+    L->length = k;
+}
+
 void InitList(SqList *&L)
 {
     L = (SqList *)malloc(sizeof(SqList));
     L->length = 0;
 }
 
-// 销毁线性表，释放为线性表L分配的内存空间。
 void DestroyList(SqList *&L)
 {
     free(L);
 }
 
-// 判断线性表是否为空表，若L为空表，则返回真，否则返回假。
 bool ListEmpty(SqList *L)
 {
     return (L->length == 0);
 }
 
-// 求线性表的长度，返回L中元素的个数。
 int ListLength(SqList *L)
 {
     return L->length;
 }
 
-// 输出线性表，当线性表L不为空时顺序输出L中各元素值。
 void DispList(SqList *L)
 {
     for (int i = 0; i < L->length; i++)
@@ -34,7 +42,6 @@ void DispList(SqList *L)
     std::cout << std::endl;
 }
 
-// 按序号求线性表中元素，用e返回L中第i(1≤i≤n)个元素值。
 bool GetElem(SqList *L, int i, ElemType &e)
 {
     if (i < 1 || i > L->length)
@@ -43,7 +50,6 @@ bool GetElem(SqList *L, int i, ElemType &e)
     return true;
 }
 
-// 按元素值查找，返回L中第一个值为e相等的元素序号。
 int LocateElem(SqList *L, ElemType e)
 {
     int i = 0;
@@ -54,7 +60,6 @@ int LocateElem(SqList *L, ElemType e)
     return i + 1;
 }
 
-// 插入元素，在L的第i(1≤i≤n+1)个位置插入一个新元素e。
 bool ListInsert(SqList *&L, int i, ElemType e)
 {
     int j;
@@ -68,7 +73,6 @@ bool ListInsert(SqList *&L, int i, ElemType e)
     return true;
 }
 
-// 删除元素，删除L的第i(1≤i≤n)个元素，并用e返回该元素值。
 bool ListDelete(SqList *&L, int i, ElemType &e)
 {
     int j;
@@ -80,4 +84,41 @@ bool ListDelete(SqList *&L, int i, ElemType &e)
         L->data[j] = L->data[j + 1];
     L->length--;
     return true;
+}
+
+ElemType Sum_Recursion(SqList *L, int n)
+{
+    if (n == 1)
+        return L->data[0];
+    else
+        return L->data[n - 1] + Sum_Recursion(L, n - 1);
+}
+
+void MergeSort_Recursion(SqList *&L, int left, int right)
+{
+    if (left >= right)
+        return; // 递归出口
+    int mid = (left + right) / 2;
+    MergeSort_Recursion(L, left, mid);
+    MergeSort_Recursion(L, mid + 1, right);
+    Merge_Recursion(L, left, mid, right); // 合并有序表
+}
+
+void Merge_Recursion(SqList *&L, int low, int mid, int high)
+{
+    int i = low, j = mid + 1, k = 0;
+    ElemType *t;
+    t = new ElemType[high - low + 1];
+    while (i <= mid && j <= high)
+        if (L->data[i] <= L->data[j])
+            t[k++] = L->data[i++];
+        else
+            t[k++] = L->data[j++];
+    while (i <= mid)
+        t[k++] = L->data[i++];
+    while (j <= high)
+        t[k++] = L->data[j++];
+    for (i = low, k = 0; i <= high; i++, k++)
+        L->data[i] = t[k];
+    delete[] t;
 }
