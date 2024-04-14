@@ -20,7 +20,7 @@ bool GetElem(SqList *L, int i, ElemType &e);                  // 朱叶凯：按
 int LocateElem(SqList *L, ElemType e);                        // 张正阳：按元素值查找，返回L中第一个值为e相等的元素序号
 bool ListInsert(SqList *&L, int i, ElemType e);               // 张正阳：插入元素，在L的第i(1≤i≤n+1)个位置插入一个新元素e
 bool ListDelete(SqList *&L, int i, ElemType &e);              // 许靖轩：删除元素，删除L的第i(1≤i≤n)个元素，并用e返回该元素值
-void Reverse(SqList *&L);                                     // 许靖轩：顺序表元素逆序
+void ListReverse(SqList *&L);                                 // 许靖轩：顺序表元素逆序
 ElemType MidElem(SqList *&L);                                 // 许靖轩：返回线性表中间位置的值
 ElemType Sum_Recursion(SqList *L, int n);                     // 张笑宇：非空线性表中元素之和（递归）
 void MergeSort_Recursion(SqList *&L, int left, int right);    // 张笑宇：归并排序（递归）

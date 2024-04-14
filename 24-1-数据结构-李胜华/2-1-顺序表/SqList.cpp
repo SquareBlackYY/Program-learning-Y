@@ -82,7 +82,7 @@ bool ListDelete(SqList *&L, int i, ElemType &e)
     return true;
 }
 
-void Reverse(SqList *&L)
+void ListReverse(SqList *&L)
 {
     int left = 0, right = L->length - 1;
     while (left < right)
@@ -91,7 +91,7 @@ void Reverse(SqList *&L)
 
 ElemType MidElem(SqList *&L)
 {
-    if (ListEmpty)
+    if (ListEmpty(L))
         return -1;
     return L->data[L->length / 2];
 }
