@@ -39,7 +39,6 @@ int main()
     CreateList(L, a, 5);
     DestroyList(L);
     cout << "线性表销毁成功:" << endl;
-    // Trying to display the list will result in undefined behavior
     return 0;
 }
 
