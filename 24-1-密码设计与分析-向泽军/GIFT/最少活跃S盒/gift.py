@@ -16,7 +16,6 @@ for i in range(16):
                 list(map(int, list(format(i, "04b"))))
                 + list(map(int, list(format(j, "04b"))))
             )
-print(points)
 
 # 将打印出来的point二维列表带入sagemath生成以下不等式系数矩阵
 # points =
@@ -306,10 +305,9 @@ while len(cpoints) > 0:
 # print(len(res))
 
 P = [
-    (4 * (i // 16) + 16 * ((3 * (i % 16) // 4 + (i % 4)) % 4) + (i % 4))
+    (4 * (i // 16) + 16 * ((3 * ((i % 16) // 4) + (i % 4)) % 4) + (i % 4))
     for i in range(64)
 ]
-
 
 def get_obj(round):
     return " + ".join([f"A_{r}_{i}" for r in range(round) for i in range(16)])
@@ -324,8 +322,7 @@ def get_sbox_constrains(round):
     for r in range(round):
         for i in range(16):
             x_in = get_vars("x", r, range(4 * i, 4 * (i + 1)))
-            inv_index = [P.index(value) for value in range(4 * i, 4 * (i + 1))]
-            x_out = get_vars("x", r + 1, inv_index)
+            x_out = get_vars("x", r + 1, P[4 * i : 4 * (i + 1)])
             s += (
                 " + ".join([f"4 {var}" for var in x_in])
                 + " - "
@@ -342,7 +339,17 @@ def get_sbox_constrains(round):
             for item in list(zip(get_vars("A", r, [i]) * 4, x_in)):
                 s += " - ".join(item) + " >= 0\n"
             for res_item in res:
-                s += " + ".join([" ".join(item) for item in list(zip(list(map(str, res_item[0:-1])), x_in + x_out))]).replace("+ -", "- ") + f" + {res_item[-1]} >= 0\n"
+                s += (
+                    " + ".join(
+                        [
+                            " ".join(item)
+                            for item in list(
+                                zip(list(map(str, res_item[0:-1])), x_in + x_out)
+                            )
+                        ]
+                    ).replace("+ -", "- ")
+                    + f" >= {-res_item[-1]}\n"
+                )
     return s
 
 
@@ -350,7 +357,7 @@ def get_bin(round):
     return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)])
 
 
-ROUND = 5
+ROUND = 30
 
 for round in range(1, ROUND + 1):
     with open(f".\\lp\\gift_min_active_sbox_{round}.lp", "w") as f:
@@ -366,10 +373,9 @@ for round in range(1, ROUND + 1):
 
         f.write("END")
 
-    m = gp.read(f".\\lp\\gift_min_active_sbox_{round}.lp", env=gp.Env(params={"OutputFlag": 0}))
+    m = gp.read(
+        f".\\lp\\gift_min_active_sbox_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
+    )
     m.optimize()
     if m.Status == 2:
         print(f"{round}\t{m.ObjVal}")
-
-
-
