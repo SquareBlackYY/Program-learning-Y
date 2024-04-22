@@ -16,6 +16,7 @@ for i in range(16):
                 list(map(int, list(format(i, "04b"))))
                 + list(map(int, list(format(j, "04b"))))
             )
+print(points)
 
 # 将打印出来的point二维列表带入sagemath生成以下不等式系数矩阵
 # points =
