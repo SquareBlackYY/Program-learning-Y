@@ -1,6 +1,8 @@
 #include <iostream>
 #include <gmpxx.h>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 struct Coordinate
 {
@@ -60,9 +62,13 @@ int main()
     std::cout << "结果: (" << ECC_multiple_add(E, p, multiple).x << ", " << ECC_multiple_add(E, p, multiple).y << ")" << std::endl;
 
     std::cout << "ECDH算法实现:" << std::endl;
-    ECDH A({211, 0, -4}, {2, 2}, 241), B({211, 0, -4}, {2, 2}, 241);
+    ECDH A({211, 0, -4}, {2, 2}, 241);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    ECDH B({211, 0, -4}, {2, 2}, 241);
     Coordinate PK_A = A.generate_public_key();
     Coordinate PK_B = B.generate_public_key();
+    std::cout << "A向B发出的公钥: (" << PK_A.x <<  ", " << PK_A.y << ")" << std::endl;
+    std::cout << "B向A发出的公钥: (" << PK_B.x <<  ", " << PK_B.y << ")" << std::endl;
     std::cout << "A计算出的共享密钥: (" << A.generate_share_key(PK_B).x <<  ", " << A.generate_share_key(PK_B).y << ")" << std::endl;
     std::cout << "B计算出的共享密钥: (" << B.generate_share_key(PK_A).x <<  ", " << B.generate_share_key(PK_A).y << ")" << std::endl;
 
