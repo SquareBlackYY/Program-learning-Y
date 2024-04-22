@@ -324,18 +324,18 @@ def get_sbox_constrains(round):
         for i in range(16):
             x_in = get_vars("x", r, range(4 * i, 4 * (i + 1)))
             x_out = get_vars("x", r + 1, P[4 * i : 4 * (i + 1)])
-            s += (
-                " + ".join([f"4 {var}" for var in x_in])
-                + " - "
-                + " - ".join([var for var in x_out])
-                + " >= 0\n"
-            )
-            s += (
-                " + ".join([f"4 {var}" for var in x_out])
-                + " - "
-                + " - ".join([var for var in x_in])
-                + " >= 0\n"
-            )
+            # s += (
+            #     " + ".join([f"4 {var}" for var in x_in])
+            #     + " - "
+            #     + " - ".join([var for var in x_out])
+            #     + " >= 0\n"
+            # )
+            # s += (
+            #     " + ".join([f"4 {var}" for var in x_out])
+            #     + " - "
+            #     + " - ".join([var for var in x_in])
+            #     + " >= 0\n"
+            # )
             s += " + ".join(x_in) + f" - A_{r}_{i} >= 0\n"
             for item in list(zip(get_vars("A", r, [i]) * 4, x_in)):
                 s += " - ".join(item) + " >= 0\n"
@@ -355,8 +355,7 @@ def get_sbox_constrains(round):
 
 
 def get_bin(round):
-    return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)])
-
+    return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)] + [f"x_{r}_{i}" for r in range(round) for i in range(64)])
 
 ROUND = 30
 
