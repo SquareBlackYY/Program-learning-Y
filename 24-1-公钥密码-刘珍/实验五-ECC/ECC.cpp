@@ -24,13 +24,48 @@ Coordinate ECC_add(const Elliptic_Curve &, const Coordinate &, const Coordinate 
 Coordinate ECC_multiple_add(const Elliptic_Curve &, const Coordinate &, int);
 mpz_class power_mod(const mpz_class &, const mpz_class &, const mpz_class &);
 mpz_class ExEculid(const mpz_class &, const mpz_class &);
+mpz_class generate_random_number(const mpz_class &, const mpz_class &);
+
+class ECDH
+{
+private:
+    Elliptic_Curve E; // 椭圆曲线
+    Coordinate G;     // 生成元
+    mpz_class n;      // G的阶
+    mpz_class rn;     // 随机数
+
+public:
+    ECDH(const Elliptic_Curve &E, const Coordinate &G, const mpz_class &n) : E(E), G(G), n(n)
+    {
+        rn = generate_random_number(2, n - 1);
+        std::cout << generate_random_number(2, 12) << std::endl;
+    };
+
+    Coordinate generate_public_key()
+    {
+        return {(rn * G.x) % E.p, (rn * G.y) % E.p};
+    }
+
+    Coordinate generate_share_key(const Coordinate &PK)
+    {
+        return {(rn * PK.x) % E.p, (rn * PK.y) % E.p};
+    }
+};
 
 int main()
 {
+    std::cout << "实例: a = 1, b = 4, p = 23, n = 29, G = (0, 2)" << std::endl;
     const Elliptic_Curve E(23, 1, 4);
     const Coordinate p(0, 2);
     const int multiple = 29;
-    std::cout << ECC_multiple_add(E, p, multiple).x << ' ' << ECC_multiple_add(E, p, multiple).y << std::endl;
+    std::cout << "结果: (" << ECC_multiple_add(E, p, multiple).x << ", " << ECC_multiple_add(E, p, multiple).y << ")" << std::endl;
+
+    std::cout << "ECDH算法实现:" << std::endl;
+    ECDH A({211, 0, -4}, {2, 2}, 241), B({211, 0, -4}, {2, 2}, 241);
+    Coordinate PK_A = A.generate_public_key();
+    Coordinate PK_B = B.generate_public_key();
+    std::cout << "A计算出的共享密钥: (" << A.generate_share_key(PK_B).x <<  ", " << A.generate_share_key(PK_B).y << ")" << std::endl;
+    std::cout << "B计算出的共享密钥: (" << B.generate_share_key(PK_A).x <<  ", " << B.generate_share_key(PK_A).y << ")" << std::endl;
 
     return 0;
 }
@@ -44,12 +79,12 @@ Coordinate ECC_add(const Elliptic_Curve &E, const Coordinate &p, const Coordinat
     else if (q.x == 0 && q.y == 0)
         return p;
     else if (p.x == q.x && (p.y % E.p + E.p) % E.p == ((-q.y) % E.p + E.p) % E.p)
-        return Coordinate(0,0);
+        return Coordinate(0, 0);
     else if (p.x == q.x && p.y == q.y)
         lambda = ((3 * p.x * p.x + E.a) * ExEculid(2 * p.y, E.p)) % E.p;
     else
         lambda = ((q.y - p.y) * ExEculid(q.x - p.x, E.p)) % E.p;
-    
+
     Coordinate sum;
     sum.x = ((lambda * lambda - p.x - q.x) % E.p + E.p) % E.p;
     sum.y = ((lambda * (p.x - sum.x) - p.y) % E.p + E.p) % E.p;
@@ -62,7 +97,7 @@ Coordinate ECC_multiple_add(const Elliptic_Curve &E, const Coordinate &p, int mu
     Coordinate temp = p, result(0, 0);
     while (multiple)
     {
-        if((multiple & 1) == 1)
+        if ((multiple & 1) == 1)
             result = ECC_add(E, result, temp);
         temp = ECC_add(E, temp, temp);
         multiple >>= 1;
@@ -99,4 +134,20 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
     }
 
     return (x0 + b) % b;
+}
+
+// 生成随机数
+mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
+{
+    mpz_class randomNum;
+    gmp_randstate_t state;
+    gmp_randinit_default(state);
+
+    mpz_class range = upperBound - lowerBound;
+    mpz_urandomm(randomNum.get_mpz_t(), state, range.get_mpz_t());
+    randomNum += lowerBound;
+
+    gmp_randclear(state);
+
+    return randomNum;
 }
