@@ -37,8 +37,7 @@ private:
 public:
     ECDH(const Elliptic_Curve &E, const Coordinate &G, const mpz_class &n) : E(E), G(G), n(n)
     {
-        rn = generate_random_number(2, n - 1);
-        std::cout << generate_random_number(2, 12) << std::endl;
+        rn = generate_random_number(2, n);
     };
 
     Coordinate generate_public_key()
@@ -136,18 +135,10 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
     return (x0 + b) % b;
 }
 
-// 生成随机数
+// 生成随机数（前闭后开）
 mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
 {
-    mpz_class randomNum;
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-
-    mpz_class range = upperBound - lowerBound;
-    mpz_urandomm(randomNum.get_mpz_t(), state, range.get_mpz_t());
-    randomNum += lowerBound;
-
-    gmp_randclear(state);
-
-    return randomNum;
+    gmp_randclass rand(gmp_randinit_mt);
+    rand.seed(time(0));
+    return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }

@@ -45,7 +45,7 @@ public:
     {
         if (g == 0)
             g = generate_primitive_root(p);
-        alpha = generate_random_number(2, p - 1);
+        alpha = generate_random_number(2, p);
         beta = power_mod(g, alpha, p);
     }
 
@@ -102,20 +102,12 @@ int main()
     return 0;
 }
 
-// 生成随机数
+// 生成随机数（前闭后开）
 mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
 {
-    mpz_class randomNum;
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-
-    mpz_class range = upperBound - lowerBound;
-    mpz_urandomm(randomNum.get_mpz_t(), state, range.get_mpz_t());
-    randomNum += lowerBound;
-
-    gmp_randclear(state);
-
-    return randomNum;
+    gmp_randclass rand(gmp_randinit_mt);
+    rand.seed(time(0));
+    return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }
 
 // 计算幂模
@@ -153,7 +145,7 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
 ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &m, const ElGamal_Public_Key &pk)
 {
     ElGamal_ciphertext c;
-    mpz_class k = generate_random_number(2, pk.p - 1);
+    mpz_class k = generate_random_number(2, pk.p);
 
     c.r = power_mod(pk.g, k, pk.p);
     c.s = (power_mod(pk.beta, k, pk.p) * m) % pk.p;
