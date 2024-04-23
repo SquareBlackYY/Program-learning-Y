@@ -4,29 +4,32 @@ import gurobipy as gp
 
 SBOX = [0x1, 0xA, 0x4, 0xC, 0x6, 0xF, 0x3, 0x9, 0x2, 0xD, 0xB, 0x7, 0x5, 0x0, 0x8, 0xE]
 
-DDT = [
-    [sum([SBOX[x] ^ SBOX[x ^ i] == j for x in range(16)]) for j in range(16)]
-    for i in range(16)
-]
+LCT = [[-8 for i in range(16)] for j in range(16)]
+for in_mask in range(16):
+    for out_mask in range(16):
+        for x in range(16):
+            if (
+                format((in_mask & x), "04b").count("1")
+                + format((out_mask & SBOX[x]), "04b").count("1")
+            ) % 2 == 0:
+                LCT[in_mask][out_mask] += 1
 
 # 点集
 points = []
 for i in range(16):
     for j in range(16):
-        if DDT[i][j] != 0:
+        if LCT[i][j] != 0:
             points.append(
                 list(map(int, list(format(i, "04b"))))
                 + list(map(int, list(format(j, "04b"))))
                 + (
-                    list(map(int, list(format(4, "03b"))))
-                    if DDT[i][j] == 2
+                    list(map(int, list(format(1, "03b"))))
+                    if abs(LCT[i][j]) == 2
                     else (
                         list(map(int, list(format(2, "03b"))))
-                        if DDT[i][j] == 4
+                        if abs(LCT[i][j]) == 4
                         else (
-                            list(map(int, list(format(1, "03b"))))
-                            if DDT[i][j] == 6
-                            else list(map(int, list(format(0, "03b"))))
+                            list(map(int, list(format(0, "03b"))))
                         )
                     )
                 )
