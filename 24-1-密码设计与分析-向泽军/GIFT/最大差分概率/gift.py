@@ -1,6 +1,6 @@
 from math import log2
 
-# import gurobipy as gp
+import gurobipy as gp
 
 SBOX = [0x1, 0xA, 0x4, 0xC, 0x6, 0xF, 0x3, 0x9, 0x2, 0xD, 0xB, 0x7, 0x5, 0x0, 0x8, 0xE]
 
@@ -1040,7 +1040,7 @@ P = [
 
 
 def get_obj(round):
-    return " + ".join([f"A_{r}_{i}" for r in range(round) for i in range(16)])
+    return " + ".join([" ".join(item) for item in list(zip(["1.415037499278844", "2", "1"] * round, [f"u_{r}_{i}" for r in range(round) for i in range(3)]))])
 
 
 def get_vars(var, round, range):
@@ -1053,28 +1053,14 @@ def get_sbox_constrains(round):
         for i in range(16):
             x_in = get_vars("x", r, range(4 * i, 4 * (i + 1)))
             x_out = get_vars("x", r + 1, P[4 * i : 4 * (i + 1)])
-            s += (
-                " + ".join([f"4 {var}" for var in x_in])
-                + " - "
-                + " - ".join([var for var in x_out])
-                + " >= 0\n"
-            )
-            s += (
-                " + ".join([f"4 {var}" for var in x_out])
-                + " - "
-                + " - ".join([var for var in x_in])
-                + " >= 0\n"
-            )
-            s += " + ".join(x_in) + f" - A_{r}_{i} >= 0\n"
-            for item in list(zip(get_vars("A", r, [i]) * 4, x_in)):
-                s += " - ".join(item) + " >= 0\n"
+            u = get_vars("u", r, range(3))
             for res_item in res:
                 s += (
                     " + ".join(
                         [
                             " ".join(item)
                             for item in list(
-                                zip(list(map(str, res_item[0:-1])), x_in + x_out)
+                                zip(list(map(str, res_item[0:-1])), x_in + x_out + u)
                             )
                         ]
                     ).replace("+ -", "- ")
@@ -1084,13 +1070,13 @@ def get_sbox_constrains(round):
 
 
 def get_bin(round):
-    return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)])
+    return "\n".join([f"x_{r}_{i}" for r in range(round + 1) for i in range(64)] + [f"u_{r}_{i}" for r in range(round) for i in range(3)])
 
 
 ROUND = 30
 
 for round in range(1, ROUND + 1):
-    with open(f".\\lp\\gift_min_active_sbox_{round}.lp", "w") as f:
+    with open(f".\\lp\\gift_max_diff_prob_{round}.lp", "w") as f:
         f.write("Minimize\n")
         f.write(get_obj(round) + "\n")
 
@@ -1104,7 +1090,7 @@ for round in range(1, ROUND + 1):
         f.write("END")
 
     m = gp.read(
-        f".\\lp\\gift_min_active_sbox_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
+        f".\\lp\\gift_max_diff_prob_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
     )
     m.optimize()
     if m.Status == 2:

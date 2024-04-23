@@ -355,7 +355,7 @@ def get_sbox_constrains(round):
 
 
 def get_bin(round):
-    return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)] + [f"x_{r}_{i}" for r in range(round) for i in range(64)])
+    return "\n".join([f"A_{r}_{i}" for r in range(round) for i in range(16)] + [f"x_{r}_{i}" for r in range(round + 1) for i in range(64)])
 
 ROUND = 30
 
