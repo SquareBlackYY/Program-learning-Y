@@ -1,8 +1,6 @@
 #include <iostream>
 #include <gmpxx.h>
 #include <vector>
-#include <chrono>
-#include <thread>
 
 struct Coordinate
 {
@@ -62,11 +60,8 @@ int main()
     std::cout << "结果: (" << ECC_multiple_add(E, p, multiple).x << ", " << ECC_multiple_add(E, p, multiple).y << ")" << std::endl;
 
     std::cout << "ECDH算法实现:" << std::endl;
-    ECDH A({211, 0, -4}, {2, 2}, 241);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    ECDH B({211, 0, -4}, {2, 2}, 241);
-    Coordinate PK_A = A.generate_public_key();
-    Coordinate PK_B = B.generate_public_key();
+    ECDH A({211, 0, -4}, {2, 2}, 241), B({211, 0, -4}, {2, 2}, 241);
+    Coordinate PK_A = A.generate_public_key(), PK_B = B.generate_public_key();
     std::cout << "A向B发出的公钥: (" << PK_A.x <<  ", " << PK_A.y << ")" << std::endl;
     std::cout << "B向A发出的公钥: (" << PK_B.x <<  ", " << PK_B.y << ")" << std::endl;
     std::cout << "A计算出的共享密钥: (" << A.generate_share_key(PK_B).x <<  ", " << A.generate_share_key(PK_B).y << ")" << std::endl;
@@ -145,6 +140,11 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
 mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
 {
     gmp_randclass rand(gmp_randinit_mt);
-    rand.seed(time(0));
+    static bool seed_initialized = false;
+    if (!seed_initialized)
+    {
+        rand.seed(time(0));
+        seed_initialized = true;
+    }
     return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }
