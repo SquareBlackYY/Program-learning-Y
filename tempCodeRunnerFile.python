@@ -1,6 +1,0 @@
-from math import log2
-
-print(-log2(16 / 16))
-print(-log2(2 / 16))
-print(-log2(4 / 16))
-print(-log2(6 / 16))
