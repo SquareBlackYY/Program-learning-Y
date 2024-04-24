@@ -1054,7 +1054,7 @@ def get_obj(round):
             for item in list(
                 zip(
                     ["3", "2", "1.415"] * round * 16,
-                    [f"u_{r}_{i}" for r in range(round) for i in range(48)],
+                    [f"u_{r}_{i}" for r in range(round) for i in range(48)]
                 )
             )
         ]
