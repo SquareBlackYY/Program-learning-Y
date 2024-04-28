@@ -15,6 +15,13 @@ public:
     {
         delete[] string;
     }
+    void PrintString()
+    {
+        std::cout << "字节串: ";
+        for (size_t i = 0; i < size; i++)
+            std::cout << std::hex << static_cast<int>(string[i]);
+        std::cout << std::dec << std::endl;
+    }
 };
 
 int main()
@@ -24,12 +31,7 @@ int main()
     // 大整数转字节串
     byteString bytestring = int_to_bytes(num);
 
-    std::cout << "字节串: ";
-    for (size_t i = 0; i < bytestring.size; ++i)
-    {
-        std::cout << std::hex << static_cast<int>(bytestring.string[i]);
-    }
-    std::cout << std::endl;
+    bytestring.PrintString();
 
     // 字节串转大整数
     mpz_class result = bytes_to_int(bytestring);
