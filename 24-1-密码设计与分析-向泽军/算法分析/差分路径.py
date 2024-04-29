@@ -124,13 +124,13 @@ L3_Table = [[] for _ in range(16)]
 for i in range(16):
     for j in range(16):
         if (L0[i] >> j) & 1 == 1:
-            L0_Table[i].append(j)
+            L0_Table[i].append(4 * j + 3)
         if (L1[i] >> j) & 1 == 1:
-            L1_Table[i].append(j)
+            L1_Table[i].append(4 * j + 2)
         if (L2[i] >> j) & 1 == 1:
-            L2_Table[i].append(j)
+            L2_Table[i].append(4 * j + 1)
         if (L3[i] >> j) & 1 == 1:
-            L3_Table[i].append(j)
+            L3_Table[i].append(4 * j)
 
 DDT = [
     [sum([SBOX[x] ^ SBOX[x ^ i] == j for x in range(16)]) for j in range(16)]
@@ -626,7 +626,6 @@ def get_constrains(round):
             x_in = get_vars("xin", r, range(4 * i, 4 * (i + 1)))
             x_out = get_vars("xout", r, range(4 * i, 4 * (i + 1)))
             u = get_vars("u", r, range(2 * i, 2 * (i + 1)))
-            k = get_vars("k", r, range(4 * i, 4 * (i + 1)))
             for res_item in res:
                 s += (
                     " + ".join(
@@ -649,14 +648,14 @@ def get_bin(round):
         + [f"u_{r}_{i}" for r in range(round) for i in range(32)]
     )
 
+
 def get_int(round):
-    return "\n".join(
-        [f"k_{r}_{i}" for r in range(round - 1) for i in range(64)]
-    )
+    return "\n".join([f"k_{r}_{i}" for r in range(round - 1) for i in range(64)])
+
 
 ROUND = 9
 
-for round in range(1, ROUND + 1):
+for round in range(ROUND, ROUND + 1):
     with open(f".\\diff\\smallPride_max_diff_prob_{round}.lp", "w") as f:
         f.write("Minimize\n")
         f.write(get_obj(round) + "\n")
@@ -674,7 +673,8 @@ for round in range(1, ROUND + 1):
         f.write("END")
 
     m = gp.read(
-        f".\\diff\\smallPride_max_diff_prob_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
+        f".\\diff\\smallPride_max_diff_prob_{round}.lp",
+        env=gp.Env(params={"OutputFlag": 0}),
     )
     m.optimize()
     if m.Status == 2:
