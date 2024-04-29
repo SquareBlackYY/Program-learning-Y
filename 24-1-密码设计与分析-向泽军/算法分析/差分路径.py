@@ -601,7 +601,7 @@ def get_obj(round):
             " ".join(item)
             for item in list(
                 zip(
-                    ["2", "3"] * round * 16,
+                    ["3", "2"] * round * 16,
                     [f"u_{r}_{i}" for r in range(round) for i in range(32)],
                 )
             )
@@ -616,6 +616,12 @@ def get_vars(var, round, range):
 def get_constrains(round):
     s = ""
     for r in range(round):
+        if not r == 0:
+            for j in range(16):
+                s += f"xout_{r - 1}_{L0_Table[j][0]} + xout_{r - 1}_{L0_Table[j][1]} + xout_{r - 1}_{L0_Table[j][2]} + xin_{r}_{4 * (15 - j) + 3} - 2 k_{r - 1}_{4 * (15 - j) + 3} = 0\n"
+                s += f"xout_{r - 1}_{L1_Table[j][0]} + xout_{r - 1}_{L1_Table[j][1]} + xout_{r - 1}_{L1_Table[j][2]} + xin_{r}_{4 * (15 - j) + 2} - 2 k_{r - 1}_{4 * (15 - j) + 2} = 0\n"
+                s += f"xout_{r - 1}_{L2_Table[j][0]} + xout_{r - 1}_{L2_Table[j][1]} + xout_{r - 1}_{L2_Table[j][2]} + xin_{r}_{4 * (15 - j) + 1} - 2 k_{r - 1}_{4 * (15 - j) + 1} = 0\n"
+                s += f"xout_{r - 1}_{L3_Table[j][0]} + xout_{r - 1}_{L3_Table[j][1]} + xout_{r - 1}_{L3_Table[j][2]} + xin_{r}_{4 * (15 - j)} - 2 k_{r - 1}_{4 * (15 - j)} = 0\n"
         for i in range(16):
             x_in = get_vars("xin", r, range(4 * i, 4 * (i + 1)))
             x_out = get_vars("xout", r, range(4 * i, 4 * (i + 1)))
@@ -633,30 +639,25 @@ def get_constrains(round):
                     ).replace("+ -", "- ")
                     + f" >= {-res_item[-1]}\n"
                 )
-        for j in range(16):
-            s += f"xout_{r}_{L0_Table[j][0]} + xout_{r}_{L0_Table[j][1]} + xout_{r}_{L0_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 3} - 2 k_{r}_{4 * (15 - j) + 3} = 0\n"
-            s += f"xout_{r}_{L1_Table[j][0]} + xout_{r}_{L1_Table[j][1]} + xout_{r}_{L1_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 2} - 2 k_{r}_{4 * (15 - j) + 2} = 0\n"
-            s += f"xout_{r}_{L2_Table[j][0]} + xout_{r}_{L2_Table[j][1]} + xout_{r}_{L2_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 1} - 2 k_{r}_{4 * (15 - j) + 1} = 0\n"
-            s += f"xout_{r}_{L3_Table[j][0]} + xout_{r}_{L3_Table[j][1]} + xout_{r}_{L3_Table[j][2]} + xin_{r + 1}_{4 * (15 - j)} - 2 k_{r}_{4 * (15 - j)} = 0\n"
     return s
 
 
 def get_bin(round):
     return "\n".join(
-        [f"xin_{r}_{i}" for r in range(round + 1) for i in range(64)]
-        + [f"xout_{r}_{i}" for r in range(round + 1) for i in range(64)]
-        + [f"u_{r}_{i}" for r in range(round) for i in range(48)]
+        [f"xin_{r}_{i}" for r in range(round) for i in range(64)]
+        + [f"xout_{r}_{i}" for r in range(round) for i in range(64)]
+        + [f"u_{r}_{i}" for r in range(round) for i in range(32)]
     )
 
 def get_int(round):
     return "\n".join(
-        [f"k_{r}_{i}" for r in range(round + 1) for i in range(64)]
+        [f"k_{r}_{i}" for r in range(round - 1) for i in range(64)]
     )
 
-ROUND = 6
+ROUND = 9
 
 for round in range(1, ROUND + 1):
-    with open(f"smallPride_max_diff_prob_{round}.lp", "w") as f:
+    with open(f".\\diff\\smallPride_max_diff_prob_{round}.lp", "w") as f:
         f.write("Minimize\n")
         f.write(get_obj(round) + "\n")
 
@@ -673,7 +674,7 @@ for round in range(1, ROUND + 1):
         f.write("END")
 
     m = gp.read(
-        f"smallPride_max_diff_prob_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
+        f".\\diff\\smallPride_max_diff_prob_{round}.lp", env=gp.Env(params={"OutputFlag": 0})
     )
     m.optimize()
     if m.Status == 2:
