@@ -1,4 +1,4 @@
-# import gurobipy as gp
+import gurobipy as gp
 
 SBOX = [0x0, 0x4, 0x8, 0xF, 0x1, 0x5, 0xE, 0x9, 0x2, 0x7, 0xA, 0xC, 0xB, 0xD, 0x6, 0x3]
 
@@ -592,7 +592,7 @@ while len(cpoints) > 0:
             new_cpoints.append(p)
     cpoints = new_cpoints
 # print(res)
-print(len(res))
+# print(len(res))
 
 
 def get_obj(round):
@@ -601,7 +601,7 @@ def get_obj(round):
             " ".join(item)
             for item in list(
                 zip(
-                    ["4", "2"] * round * 16,
+                    ["2", "3"] * round * 16,
                     [f"u_{r}_{i}" for r in range(round) for i in range(32)],
                 )
             )
@@ -634,10 +634,10 @@ def get_constrains(round):
                     + f" >= {-res_item[-1]}\n"
                 )
         for j in range(16):
-            s += f"xout_{r}_{L0_Table[j][0]} + xout_{r}_{L0_Table[j][1]} + xout_{r}_{L0_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 3} - 2 k_{r}_{4 * (15 - j) + 3} = 0"
-            s += f"xout_{r}_{L1_Table[j][0]} + xout_{r}_{L1_Table[j][1]} + xout_{r}_{L1_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 2} - 2 k_{r}_{4 * (15 - j) + 2} = 0"
-            s += f"xout_{r}_{L2_Table[j][0]} + xout_{r}_{L2_Table[j][1]} + xout_{r}_{L2_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 1} - 2 k_{r}_{4 * (15 - j) + 1} = 0"
-            s += f"xout_{r}_{L3_Table[j][0]} + xout_{r}_{L3_Table[j][1]} + xout_{r}_{L3_Table[j][2]} + xin_{r + 1}_{4 * (15 - j)} - 2 k_{r}_{4 * (15 - j)} = 0"
+            s += f"xout_{r}_{L0_Table[j][0]} + xout_{r}_{L0_Table[j][1]} + xout_{r}_{L0_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 3} - 2 k_{r}_{4 * (15 - j) + 3} = 0\n"
+            s += f"xout_{r}_{L1_Table[j][0]} + xout_{r}_{L1_Table[j][1]} + xout_{r}_{L1_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 2} - 2 k_{r}_{4 * (15 - j) + 2} = 0\n"
+            s += f"xout_{r}_{L2_Table[j][0]} + xout_{r}_{L2_Table[j][1]} + xout_{r}_{L2_Table[j][2]} + xin_{r + 1}_{4 * (15 - j) + 1} - 2 k_{r}_{4 * (15 - j) + 1} = 0\n"
+            s += f"xout_{r}_{L3_Table[j][0]} + xout_{r}_{L3_Table[j][1]} + xout_{r}_{L3_Table[j][2]} + xin_{r + 1}_{4 * (15 - j)} - 2 k_{r}_{4 * (15 - j)} = 0\n"
     return s
 
 
@@ -653,9 +653,9 @@ def get_int(round):
         [f"k_{r}_{i}" for r in range(round + 1) for i in range(64)]
     )
 
-ROUND = 9
+ROUND = 6
 
-for round in range(ROUND, ROUND + 1):
+for round in range(1, ROUND + 1):
     with open(f"smallPride_max_diff_prob_{round}.lp", "w") as f:
         f.write("Minimize\n")
         f.write(get_obj(round) + "\n")
