@@ -677,5 +677,16 @@ for round in range(ROUND, ROUND + 1):
         env=gp.Env(params={"OutputFlag": 0}),
     )
     m.optimize()
+    # 获取所有变量对象
+    vars = m.getVars()
+    # 打印每个变量的最优解值
+    cnt = 0
+    for var in vars:
+        if var.X != 0:
+            print(f"{var.VarName} = {int(var.X)}", end="\t")
+            if (cnt + 1) % 10 == 0:
+                print()
+            cnt += 1
+    print()
     if m.Status == 2:
         print(f"{round}\t{m.ObjVal}")
