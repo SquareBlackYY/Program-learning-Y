@@ -1,14 +1,8 @@
 #include <iostream>
 #include <gmpxx.h>
 #include <cstdint>
+#include <iomanip>
 #include <vector>
-
-mpz_class generate_random_number(const mpz_class &, const mpz_class &);
-struct byteString int_to_bytes(const mpz_class &);
-mpz_class bytes_to_int(const byteString &);
-mpz_class ExEculid(const mpz_class &, const mpz_class &);
-Point ECC_add(const Elliptic_Curve &, const Point &, const Point &);
-Point ECC_multiple_add(const Elliptic_Curve &, const Point &, mpz_class);
 
 // 点坐标
 struct Point
@@ -38,25 +32,13 @@ struct Elliptic_Curve
         : p(p_val), a(a_val), b(b_val), G(G_point), n(n_val), h(h_val) {}
 };
 
-// 字节串
-class byteString
-{
-public:
-    size_t size;
-    uint8_t *string;
-
-    ~byteString()
-    {
-        delete[] string;
-    }
-    void PrintString()
-    {
-        std::cout << "字节串: ";
-        for (size_t i = 0; i < size; i++)
-            std::cout << std::hex << static_cast<int>(string[i]);
-        std::cout << std::dec << std::endl;
-    }
-};
+mpz_class generate_random_number(const mpz_class &, const mpz_class &);
+std::vector<uint8_t> int_to_bytes(const mpz_class &);
+mpz_class bytes_to_int(const std::vector<uint8_t> &);
+mpz_class ExEculid(const mpz_class &, const mpz_class &);
+Point ECC_add(const Elliptic_Curve &, const Point &, const Point &);
+Point ECC_multiple_add(const Elliptic_Curve &, const Point &, mpz_class);
+void PrintByteString(const std::vector<uint8_t> &);
 
 int main()
 {
@@ -70,17 +52,10 @@ int main()
     mpz_class d = generate_random_number(1, E.n); // 用户B的私钥
     Point P = ECC_multiple_add(E, E.G, d);        // 用户B的公钥
 
-    mpz_class num("258");
-
-    // 大整数转字节串
-    byteString bytestring = int_to_bytes(num);
-
-    bytestring.PrintString();
-
-    // 字节串转大整数
-    mpz_class result = bytes_to_int(bytestring);
-
-    std::cout << std::dec << "大整数: " << result << std::endl;
+    mpz_class m_int("0x0123456789abcdef");
+    std::vector<uint8_t> m_bytes = int_to_bytes(m_int);
+    std::cout << "明文：\t";
+    PrintByteString(m_bytes);
 
     return 0;
 }
@@ -130,7 +105,7 @@ Point ECC_add(const Elliptic_Curve &E, const Point &p, const Point &q)
     else if (q.x == 0 && q.y == 0)
         return p;
     else if (p.x == q.x && (p.y % E.p + E.p) % E.p == ((-q.y) % E.p + E.p) % E.p)
-        return Point((mpz_class)0, 0);
+        return Point();
     else if (p.x == q.x && p.y == q.y)
         lambda = ((3 * p.x * p.x + E.a) * ExEculid(2 * p.y, E.p)) % E.p;
     else
@@ -145,7 +120,7 @@ Point ECC_add(const Elliptic_Curve &E, const Point &p, const Point &q)
 // 倍点运算
 Point ECC_multiple_add(const Elliptic_Curve &E, const Point &p, mpz_class multiple)
 {
-    Point temp = p, result((mpz_class)0, 0);
+    Point temp = p, result;
     while (multiple)
     {
         if ((multiple & 1) == 1)
@@ -157,19 +132,27 @@ Point ECC_multiple_add(const Elliptic_Curve &E, const Point &p, mpz_class multip
 }
 
 // 整数转字节串
-struct byteString int_to_bytes(const mpz_class &Num)
+std::vector<uint8_t> int_to_bytes(const mpz_class &Num)
 {
-    byteString bytestring;
-    bytestring.size = (mpz_sizeinbase(Num.get_mpz_t(), 2) + 7) / 8;
-    bytestring.string = new uint8_t[bytestring.size];
-    mpz_export(bytestring.string, nullptr, 1, 1, 1, 0, Num.get_mpz_t());
+    size_t size;
+    unsigned char *bytes = reinterpret_cast<unsigned char*>(mpz_export(nullptr, &size, 1, sizeof(uint8_t), 1, 0, Num.get_mpz_t()));
+    std::vector<uint8_t> bytestring(bytes, bytes + size);
+    free(bytes);
     return bytestring;
 }
 
 // 字节串转整数
-mpz_class bytes_to_int(const byteString &bytestring)
+mpz_class bytes_to_int(const std::vector<uint8_t> &bytestring)
 {
     mpz_class Num;
-    mpz_import(Num.get_mpz_t(), bytestring.size, 1, 1, 1, 0, bytestring.string);
+    mpz_import(Num.get_mpz_t(), bytestring.size(), 1, sizeof(uint8_t), 1, 0, bytestring.data());
     return Num;
+}
+
+// 打印字节串
+void PrintByteString(const std::vector<uint8_t> &bytestring)
+{
+    for (uint8_t byte : bytestring)
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    std::cout << std::dec << std::endl;
 }
