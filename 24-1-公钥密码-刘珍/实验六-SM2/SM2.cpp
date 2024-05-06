@@ -59,6 +59,7 @@ void bytes_to_Point(const Elliptic_Curve &, const std::vector<uint8_t> &, Point 
 void PrintByteString(const std::vector<uint8_t> &);
 void KDF(std::vector<uint8_t>, const size_t &, std::vector<bool> &);
 SM2_ciphertext SM2_Encrypt(const Elliptic_Curve &, const Point &, const std::vector<bool> &, const size_t &);
+std::vector<bool> SM2_Decrypt(const Elliptic_Curve &, const mpz_class &, const SM2_ciphertext &, const size_t &);
 
 int main()
 {
@@ -96,6 +97,14 @@ int main()
     for (bool bit : C.C3)
         std::cout << bit;
     std::cout << std::endl;
+
+    std::vector<bool> M_decrypt = SM2_Decrypt(E, d_B, C, klen);
+    mpz_class m_decrypt = 0;
+    bits_to_int(M_decrypt, m_decrypt);
+    std::vector<uint8_t> m_decrypt_bytes = int_to_bytes(m_decrypt);
+
+    std::cout << "解密结果：\t";
+    PrintByteString(m_decrypt_bytes);
 
     return 0;
 }
@@ -437,7 +446,6 @@ void KDF(std::vector<uint8_t> bytes, const size_t &klen, std::vector<bool> &t)
     std::copy(data_bits.begin(), data_bits.begin() + klen - (size - 1) * 512, t.begin() + (size - 1) * 512);
 }
 
-
 // SM2加密
 SM2_ciphertext SM2_Encrypt(const Elliptic_Curve &E, const Point &P, const std::vector<bool> &M, const size_t &klen)
 {
@@ -463,7 +471,6 @@ SM2_ciphertext SM2_Encrypt(const Elliptic_Curve &E, const Point &P, const std::v
 
         // 4.计算k * P_B = (x2, y2)
         Point Q = ECC_multiple_add(E, P, k);
-
 
         std::vector<uint8_t> x2_bytes = int_to_bytes(Q.x);
         std::vector<uint8_t> y2_bytes = int_to_bytes(Q.y);
@@ -496,4 +503,55 @@ SM2_ciphertext SM2_Encrypt(const Elliptic_Curve &E, const Point &P, const std::v
 
         return {C1_bits, C2_bits, C3_bits};
     }
+}
+
+// SM2解密
+std::vector<bool> SM2_Decrypt(const Elliptic_Curve &E, const mpz_class &d, const SM2_ciphertext &C, const size_t &klen)
+{
+    std::vector<uint8_t> C1_bytes;
+    std::vector<bool> t(klen), M(klen), u;
+    Point C1_point;
+
+    bits_to_bytes(C.C1, C1_bytes);
+    bytes_to_Point(E, C1_bytes, C1_point);
+    if (power_mod(C1_point.y, 2, E.p) != (power_mod(C1_point.x, 3, E.p) + E.a * C1_point.x + E.b) % E.p)
+        exit(0);
+
+    Point S = ECC_multiple_add(E, C1_point, E.h);
+    if (S.x == 0 && S.y == 0)
+        exit(0);
+
+    Point Q = ECC_multiple_add(E, C1_point, d);
+    std::vector<uint8_t> x2_bytes = int_to_bytes(Q.x);
+    std::vector<uint8_t> y2_bytes = int_to_bytes(Q.y);
+    std::vector<uint8_t> Q_bytes(x2_bytes.size() + y2_bytes.size());
+
+    std::copy(x2_bytes.begin(), x2_bytes.end(), Q_bytes.begin());
+    std::copy(y2_bytes.begin(), y2_bytes.end(), Q_bytes.begin() + x2_bytes.size());
+    KDF(Q_bytes, klen, t);
+    if (std::all_of(t.begin(), t.end(), [](bool value)
+                    { return !value; })) // t 为全 0 比特串
+        exit(0);
+    std::transform(C.C2.begin(), C.C2.end(), t.begin(), M.begin(), [](bool a, bool b)
+                   { return a ^ b; });
+
+    std::vector<uint8_t> M_bytes;
+    bits_to_bytes(M, M_bytes);
+    std::vector<uint8_t> message(x2_bytes.size() + M_bytes.size() + y2_bytes.size());
+
+    std::vector<uint8_t>::iterator iter = message.begin();
+    iter = std::copy(x2_bytes.begin(), x2_bytes.end(), iter);
+    iter = std::copy(M_bytes.begin(), M_bytes.end(), iter);
+    std::copy(y2_bytes.begin(), y2_bytes.end(), iter);
+
+    uint8_t *hash_val = message.data();
+    size_t length = message.size();
+    uint8_t digest[SHA512_DIGEST_LENGTH];
+    SHA512(hash_val, length, digest);
+    std::vector<uint8_t> data_bytes(digest, digest + SHA512_DIGEST_LENGTH);
+    bytes_to_bits(data_bytes, u);
+    if (!std::equal(u.begin(), u.end(), C.C3.begin())) // u 和 C3 不相等
+        exit(0);
+
+    return M;
 }
