@@ -73,13 +73,13 @@ int main()
 
     cout << "(4) 实现RSA的共模攻击" << endl;
     cout << "明文 m = " << m << endl;
-    
+
     mpz_class e1, e2, c1, c2;
     do
     {
         e1 = generate_random_number(3, fn);
         e2 = generate_random_number(3, fn);
-    } while (!GCD(e1, fn) || !GCD(e2, fn) || !GCD(e1, e2));
+    } while (!GCD(e1, fn) || !GCD(e2, fn) || !GCD(e1, e2) || e1 == e2);
 
     RSA_Encrypt(m, c1, e1, n);
     cout << "加密结果1 c1 = " << c1 << endl;
