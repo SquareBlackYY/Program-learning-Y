@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <random>
+#include <mutex>
 using namespace std;
 
 
@@ -279,13 +281,22 @@ bool Miller_Rabin(const mpz_class &n)
 // 生成随机数（前闭后开）
 mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
 {
-    gmp_randclass rand(gmp_randinit_mt);
-    static bool seed_initialized = false;
+    static thread_local gmp_randclass rand(gmp_randinit_mt);
+    static thread_local bool seed_initialized = false;
+    static mutex mtx;
+
     if (!seed_initialized)
     {
-        rand.seed(time(0));
-        seed_initialized = true;
+        lock_guard<mutex> lock(mtx);
+        if (!seed_initialized)
+        {
+            random_device rd;
+            unsigned long seed = rd() ^ (time(0) + (clock() << 1));
+            rand.seed(seed);
+            seed_initialized = true;
+        }
     }
+    
     return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }
 
