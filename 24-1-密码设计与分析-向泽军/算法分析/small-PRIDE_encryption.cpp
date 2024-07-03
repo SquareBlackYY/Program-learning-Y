@@ -177,9 +177,9 @@ void small_PRIDE_encryption_without_keyschedule(unsigned short int state[4], uns
 
 int main()
 {
-	unsigned short int Key[4] = {0x0F9D, 0x4ACD, 0xA5D6, 0x0081};
+	unsigned short int Key[4] = {0x9D0F, 0xCD4A, 0xD6A5, 0x8100};
 	unsigned short int Round_key[ROUND + 1][4];
-	unsigned short int state[4] = {0x585f, 0x1dd0, 0xfa8a, 0xb3f8};
+	unsigned short int state[4] = {0x6baf, 0xe6a1, 0xab2d, 0xa4fb};
 	small_PRIDE_encryption_with_keyschedule(state, Key);
 	for (int i = 0; i < 4; i++)
 		cout << hex << state[i] << endl;
