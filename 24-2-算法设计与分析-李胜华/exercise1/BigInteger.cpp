@@ -188,6 +188,11 @@ public:
     }
 
     // 重载 = 运算符
+    BigInteger &operator=(const string &other)
+    {
+        BigInteger result(other);
+        return result;
+    }
     BigInteger &operator=(const BigInteger &other)
     {
         // 检测自我赋值
