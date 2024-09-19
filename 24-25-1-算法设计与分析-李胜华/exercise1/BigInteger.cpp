@@ -340,7 +340,7 @@ public:
 
         size_t n1 = a.number.length();
         size_t n2 = b.number.length();
-        size_t resultLength = n1 * n2;
+        size_t resultLength = n1 + n2;
         int *product = new int[resultLength]();
 
         for (int i = n1 - 1; i >= 0; --i)
@@ -351,14 +351,9 @@ public:
                 product[i + j + 1] = sum % 10;
                 product[i + j] += sum / 10;
             }
-        
 
         for (size_t i = 0; i < resultLength; ++i)
-        {
-            // cout << product[i] << endl;
-            if (!(result.number == "0" && product[i] == 0))
-                result.number.push_back(product[i] + '0');
-        }
+            result.number.push_back(product[i] + '0');
 
         delete[] product;
 
@@ -407,5 +402,6 @@ int main()
     cout << b << endl;
 
     cout << a * b << endl;
+
     return 0;
 }
