@@ -472,8 +472,8 @@ int main()
 {
     double a = -0.00123;
     double b = 0.1;
-    BigInteger c("-0000.00123000");
-    BigInteger d("+0.1");
+    BigInteger c("20");
+    BigInteger d("100");
 
     cout << a << endl;
     cout << b << endl;
