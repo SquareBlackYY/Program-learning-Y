@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 class BigInteger
@@ -7,6 +8,8 @@ private:
     string number;   // 数字部分
     size_t point;    // 小数点位置 10 ^ -point
     bool isNegative; // 是否为负数
+
+    const static size_t k = 5; // 除法最多延长k位
 
     // 化简数字部分（去除前后多余的0）
     static void simplifyInt(BigInteger &bi)
@@ -136,6 +139,18 @@ public:
     // 空参构造
     BigInteger() : number("0"), point(0), isNegative(false) {};
 
+    // 传入整数或小数构造
+    BigInteger(double input)
+    {
+        // 将 double 转换为字符串
+        ostringstream oss;
+        oss << input;
+        string str = oss.str();
+
+        // 调用字符串构造函数
+        *this = BigInteger(str);
+    }
+
     // 传入字符串构造
     explicit BigInteger(const string &str)
     {
@@ -188,7 +203,8 @@ public:
     }
 
     // 重载 = 运算符
-    BigInteger &operator=(const string &other)
+    template <typename T>
+    BigInteger &operator=(const T &other)
     {
         BigInteger result(other);
         *this = result;
@@ -234,7 +250,8 @@ public:
     }
 
     // 重载 == 运算符
-    bool operator==(const string &other) const
+    template <typename T>
+    bool operator==(const T &other) const
     {
         BigInteger bi(other);
         return (this->number == bi.number &&
@@ -274,9 +291,9 @@ public:
     BigInteger operator+(const BigInteger &other) const
     {
         // 0判断
-        if (*this == "0")
+        if (*this == 0)
             return other;
-        else if (other == "0")
+        else if (other == 0)
             return *this;
 
         BigInteger result, a = *this, b = other;
@@ -311,9 +328,9 @@ public:
     BigInteger operator-(const BigInteger &other) const
     {
         // 0判断
-        if (*this == "0")
+        if (*this == 0)
             return !other;
-        else if (other == "0")
+        else if (other == 0)
             return *this;
 
         BigInteger result, a = *this, b = other;
@@ -349,7 +366,7 @@ public:
     {
 
         BigInteger result;
-        if (*this == "0" || other == "0")
+        if (*this == 0 || other == 0)
             return result;
 
         BigInteger a = *this, b = other;
@@ -379,24 +396,24 @@ public:
         return result;
     }
 
-    // 重载 / 运算符（这里只实现整数部分的除法）
+    // 重载 / 运算符（最多延长k位）
     BigInteger operator/(const BigInteger &other) const
     {
         BigInteger result;
 
-        if (*this == "0")
+        if (*this == 0)
             return result;
-        else if (other == "0")
+        else if (other == 0)
             throw invalid_argument("Divide by zero error");
 
-        BigInteger dividend = *this, divisor = other, remainder;
-        string quotient;
+        BigInteger dividend = *this, divisor = other, remainder; // 除数、被除数、余数
+        string quotient;                                         // 商
 
-        int count = 0;
         for (char c : dividend.number)
         {
+            int count = 0;
             remainder.number.push_back(c);
-            
+
             while (compareAbsValue(remainder, divisor))
             {
                 remainder = remainder - divisor;
@@ -406,7 +423,7 @@ public:
         }
 
         result.number = quotient;
-        result.point = this->point + other.point + count;
+        //result.point = this->point + other.point;
         result.isNegative = this->isNegative != other.isNegative;
         simplifyInt(result);
         return result;
@@ -417,10 +434,13 @@ int main()
 {
     BigInteger a("-0000.00123000");
     BigInteger b("+0.1");
+    BigInteger c = 2;
+    BigInteger d = 5.0;
+
     cout << a << endl;
     cout << b << endl;
 
-    cout << a / b << endl;
+    cout << d / c << endl;
 
     return 0;
 }
