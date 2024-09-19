@@ -473,8 +473,7 @@ int main()
     BigInteger a("20");
     BigInteger b("100");
 
-    cout << "a = " << a << endl;
-    cout << "b = " << b << endl;
+    cout << "a = " << a << ", b = " << b << endl;
 
     cout << "a + b = " << a + b << endl;
     cout << "a - b = " << a - b << endl;
