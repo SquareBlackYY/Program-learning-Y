@@ -191,7 +191,8 @@ public:
     BigInteger &operator=(const string &other)
     {
         BigInteger result(other);
-        return result;
+        *this = result;
+        return *this;
     }
     BigInteger &operator=(const BigInteger &other)
     {
@@ -335,6 +336,6 @@ int main()
     cout << a << endl;
     cout << b << endl;
 
-    cout << a - b << endl;
+    cout << b - a << endl;
     return 0;
 }
