@@ -115,7 +115,7 @@ private:
         simplifyInt(a);
         simplifyInt(b);
         alignInt(a, b);
-        
+
         if (a.number.length() > b.number.length())
             return true;
         else if (a.number.length() < b.number.length())
@@ -450,7 +450,7 @@ public:
         {
             remainder.number.push_back(i < dividend.number.length() ? dividend.number[i] : '0');
             size_t count = 0;
-            
+
             while (abs(compareAbsValue(remainder, divisor)) == 1)
             {
                 remainder = remainder - divisor;
@@ -479,6 +479,6 @@ int main()
     cout << "a - b = " << a - b << endl;
     cout << "a * b = " << a * b << endl;
     cout << "a / b = " << a / b << endl;
-    
+
     return 0;
 }
