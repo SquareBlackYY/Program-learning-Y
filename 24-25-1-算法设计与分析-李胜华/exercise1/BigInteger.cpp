@@ -233,6 +233,22 @@ public:
         return is;
     }
 
+    // 重载 == 运算符
+    bool operator==(const string &other) const
+    {
+        BigInteger bi(other);
+        return (this->number == bi.number &&
+                this->point == bi.point &&
+                this->isNegative == bi.isNegative);
+    }
+    bool operator==(const BigInteger &other) const
+    {
+        // 比较所有关键成员变量
+        return (this->number == other.number &&
+                this->point == other.point &&
+                this->isNegative == other.isNegative);
+    }
+
     // 重载 << 运算符
     friend ostream &operator<<(ostream &os, const BigInteger &bi)
     {
@@ -258,9 +274,9 @@ public:
     BigInteger operator+(const BigInteger &other) const
     {
         // 0判断
-        if (this->number == "0")
+        if (*this == "0")
             return other;
-        else if (other.number == "0")
+        else if (other == "0")
             return *this;
 
         BigInteger result, a = *this, b = other;
@@ -295,9 +311,9 @@ public:
     BigInteger operator-(const BigInteger &other) const
     {
         // 0判断
-        if (this->number == "0")
+        if (*this == "0")
             return !other;
-        else if (other.number == "0")
+        else if (other == "0")
             return *this;
 
         BigInteger result, a = *this, b = other;
@@ -333,7 +349,7 @@ public:
     {
 
         BigInteger result;
-        if (this->number == "0" || other.number == "0")
+        if (*this == "0" || other == "0")
             return result;
 
         BigInteger a = *this, b = other;
@@ -357,41 +373,44 @@ public:
 
         delete[] product;
 
-        result.isNegative = this->isNegative != other.isNegative;
         result.point = this->point + other.point;
+        result.isNegative = this->isNegative != other.isNegative;
         simplifyInt(result);
         return result;
     }
 
     // 重载 / 运算符（这里只实现整数部分的除法）
-    // BigInteger operator/(const BigInteger &other) const
-    // {
-    //     BigInteger result;
+    BigInteger operator/(const BigInteger &other) const
+    {
+        BigInteger result;
 
-    //     if (other.number == "0")
-    //         throw invalid_argument("Divide by zero error");
-    //     else if (this->number == "0")
-    //         return result;
+        if (*this == "0")
+            return result;
+        else if (other == "0")
+            throw invalid_argument("Divide by zero error");
 
-    //     BigInteger dividend = *this, divisor = other, remainder;
-    //     string quotient;
+        BigInteger dividend = *this, divisor = other, remainder;
+        string quotient;
 
-    //     for (char c : dividend.number)
-    //     {
-    //         remainder.number.push_back(c);
-    //         int count = 0;
-    //         while (compareAbsValue(remainder, divisor))
-    //         {
-    //             remainder = remainder - divisor;
-    //             count++;
-    //         }
-    //         quotient.push_back(count + '0');
-    //     }
+        int count = 0;
+        for (char c : dividend.number)
+        {
+            remainder.number.push_back(c);
+            
+            while (compareAbsValue(remainder, divisor))
+            {
+                remainder = remainder - divisor;
+                count++;
+            }
+            quotient.push_back(count + '0');
+        }
 
-    //     result.number = quotient;
-    //     result.isNegative = this->isNegative != other.isNegative;
-    //     return result;
-    // }
+        result.number = quotient;
+        result.point = this->point + other.point + count;
+        result.isNegative = this->isNegative != other.isNegative;
+        simplifyInt(result);
+        return result;
+    }
 };
 
 int main()
@@ -401,7 +420,7 @@ int main()
     cout << a << endl;
     cout << b << endl;
 
-    cout << a * b << endl;
+    cout << a / b << endl;
 
     return 0;
 }
