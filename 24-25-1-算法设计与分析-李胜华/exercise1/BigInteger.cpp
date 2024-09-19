@@ -4,9 +4,9 @@ using namespace std;
 class BigInteger
 {
 private:
-    string number;      // 数字部分
-    unsigned int point; // 小数点位置 10 ^ -point
-    bool isNegative;    // 是否为负数
+    string number;   // 数字部分
+    size_t point;    // 小数点位置 10 ^ -point
+    bool isNegative; // 是否为负数
 
     // 化简数字部分（去除前后多余的0）
     static void simplifyInt(BigInteger &bi)
@@ -286,12 +286,12 @@ public:
                 result.isNegative = b.isNegative;
             }
         }
-        result.point = a.point;
+        result.point = this->point;
         simplifyInt(result);
         return result;
     }
 
-    // 重载减法运算符
+    // 重载 - 运算符
     BigInteger operator-(const BigInteger &other) const
     {
         // 0判断
@@ -323,10 +323,80 @@ public:
                 result.isNegative = !a.isNegative;
             }
         }
-        result.point = a.point;
+        result.point = this->point;
         simplifyInt(result);
         return result;
     }
+
+    // 重载 * 运算符
+    BigInteger operator*(const BigInteger &other) const
+    {
+
+        BigInteger result;
+        if (this->number == "0" || other.number == "0")
+            return result;
+
+        BigInteger a = *this, b = other;
+
+        size_t n1 = a.number.length();
+        size_t n2 = b.number.length();
+        size_t resultLength = n1 * n2;
+        int *product = new int[resultLength]();
+
+        for (int i = n1 - 1; i >= 0; --i)
+            for (int j = n2 - 1; j >= 0; --j)
+            {
+                int mul = (a.number[i] - '0') * (b.number[j] - '0');
+                int sum = product[i + j + 1] + mul;
+                product[i + j + 1] = sum % 10;
+                product[i + j] += sum / 10;
+            }
+        
+
+        for (size_t i = 0; i < resultLength; ++i)
+        {
+            // cout << product[i] << endl;
+            if (!(result.number == "0" && product[i] == 0))
+                result.number.push_back(product[i] + '0');
+        }
+
+        delete[] product;
+
+        result.isNegative = this->isNegative != other.isNegative;
+        result.point = this->point + other.point;
+        simplifyInt(result);
+        return result;
+    }
+
+    // 重载 / 运算符（这里只实现整数部分的除法）
+    // BigInteger operator/(const BigInteger &other) const
+    // {
+    //     BigInteger result;
+
+    //     if (other.number == "0")
+    //         throw invalid_argument("Divide by zero error");
+    //     else if (this->number == "0")
+    //         return result;
+
+    //     BigInteger dividend = *this, divisor = other, remainder;
+    //     string quotient;
+
+    //     for (char c : dividend.number)
+    //     {
+    //         remainder.number.push_back(c);
+    //         int count = 0;
+    //         while (compareAbsValue(remainder, divisor))
+    //         {
+    //             remainder = remainder - divisor;
+    //             count++;
+    //         }
+    //         quotient.push_back(count + '0');
+    //     }
+
+    //     result.number = quotient;
+    //     result.isNegative = this->isNegative != other.isNegative;
+    //     return result;
+    // }
 };
 
 int main()
@@ -336,6 +406,6 @@ int main()
     cout << a << endl;
     cout << b << endl;
 
-    cout << b - a << endl;
+    cout << a * b << endl;
     return 0;
 }
