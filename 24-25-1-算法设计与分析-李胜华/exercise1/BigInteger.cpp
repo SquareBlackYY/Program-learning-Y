@@ -16,7 +16,6 @@ private:
     {
         size_t front, back;          // 前后首个非零字符位置
         bool isFirstNotZero = false; // 是否遇到首个非零字符
-        size_t addZeros = 0;         // 补0数量
 
         // 判断首个非0字符位置
         for (size_t i = 0; i < bi.number.length(); ++i)
@@ -36,10 +35,6 @@ private:
         }
         else
         {
-            // 判断是否需要补0
-            if (front >= bi.number.length() - bi.point)
-                addZeros = front - bi.number.length() + bi.point + 1;
-
             // 去除小数部分多余的0
             size_t i = 0;
             for (; i < bi.number.length(); ++i)
@@ -53,24 +48,14 @@ private:
 
             // 写入字符串
             bi.number = bi.number.substr(front, back - front + 1);
-            bi.number.insert(0, addZeros, '0');
         }
     }
 
-    // 对齐两个数字（前后补0）
+    // 对齐两个数字（后补0）
     static void alignInt(BigInteger &a, BigInteger &b)
     {
-        // 较小的数
-        BigInteger *minIntPart = a.number.length() - a.point < b.number.length() - b.point ? &a : &b;
         BigInteger *minPointPart = a.point < b.point ? &a : &b;
-
-        // 差值计算
-        size_t diffInt = a.number.length() - a.point > b.number.length() - b.point ? a.number.length() - a.point - b.number.length() + b.point : b.number.length() - b.point - a.number.length() + a.point;
-        size_t diffPoint = a.point > b.point ? a.point - b.point : b.point - a.point;
-
-        // 整数部分填充
-        minIntPart->number.insert(0, diffInt, '0');
-        // 小数部分填充
+        const size_t diffPoint = a.point > b.point ? a.point - b.point : b.point - a.point;
         minPointPart->number.append(diffPoint, '0');
         minPointPart->point += diffPoint;
     }
@@ -82,11 +67,13 @@ private:
         int carry = 0, sum = 0; // 进位与和
 
         alignInt(a, b);
+        int i = a.number.length() - 1;
+        int j = b.number.length() - 1;
 
-        for (int i = a.number.length() - 1; i >= 0 || carry; --i)
+        while (i >= 0 || j >= 0 || carry)
         {
-            int x = (i >= 0) ? a.number[i] - '0' : 0;
-            int y = (i >= 0) ? b.number[i] - '0' : 0;
+            int x = (i >= 0) ? a.number[i--] - '0' : 0;
+            int y = (j >= 0) ? b.number[j--] - '0' : 0;
             sum = x + y + carry;
             carry = sum / 10;
             result.push_back((sum % 10) + '0');
@@ -102,11 +89,12 @@ private:
         int borrow = 0, diff = 0; // 借位与差
 
         alignInt(a, b);
+        int i = a.number.length() - 1, j = b.number.length() - 1;
 
-        for (int i = a.number.length() - 1; i >= 0; --i)
+        while (i >= 0 || j >= 0)
         {
-            int x = (i >= 0) ? a.number[i] - '0' : 0;
-            int y = (i >= 0) ? b.number[i] - '0' : 0;
+            int x = (i >= 0) ? a.number[i--] - '0' : 0;
+            int y = (j >= 0) ? b.number[j--] - '0' : 0;
             diff = x - y - borrow;
             if (diff < 0)
             {
@@ -124,15 +112,25 @@ private:
     // 比较两个函数的绝对值，a > b时返回1，<时返回0，相等时返回-1
     static int compareAbsValue(BigInteger &a, BigInteger &b)
     {
+        simplifyInt(a);
+        simplifyInt(b);
         alignInt(a, b);
-        for (size_t i = 0; i < a.number.length(); ++i)
+        
+        if (a.number.length() > b.number.length())
+            return true;
+        else if (a.number.length() < b.number.length())
+            return false;
+        else
         {
-            if (a.number[i] > b.number[i])
-                return true;
-            else if (a.number[i] < b.number[i])
-                return false;
+            for (size_t i = 0; i < a.number.length(); ++i)
+            {
+                if (a.number[i] > b.number[i])
+                    return true;
+                else if (a.number[i] < b.number[i])
+                    return false;
+            }
+            return -1;
         }
-        return -1;
     }
 
 public:
@@ -237,6 +235,46 @@ public:
         return result;
     }
 
+    // 重载 == 运算符
+    template <typename T>
+    bool operator==(const T &other) const
+    {
+        BigInteger a = *this, b(other);
+        simplifyInt(a);
+        return (a.number == b.number &&
+                a.point == b.point &&
+                a.isNegative == b.isNegative);
+    }
+    bool operator==(const BigInteger &other) const
+    {
+        BigInteger a = *this, b = other;
+        simplifyInt(a);
+        simplifyInt(b);
+        return (a.number == b.number &&
+                a.point == b.point &&
+                a.isNegative == b.isNegative);
+    }
+
+    // 重载 != 运算符
+    template <typename T>
+    bool operator!=(const T &other) const
+    {
+        BigInteger a = *this, b(other);
+        simplifyInt(a);
+        return (a.number != b.number ||
+                a.point != b.point ||
+                a.isNegative != b.isNegative);
+    }
+    bool operator!=(const BigInteger &other) const
+    {
+        BigInteger a = *this, b = other;
+        simplifyInt(a);
+        simplifyInt(b);
+        return (this->number != other.number ||
+                this->point != other.point ||
+                this->isNegative != other.isNegative);
+    }
+
     // 重载 >> 运算符
     friend istream &operator>>(istream &is, BigInteger &bi)
     {
@@ -249,23 +287,6 @@ public:
         return is;
     }
 
-    // 重载 == 运算符
-    template <typename T>
-    bool operator==(const T &other) const
-    {
-        BigInteger bi(other);
-        return (this->number == bi.number &&
-                this->point == bi.point &&
-                this->isNegative == bi.isNegative);
-    }
-    bool operator==(const BigInteger &other) const
-    {
-        // 比较所有关键成员变量
-        return (this->number == other.number &&
-                this->point == other.point &&
-                this->isNegative == other.isNegative);
-    }
-
     // 重载 << 运算符
     friend ostream &operator<<(ostream &os, const BigInteger &bi)
     {
@@ -273,15 +294,22 @@ public:
         if (bi.isNegative)
             os << '-';
 
-        // 整数部分
-        string integerPart = bi.number.substr(0, bi.number.length() - bi.point);
-        os << integerPart;
-
-        // 小数部分
-        if (bi.point)
+        // 判断小数点位置
+        if (bi.point < bi.number.length())
         {
-            string decimalPart = bi.number.substr(bi.number.length() - bi.point, bi.point);
-            os << '.' + decimalPart;
+            // 整数部分
+            os << bi.number.substr(0, bi.number.length() - bi.point);
+
+            // 小数部分
+            if (bi.point)
+                os << '.' + bi.number.substr(bi.number.length() - bi.point, bi.point);
+        }
+        else
+        {
+            os << "0.";
+            for (size_t i = bi.number.length(); i < bi.point; ++i)
+                os << '0';
+            os << bi.number;
         }
 
         return os;
@@ -332,6 +360,8 @@ public:
             return !other;
         else if (other == 0)
             return *this;
+        else if (*this == other)
+            return BigInteger();
 
         BigInteger result, a = *this, b = other;
 
@@ -371,9 +401,9 @@ public:
 
         BigInteger a = *this, b = other;
 
-        size_t n1 = a.number.length();
-        size_t n2 = b.number.length();
-        size_t resultLength = n1 + n2;
+        const size_t n1 = a.number.length();
+        const size_t n2 = b.number.length();
+        const size_t resultLength = n1 + n2;
         int *product = new int[resultLength]();
 
         for (int i = n1 - 1; i >= 0; --i)
@@ -409,21 +439,29 @@ public:
         BigInteger dividend = *this, divisor = other, remainder; // 除数、被除数、余数
         string quotient;                                         // 商
 
-        for (char c : dividend.number)
-        {
-            int count = 0;
-            remainder.number.push_back(c);
+        // 将除数与被除数对齐为正整数
+        alignInt(dividend, divisor);
+        dividend.point = divisor.point = 0;
+        dividend.isNegative = divisor.isNegative = false;
 
-            while (compareAbsValue(remainder, divisor))
+        const size_t maxLength = dividend.number.length() > divisor.number.length() ? dividend.number.length() : divisor.number.length();
+        size_t i = 0;
+        do
+        {
+            remainder.number.push_back(i < dividend.number.length() ? dividend.number[i] : '0');
+            size_t count = 0;
+            
+            while (abs(compareAbsValue(remainder, divisor)) == 1)
             {
                 remainder = remainder - divisor;
                 count++;
             }
+
             quotient.push_back(count + '0');
-        }
+        } while (i++ < maxLength + k);
 
         result.number = quotient;
-        //result.point = this->point + other.point;
+        result.point = i > dividend.number.length() ? i - dividend.number.length() : 0;
         result.isNegative = this->isNegative != other.isNegative;
         simplifyInt(result);
         return result;
@@ -432,15 +470,25 @@ public:
 
 int main()
 {
-    BigInteger a("-0000.00123000");
-    BigInteger b("+0.1");
-    BigInteger c = 2;
-    BigInteger d = 5.0;
+    double a = -0.00123;
+    double b = 0.1;
+    BigInteger c("-0000.00123000");
+    BigInteger d("+0.1");
 
     cout << a << endl;
     cout << b << endl;
 
-    cout << d / c << endl;
+    cout << a + b << endl;
+    cout << c + d << endl;
+
+    cout << a - b << endl;
+    cout << c - d << endl;
+
+    cout << a * b << endl;
+    cout << c * d << endl;
+
+    cout << a / b << endl;
+    cout << c / d << endl;
 
     return 0;
 }
