@@ -470,25 +470,16 @@ public:
 
 int main()
 {
-    double a = -0.00123;
-    double b = 0.1;
-    BigInteger c("20");
-    BigInteger d("100");
+    BigInteger a("20");
+    BigInteger b("100");
 
     cout << a << endl;
     cout << b << endl;
 
     cout << a + b << endl;
-    cout << c + d << endl;
-
     cout << a - b << endl;
-    cout << c - d << endl;
-
     cout << a * b << endl;
-    cout << c * d << endl;
-
     cout << a / b << endl;
-    cout << c / d << endl;
-
+    
     return 0;
 }
