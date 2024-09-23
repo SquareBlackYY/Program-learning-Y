@@ -72,15 +72,15 @@ public:
     }
 };
 
-class SchnorrCipherText
+class SchnorrSignature
 {
 public:
     mpz_class r;
     mpz_class s;
 
-    SchnorrCipherText(const mpz_class r, const mpz_class s) : r(r), s(s) {}
+    SchnorrSignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
 
-    friend ostream &operator<<(ostream &os, const SchnorrCipherText &sc)
+    friend ostream &operator<<(ostream &os, const SchnorrSignature &sc)
     {
         os << "Schnorr密文:" << endl;
         os << "r : " << sc.r << endl;
@@ -95,8 +95,8 @@ mpz_class modInverse(const mpz_class &, const mpz_class &);
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
 
-SchnorrCipherText schnorrSign(const SchnorrPrivateKey &, const string &);
-bool schnorrVerify(const SchnorrPublicKey &, const SchnorrCipherText &, const string &);
+SchnorrSignature schnorrSign(const SchnorrPrivateKey &, const string &);
+bool schnorrVerify(const SchnorrPublicKey &, const SchnorrSignature &, const string &);
 
 int main()
 {
@@ -112,7 +112,7 @@ int main()
     cout << "明文:" << m << endl << endl;
 
     // 签名
-    SchnorrCipherText c = schnorrSign(sk, m);
+    SchnorrSignature c = schnorrSign(sk, m);
     cout << c << endl;
 
     // 验签
@@ -229,7 +229,7 @@ string mpzToString(const mpz_class &num)
 }
 
 // Schnorr签名函数
-SchnorrCipherText schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
+SchnorrSignature schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
@@ -239,11 +239,11 @@ SchnorrCipherText schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
     const mpz_class r = sha256((w << mpz_sizeinbase(sk.p.get_mpz_t(), 2)) + m);
     const mpz_class s = (k + sk.x * r) % sk.q;
 
-    return SchnorrCipherText(r, s);
+    return SchnorrSignature(r, s);
 }
 
 // Schnorr验签函数
-bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrCipherText &sc, const string & m_str)
+bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrSignature &sc, const string & m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
