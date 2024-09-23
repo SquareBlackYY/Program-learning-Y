@@ -174,9 +174,9 @@ public:
         bool isPoint = false; // 是否有小数点
         for (size_t i = (size_t)isSymbol; i < length; i++)
         {
-            if (str[i] == '.' && this->point == 0)
+            if (str[i] == '.' && this->point == 0 && i != (size_t)isSymbol)
             {
-                this->point = length - i - 1;
+                this->point = length - 1 - i;
                 isPoint = true;
             }
             else if (isdigit(str[i]))
