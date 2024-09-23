@@ -100,7 +100,7 @@ bool schnorrVerify(const SchnorrPublicKey &, const SchnorrCipherText &, const st
 
 int main()
 {
-    SchnorrParameter kp(mpz_class("0xB1E1F87D0053A4D73F29F1E7C84FCE4D3E161A7F0B9B4736DF4B8123C97E4A3D"), mpz_class("0xE9C7A98C1C1A7E90D60C8825B88A9351D7C3C8BF"), mpz_class("0x2"));
+    SchnorrParameter kp(mpz_class("0xb9c0faef108e0da9bc6a7fd87b9b837a19c2fa3b2daa3ef276fd87fcb7fe690f"), mpz_class("0x169f3edc9665f26b65fc6e805e3c997160a388a376e9266cfdbb512e107"), mpz_class("0x5119a79a9849f5c98659566b890077dfa71a7cb22f92e9089d3462b3b2bc16fa"));
 
     SchnorrPrivateKey sk = kp.generatePrivateKey(mpz_class("0x7C5D9F8B4A2F30D2E5AFA59F3C7B9A18E0DDAF23"));
     SchnorrPublicKey pk = kp.generatePublicKey(sk);
