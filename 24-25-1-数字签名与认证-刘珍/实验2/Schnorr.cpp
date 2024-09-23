@@ -174,7 +174,7 @@ mpz_class SHA256(const mpz_class &input)
 }
 
 // 扩展欧里几得算法求模逆 a^-1 mod b
-mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
+mpz_class ModInverse(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
@@ -245,7 +245,7 @@ bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrCipherText &sc, cons
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(ExEculid(pk.y, pk.p), sc.r, pk.p)) % pk.p;
+    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(ModInverse(pk.y, pk.p), sc.r, pk.p)) % pk.p;
     const mpz_class r_prime = SHA256((w_prime << mpz_sizeinbase(pk.p.get_mpz_t(), 2)) + m);
 
     return sc.r == r_prime;
