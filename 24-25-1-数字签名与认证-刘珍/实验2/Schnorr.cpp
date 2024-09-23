@@ -5,7 +5,6 @@ using namespace std;
 
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
 mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
-mpz_class SHA256(const mpz_class &);
 
 class SchnorrPrivateKey
 {
@@ -90,6 +89,9 @@ public:
     }
 };
 
+mpz_class sha256(const mpz_class &);
+mpz_class modInverse(const mpz_class &, const mpz_class &);
+
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
 
@@ -141,7 +143,7 @@ mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upp
 }
 
 // 哈希函数SHA256
-mpz_class SHA256(const mpz_class &input)
+mpz_class sha256(const mpz_class &input)
 {
     const string inputStr = input.get_str();
 
@@ -174,7 +176,7 @@ mpz_class SHA256(const mpz_class &input)
 }
 
 // 扩展欧里几得算法求模逆 a^-1 mod b
-mpz_class ModInverse(const mpz_class &a, const mpz_class &b)
+mpz_class modInverse(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
@@ -234,7 +236,7 @@ SchnorrCipherText schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
     const mpz_class k = generateRandomNumber(1, sk.q);
     const mpz_class w = powm(sk.g, k, sk.p);
 
-    const mpz_class r = SHA256((w << mpz_sizeinbase(sk.p.get_mpz_t(), 2)) + m);
+    const mpz_class r = sha256((w << mpz_sizeinbase(sk.p.get_mpz_t(), 2)) + m);
     const mpz_class s = (k + sk.x * r) % sk.q;
 
     return SchnorrCipherText(r, s);
@@ -245,8 +247,8 @@ bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrCipherText &sc, cons
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(ModInverse(pk.y, pk.p), sc.r, pk.p)) % pk.p;
-    const mpz_class r_prime = SHA256((w_prime << mpz_sizeinbase(pk.p.get_mpz_t(), 2)) + m);
+    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(modInverse(pk.y, pk.p), sc.r, pk.p)) % pk.p;
+    const mpz_class r_prime = sha256((w_prime << mpz_sizeinbase(pk.p.get_mpz_t(), 2)) + m);
 
     return sc.r == r_prime;
 }
