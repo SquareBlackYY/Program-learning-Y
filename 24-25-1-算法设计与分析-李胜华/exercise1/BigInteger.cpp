@@ -134,7 +134,6 @@ private:
     }
 
 public:
-    // 空参构造
     BigInteger() : number("0"), point(0), isNegative(false) {};
 
     // 传入整数或小数构造
@@ -156,7 +155,7 @@ public:
 
         // 不允许输入空字符串进行构造
         if (!length)
-            throw invalid_argument("Empty string is valid");
+            throw invalid_argument("Empty string is invalid");
 
         // 检查符号
         this->isNegative = false;
@@ -168,7 +167,7 @@ public:
         else if (isdigit(str[0]))
             isSymbol = false;
         else
-            throw invalid_argument("Valid String");
+            throw invalid_argument("Invalid String");
 
         // 数字部分检查
         this->point = 0;      // 小数点位置
@@ -183,7 +182,7 @@ public:
             else if (isdigit(str[i]))
                 ;
             else
-                throw invalid_argument("Valid String");
+                throw invalid_argument("Invalid String");
         }
 
         // 写入数字部分
