@@ -103,11 +103,9 @@ int main()
 
     string m = "This is a test message for ElGamal signature";
 
-    cout << pk << endl
-         << sk << endl;
+    cout << pk << endl << sk << endl;
 
-    cout << "明文:" << m << endl
-         << endl;
+    cout << "明文:" << m << endl << endl;
 
     // 签名
     ElGamalSignature sig = ElGamalSign(sk, m);
@@ -184,19 +182,19 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
         y1 = y;
     }
 
-    return x0;
+    return (x0 + b) % b;
 }
 
 // 互素判断
 bool isCoprime(const mpz_class &a, const mpz_class &b)
 {
-    return (a > b ? ExEculid(a, b) : ExEculid(b, a)) != 1;
+    return ExEculid(a, b) != 1;
 }
 
 // 求逆 a ^ -1 mod b
 mpz_class getInv(const mpz_class &a, const mpz_class &b)
 {
-    return ExEculid(b, ((a % b) + b) % b);
+    return ExEculid(a, b);
 }
 
 // 字符串转整数
@@ -234,7 +232,7 @@ ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
     const mpz_class k = generateRandomNumber(1, sk.p - 1, sk.p - 1);
 
     const mpz_class r = powm(sk.g, k, sk.p);
-    const mpz_class s = (getInv(k, sk.p - 1) * (m - sk.x * r)) % (sk.p - 1);
+    const mpz_class s = (getInv(k, sk.p - 1) * ((m - sk.x * r) % (sk.p - 1) + (sk.p - 1)) % (sk.p - 1)) % (sk.p - 1);
 
     return ElGamalSignature(r, s);
 }
@@ -243,7 +241,6 @@ ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
 bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sig, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
-    cout << endl << powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p) % pk.p << endl;
-    cout << powm(pk.g, m, pk.p) << endl;
+
     return powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p) % pk.p == powm(pk.g, m, pk.p);
 }
