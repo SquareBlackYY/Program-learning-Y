@@ -6,7 +6,7 @@ using namespace std;
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
 mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
 
-class SchnorrPrivateKey
+class DSAPrivateKey
 {
 public:
     mpz_class p;
@@ -14,17 +14,17 @@ public:
     mpz_class g;
     mpz_class x;
 
-    SchnorrPrivateKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &x) : p(p), q(q), g(g), x(x) {}
+    DSAPrivateKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &x) : p(p), q(q), g(g), x(x) {}
 
-    friend ostream &operator<<(ostream &os, const SchnorrPrivateKey &sk)
+    friend ostream &operator<<(ostream &os, const DSAPrivateKey &sk)
     {
-        os << "Schnorr私钥:" << endl;
+        os << "DSA私钥:" << endl;
         os << "x : " << sk.x << endl;
         return os;
     }
 };
 
-class SchnorrPublicKey
+class DSAPublicKey
 {
 public:
     mpz_class p;
@@ -32,11 +32,11 @@ public:
     mpz_class g;
     mpz_class y;
 
-    SchnorrPublicKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &y) : p(p), q(q), g(g), y(y) {}
+    DSAPublicKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &y) : p(p), q(q), g(g), y(y) {}
 
-    friend ostream &operator<<(ostream &os, const SchnorrPublicKey &pk)
+    friend ostream &operator<<(ostream &os, const DSAPublicKey &pk)
     {
-        os << "Schnorr公钥:" << endl;
+        os << "DSA公钥:" << endl;
         os << "p : " << pk.p << endl;
         os << "q : " << pk.q << endl;
         os << "g : " << pk.g << endl;
@@ -45,7 +45,7 @@ public:
     }
 };
 
-class SchnorrParameter
+class DSAParameter
 {
 private:
     mpz_class p;
@@ -53,36 +53,36 @@ private:
     mpz_class g;
 
 public:
-    SchnorrParameter(const mpz_class &p, const mpz_class &q, const mpz_class &g) : p(p), q(q), g(g) {}
+    DSAParameter(const mpz_class &p, const mpz_class &q, const mpz_class &g) : p(p), q(q), g(g) {}
 
-    SchnorrPrivateKey generatePrivateKey()
+    DSAPrivateKey generatePrivateKey()
     {
-        const mpz_class x = generateRandomNumber(2, q);
-        return SchnorrPrivateKey(p, q, g, x);
+        const mpz_class x = generateRandomNumber(1, q);
+        return DSAPrivateKey(p, q, g, x);
     }
-    SchnorrPrivateKey generatePrivateKey(const mpz_class &x)
+    DSAPrivateKey generatePrivateKey(const mpz_class &x)
     {
-        return SchnorrPrivateKey(p, q, g, x);
+        return DSAPrivateKey(p, q, g, x);
     }
 
-    SchnorrPublicKey generatePublicKey(const SchnorrPrivateKey &sk)
+    DSAPublicKey generatePublicKey(const DSAPrivateKey &sk)
     {
         const mpz_class y = powm(g, sk.x, p);
-        return SchnorrPublicKey(p, q, g, y);
+        return DSAPublicKey(p, q, g, y);
     }
 };
 
-class SchnorrSignature
+class DSASignature
 {
 public:
     mpz_class r;
     mpz_class s;
 
-    SchnorrSignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
+    DSASignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
 
-    friend ostream &operator<<(ostream &os, const SchnorrSignature &sc)
+    friend ostream &operator<<(ostream &os, const DSASignature &sc)
     {
-        os << "Schnorr签名:" << endl;
+        os << "DSA签名:" << endl;
         os << "r : " << sc.r << endl;
         os << "s : " << sc.s << endl;
         return os;
@@ -95,28 +95,28 @@ mpz_class modInverse(const mpz_class &, const mpz_class &);
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
 
-SchnorrSignature schnorrSign(const SchnorrPrivateKey &, const string &);
-bool schnorrVerify(const SchnorrPublicKey &, const SchnorrSignature &, const string &);
+DSASignature DSASign(const DSAPrivateKey &, const string &);
+bool DSAVerify(const DSAPublicKey &, const DSASignature &, const string &);
 
 int main()
 {
-    SchnorrParameter kp(mpz_class("0xb9c0faef108e0da9bc6a7fd87b9b837a19c2fa3b2daa3ef276fd87fcb7fe690f"), mpz_class("0x169f3edc9665f26b65fc6e805e3c997160a388a376e9266cfdbb512e107"), mpz_class("0x5119a79a9849f5c98659566b890077dfa71a7cb22f92e9089d3462b3b2bc16fa"));
+    DSAParameter kp(mpz_class("0xa030b2bbea795e7533769ff4e6bed8becae8e1f57d80062ed2b38397cc4c110f"), mpz_class("0x71e886bc4600d3869118146a5abf785911d"), mpz_class("0x12972b7570fb64952411d8a190995caaf1a573f5141c26b6bb17380a1880d00d"));
 
-    SchnorrPrivateKey sk = kp.generatePrivateKey(mpz_class("0x7C5D9F8B4A2F30D2E5AFA59F3C7B9A18E0DDAF23"));
-    SchnorrPublicKey pk = kp.generatePublicKey(sk);
+    DSAPrivateKey sk = kp.generatePrivateKey(mpz_class("0x3B2F0C9E3A1B5D8A6E7C0D4F8A6B2E1C3D9F5E1"));
+    DSAPublicKey pk = kp.generatePublicKey(sk);
 
-    string m = "This is a test message for Schnorr signature";
+    string m = "This is a test message for DSA signature";
 
     cout << pk << endl << sk << endl;
 
     cout << "明文:" << m << endl << endl;
 
     // 签名
-    SchnorrSignature c = schnorrSign(sk, m);
+    DSASignature c = DSASign(sk, m);
     cout << c << endl;
 
     // 验签
-    cout << "验签:" << (schnorrVerify(pk, c, m) ? "签名合法" : "签名非法") << endl;
+    cout << "验签:" << (DSAVerify(pk, c, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
@@ -229,7 +229,7 @@ string mpzToString(const mpz_class &num)
 }
 
 // Schnorr签名函数
-SchnorrSignature schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
+DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
@@ -239,11 +239,11 @@ SchnorrSignature schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
     const mpz_class r = sha256((w << mpz_sizeinbase(sk.p.get_mpz_t(), 2)) + m);
     const mpz_class s = (k + sk.x * r) % sk.q;
 
-    return SchnorrSignature(r, s);
+    return DSASignature(r, s);
 }
 
 // Schnorr验签函数
-bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrSignature &sc, const string & m_str)
+bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sc, const string & m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
