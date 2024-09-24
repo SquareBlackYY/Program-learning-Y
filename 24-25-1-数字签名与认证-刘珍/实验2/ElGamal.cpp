@@ -243,6 +243,7 @@ ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
 bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sig, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
-
-    return (powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p)) % pk.p == powm(pk.g, m, pk.p);
+    cout << endl << powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p) % pk.p << endl;
+    cout << powm(pk.g, m, pk.p) << endl;
+    return powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p) % pk.p == powm(pk.g, m, pk.p);
 }
