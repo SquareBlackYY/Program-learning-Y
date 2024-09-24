@@ -4,7 +4,7 @@
 using namespace std;
 
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
-mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
+mpz_class generateRandomNumber(const mpz_class &, const mpz_class &, const mpz_class &coprime = 0);
 
 class DSAPrivateKey
 {
@@ -90,7 +90,9 @@ public:
 };
 
 mpz_class sha256(const mpz_class &);
-mpz_class modInverse(const mpz_class &, const mpz_class &);
+mpz_class exEculid(const mpz_class &, const mpz_class &);
+bool isCoprime(const mpz_class &, const mpz_class &);
+mpz_class getInv(const mpz_class &, const mpz_class &);
 
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
@@ -129,8 +131,8 @@ mpz_class powm(const mpz_class &base, const mpz_class &power, const mpz_class &m
     return result;
 }
 
-// 生成随机数（前闭后开）
-mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound)
+// 生成随机数（前闭后开）要求互素
+mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound, const mpz_class &coprime)
 {
     static gmp_randclass rand(gmp_randinit_mt);
     static bool ifSeedInitialized = false;
@@ -139,7 +141,14 @@ mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upp
         rand.seed(time(0));
         ifSeedInitialized = true;
     }
-    return lowerBound + rand.get_z_range(upperBound - lowerBound);
+
+    mpz_class result;
+    do
+    {
+        result = lowerBound + rand.get_z_range(upperBound - lowerBound);
+    } while (!isCoprime(result, coprime) && coprime != 0);
+
+    return result;
 }
 
 // 哈希函数SHA256
@@ -175,8 +184,8 @@ mpz_class sha256(const mpz_class &input)
     return 0;
 }
 
-// 扩展欧里几得算法求模逆 a^-1 mod b
-mpz_class modInverse(const mpz_class &a, const mpz_class &b)
+// 扩展欧里几得算法
+mpz_class exEculid(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
@@ -198,7 +207,19 @@ mpz_class modInverse(const mpz_class &a, const mpz_class &b)
         y1 = y;
     }
 
-    return (x0 + b) % b;
+    return (a_copy == 1 ? (x0 + b) % b : mpz_class(0));
+}
+
+// 互素判断
+bool isCoprime(const mpz_class &a, const mpz_class &b)
+{
+    return exEculid(a, b) != 0;
+}
+
+// 求逆 a ^ -1 mod b
+mpz_class getInv(const mpz_class &a, const mpz_class &b)
+{
+    return exEculid(a, b);
 }
 
 // 字符串转整数
@@ -236,7 +257,7 @@ DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
     const mpz_class k = generateRandomNumber(1, sk.q);
 
     const mpz_class r = powm(sk.g, k, sk.p) % sk.q;
-    const mpz_class s = (modInverse(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
+    const mpz_class s = (getInv(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
 
     return DSASignature(r, s);
 }
@@ -246,7 +267,7 @@ bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sign, const string & 
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w = modInverse(sign.s, pk.q);
+    const mpz_class w = getInv(sign.s, pk.q);
     const mpz_class u1 = (sha256(m) * w) % pk.q;
     const mpz_class u2 = (sign.r * w) % pk.q;
     const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p)) % pk.q;

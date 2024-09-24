@@ -3,7 +3,7 @@
 using namespace std;
 
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
-mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
+mpz_class generateRandomNumber(const mpz_class &, const mpz_class &, const mpz_class &coprime = 0);
 
 class ElGamalPrivateKey
 {
@@ -84,7 +84,7 @@ public:
     }
 };
 
-mpz_class ExEculid(const mpz_class &, const mpz_class &);
+mpz_class exEculid(const mpz_class &, const mpz_class &);
 bool isCoprime(const mpz_class &, const mpz_class &);
 mpz_class getInv(const mpz_class &, const mpz_class &);
 
@@ -125,20 +125,6 @@ mpz_class powm(const mpz_class &base, const mpz_class &power, const mpz_class &m
     return result;
 }
 
-// 生成随机数（前闭后开）
-mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound)
-{
-    static gmp_randclass rand(gmp_randinit_mt);
-    static bool ifSeedInitialized = false;
-    if (!ifSeedInitialized)
-    {
-        rand.seed(time(0));
-        ifSeedInitialized = true;
-    }
-
-    return lowerBound + rand.get_z_range(upperBound - lowerBound);
-}
-
 // 生成随机数（前闭后开）要求互素
 mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound, const mpz_class &coprime)
 {
@@ -154,13 +140,13 @@ mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upp
     do
     {
         result = lowerBound + rand.get_z_range(upperBound - lowerBound);
-    } while (!isCoprime(result, coprime));
+    } while (!isCoprime(result, coprime) && coprime != 0);
 
     return result;
 }
 
 // 扩展欧里几得算法
-mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
+mpz_class exEculid(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
@@ -182,19 +168,19 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
         y1 = y;
     }
 
-    return (x0 + b) % b;
+    return (a_copy == 1 ? (x0 + b) % b : mpz_class(0));
 }
 
 // 互素判断
 bool isCoprime(const mpz_class &a, const mpz_class &b)
 {
-    return ExEculid(a, b) != 1;
+    return exEculid(a, b) != 0;
 }
 
 // 求逆 a ^ -1 mod b
 mpz_class getInv(const mpz_class &a, const mpz_class &b)
 {
-    return ExEculid(a, b);
+    return exEculid(a, b);
 }
 
 // 字符串转整数
