@@ -1,51 +1,47 @@
 #include <iostream>
 #include <gmpxx.h>
-#include <openssl/evp.h>
 using namespace std;
 
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
 mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
 
-class DSAPrivateKey
+class ElGamalPrivateKey
 {
 public:
     mpz_class p;
-    mpz_class q;
     mpz_class g;
     mpz_class x;
 
-    DSAPrivateKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &x) : p(p), q(q), g(g), x(x) {}
+    ElGamalPrivateKey(const mpz_class &p, const mpz_class &g, const mpz_class &x) : p(p), g(g), x(x) {}
 
-    friend ostream &operator<<(ostream &os, const DSAPrivateKey &sk)
+    friend ostream &operator<<(ostream &os, const ElGamalPrivateKey &sk)
     {
-        os << "DSA私钥:" << endl;
+        os << "ElGamal私钥:" << endl;
         os << "x : " << sk.x << endl;
         return os;
     }
 };
 
-class DSAPublicKey
+class ElGamalPublicKey
 {
 public:
     mpz_class p;
-    mpz_class q;
     mpz_class g;
     mpz_class y;
 
-    DSAPublicKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &y) : p(p), q(q), g(g), y(y) {}
+    ElGamalPublicKey(const mpz_class &p, const mpz_class &g, const mpz_class &y) : p(p), g(g), y(y) {}
 
-    friend ostream &operator<<(ostream &os, const DSAPublicKey &pk)
+    friend ostream &operator<<(ostream &os, const ElGamalPublicKey &pk)
     {
-        os << "DSA公钥:" << endl;
+        os << "ElGamal公钥:" << endl;
         os << "p : " << pk.p << endl;
-        os << "q : " << pk.q << endl;
         os << "g : " << pk.g << endl;
         os << "y : " << pk.y << endl;
         return os;
     }
 };
 
-class DSAParameter
+class ElGamalParameter
 {
 private:
     mpz_class p;
@@ -53,70 +49,69 @@ private:
     mpz_class g;
 
 public:
-    DSAParameter(const mpz_class &p, const mpz_class &q, const mpz_class &g) : p(p), q(q), g(g) {}
+    ElGamalParameter(const mpz_class &p, const mpz_class &g) : p(p), g(g) {}
 
-    DSAPrivateKey generatePrivateKey()
+    ElGamalPrivateKey generatePrivateKey()
     {
-        const mpz_class x = generateRandomNumber(1, q);
-        return DSAPrivateKey(p, q, g, x);
+        const mpz_class x = generateRandomNumber(1, p - 1);
+        return ElGamalPrivateKey(p, g, x);
     }
-    DSAPrivateKey generatePrivateKey(const mpz_class &x)
+    ElGamalPrivateKey generatePrivateKey(const mpz_class &x)
     {
-        return DSAPrivateKey(p, q, g, x);
+        return ElGamalPrivateKey(p, g, x);
     }
 
-    DSAPublicKey generatePublicKey(const DSAPrivateKey &sk)
+    ElGamalPublicKey generatePublicKey(const ElGamalPrivateKey &sk)
     {
         const mpz_class y = powm(g, sk.x, p);
-        return DSAPublicKey(p, q, g, y);
+        return ElGamalPublicKey(p, g, y);
     }
 };
 
-class DSASignature
+class ElGamalSignature
 {
 public:
     mpz_class r;
     mpz_class s;
 
-    DSASignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
+    ElGamalSignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
 
-    friend ostream &operator<<(ostream &os, const DSASignature &sc)
+    friend ostream &operator<<(ostream &os, const ElGamalSignature &sc)
     {
-        os << "DSA签名:" << endl;
+        os << "ElGamal签名:" << endl;
         os << "r : " << sc.r << endl;
         os << "s : " << sc.s << endl;
         return os;
     }
 };
 
-mpz_class sha256(const mpz_class &);
 mpz_class modInverse(const mpz_class &, const mpz_class &);
 
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
 
-DSASignature DSASign(const DSAPrivateKey &, const string &);
-bool DSAVerify(const DSAPublicKey &, const DSASignature &, const string &);
+ElGamalSignature ElGamalSign(const ElGamalPrivateKey &, const string &);
+bool ElGamalVerify(const ElGamalPublicKey &, const ElGamalSignature &, const string &);
 
 int main()
 {
-    DSAParameter kp(mpz_class("0xa030b2bbea795e7533769ff4e6bed8becae8e1f57d80062ed2b38397cc4c110f"), mpz_class("0x71e886bc4600d3869118146a5abf785911d"), mpz_class("0x12972b7570fb64952411d8a190995caaf1a573f5141c26b6bb17380a1880d00d"));
+    ElGamalParameter kp(mpz_class("0xaa5ae5a2ff388b78174378cfdea0f7363893a63c68227df45ed8be2cde31241f"), mpz_class("0x5"));
 
-    DSAPrivateKey sk = kp.generatePrivateKey(mpz_class("0x3B2F0C9E3A1B5D8A6E7C0D4F8A6B2E1C3D9F5E1"));
-    DSAPublicKey pk = kp.generatePublicKey(sk);
+    ElGamalPrivateKey sk = kp.generatePrivateKey(mpz_class("0x4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9"));
+    ElGamalPublicKey pk = kp.generatePublicKey(sk);
 
-    string m = "a";
+    string m = "This is a test message for ElGamal signature";
 
     cout << pk << endl << sk << endl;
 
     cout << "明文:" << m << endl << endl;
 
     // 签名
-    DSASignature sign = DSASign(sk, m);
+    ElGamalSignature sign = ElGamalSign(sk, m);
     cout << sign << endl;
 
     // 验签
-    cout << "验签:" << (DSAVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
+    cout << "验签:" << (ElGamalVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
@@ -140,39 +135,6 @@ mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upp
         ifSeedInitialized = true;
     }
     return lowerBound + rand.get_z_range(upperBound - lowerBound);
-}
-
-// 哈希函数SHA256
-mpz_class sha256(const mpz_class &input)
-{
-    const string inputStr = input.get_str();
-
-    // 定义哈希输出缓冲区和长度
-    unsigned char hash[EVP_MAX_MD_SIZE];
-    unsigned int length = 0;
-
-    // 创建 EVP 上下文
-    EVP_MD_CTX *context = EVP_MD_CTX_new();
-    if (context == nullptr)
-        return 0;
-
-    // 使用 EVP 接口进行哈希计算
-    if (EVP_DigestInit_ex(context, EVP_sha256(), nullptr) &&
-        EVP_DigestUpdate(context, inputStr.c_str(), inputStr.size()) &&
-        EVP_DigestFinal_ex(context, hash, &length))
-    {
-        // 将哈希结果转换为 mpz_class 对象
-        mpz_class result;
-        mpz_import(result.get_mpz_t(), length, 1, sizeof(hash[0]), 0, 0, hash);
-
-        // 释放 EVP 上下文
-        EVP_MD_CTX_free(context);
-        return result;
-    }
-
-    // 哈希计算失败
-    EVP_MD_CTX_free(context);
-    return 0;
 }
 
 // 扩展欧里几得算法求模逆 a^-1 mod b
@@ -228,28 +190,23 @@ string mpzToString(const mpz_class &num)
     return string(bytes.begin(), bytes.end());
 }
 
-// DSA签名函数
-DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
+// ElGamal签名函数
+ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class k = generateRandomNumber(1, sk.q);
+    const mpz_class k = generateRandomNumber(1, sk.p - 1);
 
-    const mpz_class r = powm(sk.g, k, sk.p) % sk.q;
-    const mpz_class s = (modInverse(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
+    const mpz_class r = powm(sk.g, k, sk.p);
+    const mpz_class s = (modInverse(k, sk.p - 1) * (m + sk.x * r)) % sk.p - 1;
 
-    return DSASignature(r, s);
+    return ElGamalSignature(r, s);
 }
 
-// DSA验签函数
-bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sign, const string & m_str)
+// ElGamal验签函数
+bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sign, const string & m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w = modInverse(sign.s, pk.q);
-    const mpz_class u1 = (sha256(m) * w) % pk.q;
-    const mpz_class u2 = (sign.r * w) % pk.q;
-    const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p)) % pk.q;
-
-    return sign.r == v;
+    return (powm(pk.y, sign.r, pk.p) * powm(sign.r, sign.s, pk.p)) % pk.p == powm(pk.g, m, pk.p);
 }
