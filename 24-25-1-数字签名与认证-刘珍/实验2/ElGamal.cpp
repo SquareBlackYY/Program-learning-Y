@@ -110,11 +110,11 @@ int main()
          << endl;
 
     // 签名
-    ElGamalSignature sign = ElGamalSign(sk, m);
-    cout << sign << endl;
+    ElGamalSignature sig = ElGamalSign(sk, m);
+    cout << sig << endl;
 
     // 验签
-    cout << "验签:" << (ElGamalVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
+    cout << "验签:" << (ElGamalVerify(pk, sig, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
@@ -240,9 +240,9 @@ ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
 }
 
 // ElGamal验签函数
-bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sign, const string &m_str)
+bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sig, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    return (powm(pk.y, sign.r, pk.p) * powm(sign.r, sign.s, pk.p)) % pk.p == powm(pk.g, m, pk.p);
+    return (powm(pk.y, sig.r, pk.p) * powm(sig.r, sig.s, pk.p)) % pk.p == powm(pk.g, m, pk.p);
 }
