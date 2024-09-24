@@ -105,18 +105,18 @@ int main()
     DSAPrivateKey sk = kp.generatePrivateKey(mpz_class("0x3B2F0C9E3A1B5D8A6E7C0D4F8A6B2E1C3D9F5E1"));
     DSAPublicKey pk = kp.generatePublicKey(sk);
 
-    string m = "This is a test message for DSA signature";
+    string m = "a";
 
     cout << pk << endl << sk << endl;
 
     cout << "明文:" << m << endl << endl;
 
     // 签名
-    DSASignature c = DSASign(sk, m);
-    cout << c << endl;
+    DSASignature sign = DSASign(sk, m);
+    cout << sign << endl;
 
     // 验签
-    cout << "验签:" << (DSAVerify(pk, c, m) ? "签名合法" : "签名非法") << endl;
+    cout << "验签:" << (DSAVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
@@ -228,27 +228,28 @@ string mpzToString(const mpz_class &num)
     return string(bytes.begin(), bytes.end());
 }
 
-// Schnorr签名函数
+// DSA签名函数
 DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
     const mpz_class k = generateRandomNumber(1, sk.q);
-    const mpz_class w = powm(sk.g, k, sk.p);
 
-    const mpz_class r = sha256((w << mpz_sizeinbase(sk.p.get_mpz_t(), 2)) + m);
-    const mpz_class s = (k + sk.x * r) % sk.q;
+    const mpz_class r = powm(sk.g, k, sk.p) % sk.q;
+    const mpz_class s = (modInverse(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
 
     return DSASignature(r, s);
 }
 
-// Schnorr验签函数
-bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sc, const string & m_str)
+// DSA验签函数
+bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sign, const string & m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(modInverse(pk.y, pk.p), sc.r, pk.p)) % pk.p;
-    const mpz_class r_prime = sha256((w_prime << mpz_sizeinbase(pk.p.get_mpz_t(), 2)) + m);
+    const mpz_class w = modInverse(sign.s, pk.q);
+    const mpz_class u1 = (sha256(m) * w) % pk.q;
+    const mpz_class u2 = (sign.r * w) % pk.q;
+    const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p)) % pk.q;
 
-    return sc.r == r_prime;
+    return sign.r == v;
 }

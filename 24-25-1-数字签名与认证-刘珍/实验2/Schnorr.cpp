@@ -112,11 +112,11 @@ int main()
     cout << "明文:" << m << endl << endl;
 
     // 签名
-    SchnorrSignature c = schnorrSign(sk, m);
-    cout << c << endl;
+    SchnorrSignature sign = schnorrSign(sk, m);
+    cout << sign << endl;
 
     // 验签
-    cout << "验签:" << (schnorrVerify(pk, c, m) ? "签名合法" : "签名非法") << endl;
+    cout << "验签:" << (schnorrVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
@@ -243,12 +243,12 @@ SchnorrSignature schnorrSign(const SchnorrPrivateKey &sk, const string &m_str)
 }
 
 // Schnorr验签函数
-bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrSignature &sc, const string & m_str)
+bool schnorrVerify(const SchnorrPublicKey &pk, const SchnorrSignature &sign, const string & m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class w_prime = (powm(pk.g, sc.s, pk.p) * powm(modInverse(pk.y, pk.p), sc.r, pk.p)) % pk.p;
+    const mpz_class w_prime = (powm(pk.g, sign.s, pk.p) * powm(modInverse(pk.y, pk.p), sign.r, pk.p)) % pk.p;
     const mpz_class r_prime = sha256((w_prime << mpz_sizeinbase(pk.p.get_mpz_t(), 2)) + m);
 
-    return sc.r == r_prime;
+    return sign.r == r_prime;
 }

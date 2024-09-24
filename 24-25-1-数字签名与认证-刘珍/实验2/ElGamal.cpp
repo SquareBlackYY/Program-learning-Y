@@ -1,136 +1,191 @@
 #include <iostream>
 #include <gmpxx.h>
-#include <vector>
+#include <openssl/evp.h>
+using namespace std;
 
-struct ElGamal_Public_Key
+mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
+mpz_class generateRandomNumber(const mpz_class &, const mpz_class &);
+
+class DSAPrivateKey
 {
+public:
     mpz_class p;
+    mpz_class q;
     mpz_class g;
-    mpz_class beta;
+    mpz_class x;
 
-    ElGamal_Public_Key(const mpz_class p, const mpz_class g, const mpz_class beta) : p(p), g(g), beta(beta) {}
+    DSAPrivateKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &x) : p(p), q(q), g(g), x(x) {}
+
+    friend ostream &operator<<(ostream &os, const DSAPrivateKey &sk)
+    {
+        os << "DSA私钥:" << endl;
+        os << "x : " << sk.x << endl;
+        return os;
+    }
 };
 
-struct ElGamal_Private_Key
+class DSAPublicKey
 {
-    mpz_class alpha;
+public:
+    mpz_class p;
+    mpz_class q;
+    mpz_class g;
+    mpz_class y;
 
-    ElGamal_Private_Key(const mpz_class alpha) : alpha(alpha) {}
+    DSAPublicKey(const mpz_class &p, const mpz_class &q, const mpz_class &g, const mpz_class &y) : p(p), q(q), g(g), y(y) {}
+
+    friend ostream &operator<<(ostream &os, const DSAPublicKey &pk)
+    {
+        os << "DSA公钥:" << endl;
+        os << "p : " << pk.p << endl;
+        os << "q : " << pk.q << endl;
+        os << "g : " << pk.g << endl;
+        os << "y : " << pk.y << endl;
+        return os;
+    }
 };
 
-struct ElGamal_ciphertext
-{
-    mpz_class r;
-    mpz_class s;
-};
-
-mpz_class generate_random_number(const mpz_class &, const mpz_class &);
-mpz_class power_mod(const mpz_class &, const mpz_class &, const mpz_class &);
-mpz_class ExEculid(const mpz_class &, const mpz_class &);
-ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &, const ElGamal_Public_Key &);
-mpz_class ElGamal_Decrypt(const ElGamal_ciphertext &, const ElGamal_Public_Key &, const ElGamal_Private_Key &);
-bool is_primitive_root(const mpz_class &, const mpz_class &, const std::vector<mpz_class> &);
-mpz_class generate_primitive_root(const mpz_class &);
-
-class ElGamal_Key_gen
+class DSAParameter
 {
 private:
     mpz_class p;
+    mpz_class q;
     mpz_class g;
-    mpz_class alpha;
-    mpz_class beta;
 
 public:
-    ElGamal_Key_gen(const mpz_class &p_input, const mpz_class &g_input = 0) : p(p_input), g(g_input)
+    DSAParameter(const mpz_class &p, const mpz_class &q, const mpz_class &g) : p(p), q(q), g(g) {}
+
+    DSAPrivateKey generatePrivateKey()
     {
-        if (g == 0)
-            g = generate_primitive_root(p);
-        alpha = generate_random_number(2, p);
-        beta = power_mod(g, alpha, p);
+        const mpz_class x = generateRandomNumber(1, q);
+        return DSAPrivateKey(p, q, g, x);
+    }
+    DSAPrivateKey generatePrivateKey(const mpz_class &x)
+    {
+        return DSAPrivateKey(p, q, g, x);
     }
 
-    ElGamal_Public_Key get_public_key()
+    DSAPublicKey generatePublicKey(const DSAPrivateKey &sk)
     {
-        return ElGamal_Public_Key(p, g, beta);
-    }
-    ElGamal_Private_Key get_private_key()
-    {
-        return ElGamal_Private_Key(alpha);
+        const mpz_class y = powm(g, sk.x, p);
+        return DSAPublicKey(p, q, g, y);
     }
 };
 
+class DSASignature
+{
+public:
+    mpz_class r;
+    mpz_class s;
+
+    DSASignature(const mpz_class r, const mpz_class s) : r(r), s(s) {}
+
+    friend ostream &operator<<(ostream &os, const DSASignature &sc)
+    {
+        os << "DSA签名:" << endl;
+        os << "r : " << sc.r << endl;
+        os << "s : " << sc.s << endl;
+        return os;
+    }
+};
+
+mpz_class sha256(const mpz_class &);
+mpz_class modInverse(const mpz_class &, const mpz_class &);
+
+mpz_class stringToMpz(const string &);
+string mpzToString(const mpz_class &);
+
+DSASignature DSASign(const DSAPrivateKey &, const string &);
+bool DSAVerify(const DSAPublicKey &, const DSASignature &, const string &);
+
 int main()
 {
-    // 示例
-    std::cout << "示例" << std::endl;
-    mpz_class p("114613267282339829338903510180606894251700056873567053286214694567429338735367");
-    mpz_class q("57306633641169914669451755090303447125850028436783526643107347283714669367683");
-    mpz_class g("14777377999967849666226757901157577468444643860798182661856789517423526464749");
+    DSAParameter kp(mpz_class("0xa030b2bbea795e7533769ff4e6bed8becae8e1f57d80062ed2b38397cc4c110f"), mpz_class("0x71e886bc4600d3869118146a5abf785911d"), mpz_class("0x12972b7570fb64952411d8a190995caaf1a573f5141c26b6bb17380a1880d00d"));
 
-    ElGamal_Key_gen key1(p, g);
-    const ElGamal_Public_Key pk1 = key1.get_public_key();
-    const ElGamal_Private_Key sk1 = key1.get_private_key();
+    DSAPrivateKey sk = kp.generatePrivateKey(mpz_class("0x3B2F0C9E3A1B5D8A6E7C0D4F8A6B2E1C3D9F5E1"));
+    DSAPublicKey pk = kp.generatePublicKey(sk);
 
-    mpz_class m = 100;
-    std::cout << "明文:\t\t" << m << std::endl;
+    string m = "a";
 
-    ElGamal_ciphertext c = ElGamal_Encrypt(m, pk1);
-    std::cout << "加密结果r:\t" << c.r << std::endl;
-    std::cout << "加密结果s:\t" << c.s << std::endl;
+    cout << pk << endl << sk << endl;
 
-    mpz_class m_decrypt = ElGamal_Decrypt(c, pk1, sk1);
-    std::cout << "解密结果:\t" << m_decrypt << std::endl;
+    cout << "明文:" << m << endl << endl;
 
-    // 推广到一般素数 p
-    std::cout << "推广到一般素数 p" << std::endl;
-    p = 101;
+    // 签名
+    DSASignature sign = DSASign(sk, m);
+    cout << sign << endl;
 
-    ElGamal_Key_gen key2(p);
-    const ElGamal_Public_Key pk2 = key2.get_public_key();
-    const ElGamal_Private_Key sk2 = key2.get_private_key();
-
-    m = 100;
-    std::cout << "明文:\t\t" << m << std::endl;
-
-    c = ElGamal_Encrypt(m, pk2);
-    std::cout << "加密结果r:\t" << c.r << std::endl;
-    std::cout << "加密结果s:\t" << c.s << std::endl;
-
-    m_decrypt = ElGamal_Decrypt(c, pk2, sk2);
-    std::cout << "解密结果:\t" << m_decrypt << std::endl;
+    // 验签
+    cout << "验签:" << (DSAVerify(pk, sign, m) ? "签名合法" : "签名非法") << endl;
 
     return 0;
 }
 
+// 模幂函数
+mpz_class powm(const mpz_class &base, const mpz_class &power, const mpz_class &mod)
+{
+    mpz_class result;
+    mpz_powm(result.get_mpz_t(), base.get_mpz_t(), power.get_mpz_t(), mod.get_mpz_t());
+    return result;
+}
+
 // 生成随机数（前闭后开）
-mpz_class generate_random_number(const mpz_class &lowerBound, const mpz_class &upperBound)
+mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound)
 {
     static gmp_randclass rand(gmp_randinit_mt);
-    static bool seed_initialized = false;
-    if (!seed_initialized)
+    static bool ifSeedInitialized = false;
+    if (!ifSeedInitialized)
     {
         rand.seed(time(0));
-        seed_initialized = true;
+        ifSeedInitialized = true;
     }
     return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }
 
-// 计算幂模
-mpz_class power_mod(const mpz_class &base, const mpz_class &exp, const mpz_class &mod)
+// 哈希函数SHA256
+mpz_class sha256(const mpz_class &input)
 {
-    mpz_class result;
-    mpz_powm(result.get_mpz_t(), base.get_mpz_t(), exp.get_mpz_t(), mod.get_mpz_t());
-    return result;
+    const string inputStr = input.get_str();
+
+    // 定义哈希输出缓冲区和长度
+    unsigned char hash[EVP_MAX_MD_SIZE];
+    unsigned int length = 0;
+
+    // 创建 EVP 上下文
+    EVP_MD_CTX *context = EVP_MD_CTX_new();
+    if (context == nullptr)
+        return 0;
+
+    // 使用 EVP 接口进行哈希计算
+    if (EVP_DigestInit_ex(context, EVP_sha256(), nullptr) &&
+        EVP_DigestUpdate(context, inputStr.c_str(), inputStr.size()) &&
+        EVP_DigestFinal_ex(context, hash, &length))
+    {
+        // 将哈希结果转换为 mpz_class 对象
+        mpz_class result;
+        mpz_import(result.get_mpz_t(), length, 1, sizeof(hash[0]), 0, 0, hash);
+
+        // 释放 EVP 上下文
+        EVP_MD_CTX_free(context);
+        return result;
+    }
+
+    // 哈希计算失败
+    EVP_MD_CTX_free(context);
+    return 0;
 }
 
-// 扩展欧里几德计算 a^-1 mod b
-mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
+// 扩展欧里几得算法求模逆 a^-1 mod b
+mpz_class modInverse(const mpz_class &a, const mpz_class &b)
 {
-    mpz_class a_copy = a, b_copy = b, x0 = 1, y0 = 0, x1 = 0, y1 = 1, q, r, x, y;
+    mpz_class a_copy = a, b_copy = b;
+    mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
+    mpz_class q, r, x, y;
 
     while (b_copy != 0)
     {
-        mpz_divmod(q.get_mpz_t(), r.get_mpz_t(), a_copy.get_mpz_t(), b_copy.get_mpz_t());
+        q = a_copy / b_copy;
+        r = a_copy % b_copy;
 
         x = x0 - q * x1;
         y = y0 - q * y1;
@@ -146,61 +201,55 @@ mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
     return (x0 + b) % b;
 }
 
-// ElGamal加密函数
-ElGamal_ciphertext ElGamal_Encrypt(const mpz_class &m, const ElGamal_Public_Key &pk)
+// 字符串转整数
+mpz_class stringToMpz(const string &str)
 {
-    ElGamal_ciphertext c;
-    mpz_class k = generate_random_number(2, pk.p);
-
-    c.r = power_mod(pk.g, k, pk.p);
-    c.s = (power_mod(pk.beta, k, pk.p) * m) % pk.p;
-
-    return c;
+    mpz_class result = 0;
+    for (size_t i = 0; i < str.length(); ++i)
+        result = (result << 8) | str[i]; // 每个字节向左移动 8 位，然后按位或存储字符
+    return result;
 }
 
-// ElGamal解密函数
-mpz_class ElGamal_Decrypt(const ElGamal_ciphertext &c, const ElGamal_Public_Key &pk, const ElGamal_Private_Key &sk)
+// 整数转字符串
+string mpzToString(const mpz_class &num)
 {
-    return (c.s * ExEculid(power_mod(c.r, sk.alpha, pk.p), pk.p)) % pk.p;
+    mpz_class n = num;
+    vector<unsigned char> bytes;
+
+    while (n > 0)
+    {
+        unsigned char byte = static_cast<unsigned char>(n.get_ui()); // 获取最低字节
+        bytes.push_back(byte);
+        n >>= 8; // 右移 8 位处理下一个字节
+    }
+
+    // 反转字节顺序，构造出 UTF-8 字符串
+    reverse(bytes.begin(), bytes.end());
+    return string(bytes.begin(), bytes.end());
 }
 
-// 检查是否是本原根
-bool is_primitive_root(const mpz_class &g, const mpz_class &p, const std::vector<mpz_class> &primes)
+// DSA签名函数
+DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
 {
-    for (mpz_class q : primes)
-    {
-        if (power_mod(g, q, p) == 1)
-            return false;
-    }
-    return true;
+    const mpz_class m = stringToMpz(m_str);
+
+    const mpz_class k = generateRandomNumber(1, sk.q);
+
+    const mpz_class r = powm(sk.g, k, sk.p) % sk.q;
+    const mpz_class s = (modInverse(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
+
+    return DSASignature(r, s);
 }
 
-// 生成 Z_p^* 的本原根
-mpz_class generate_primitive_root(const mpz_class &p)
+// DSA验签函数
+bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sign, const string & m_str)
 {
-    std::vector<mpz_class> primes;
-    mpz_class phi_p = p - 1, p_square_root;
-    mpz_sqrt(p_square_root.get_mpz_t(), phi_p.get_mpz_t());
+    const mpz_class m = stringToMpz(m_str);
 
-    // 分解 p-1
-    for (mpz_class i = 2; i <= p_square_root; i++)
-    {
-        if (phi_p % i == 0)
-        {
-            primes.push_back(i);
-            while (phi_p % i == 0)
-                phi_p /= i;
-        }
-    }
-    if (phi_p > 1)
-        primes.push_back(phi_p);
+    const mpz_class w = modInverse(sign.s, pk.q);
+    const mpz_class u1 = (sha256(m) * w) % pk.q;
+    const mpz_class u2 = (sign.r * w) % pk.q;
+    const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p)) % pk.q;
 
-    // 顺序遍历返回首个本原根
-    for (mpz_class g = 2; g < p; g++)
-    {
-        if (is_primitive_root(g, p, primes))
-            return g;
-    }
-
-    return 1;
+    return sign.r == v;
 }
