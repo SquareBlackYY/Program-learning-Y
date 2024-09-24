@@ -45,7 +45,6 @@ class ElGamalParameter
 {
 private:
     mpz_class p;
-    mpz_class q;
     mpz_class g;
 
 public:
@@ -85,7 +84,9 @@ public:
     }
 };
 
-mpz_class modInverse(const mpz_class &, const mpz_class &);
+mpz_class ExEculid(const mpz_class &, const mpz_class &);
+bool isCoprime(const mpz_class &, const mpz_class &);
+mpz_class getInv(const mpz_class &, const mpz_class &);
 
 mpz_class stringToMpz(const string &);
 string mpzToString(const mpz_class &);
@@ -102,9 +103,11 @@ int main()
 
     string m = "This is a test message for ElGamal signature";
 
-    cout << pk << endl << sk << endl;
+    cout << pk << endl
+         << sk << endl;
 
-    cout << "明文:" << m << endl << endl;
+    cout << "明文:" << m << endl
+         << endl;
 
     // 签名
     ElGamalSignature sign = ElGamalSign(sk, m);
@@ -134,11 +137,32 @@ mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upp
         rand.seed(time(0));
         ifSeedInitialized = true;
     }
+
     return lowerBound + rand.get_z_range(upperBound - lowerBound);
 }
 
-// 扩展欧里几得算法求模逆 a^-1 mod b
-mpz_class modInverse(const mpz_class &a, const mpz_class &b)
+// 生成随机数（前闭后开）要求互素
+mpz_class generateRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBound, const mpz_class &coprime)
+{
+    static gmp_randclass rand(gmp_randinit_mt);
+    static bool ifSeedInitialized = false;
+    if (!ifSeedInitialized)
+    {
+        rand.seed(time(0));
+        ifSeedInitialized = true;
+    }
+
+    mpz_class result;
+    do
+    {
+        result = lowerBound + rand.get_z_range(upperBound - lowerBound);
+    } while (!isCoprime(result, coprime));
+
+    return result;
+}
+
+// 扩展欧里几得算法
+mpz_class ExEculid(const mpz_class &a, const mpz_class &b)
 {
     mpz_class a_copy = a, b_copy = b;
     mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
@@ -160,7 +184,19 @@ mpz_class modInverse(const mpz_class &a, const mpz_class &b)
         y1 = y;
     }
 
-    return (x0 + b) % b;
+    return x0;
+}
+
+// 互素判断
+bool isCoprime(const mpz_class &a, const mpz_class &b)
+{
+    return (a > b ? ExEculid(a, b) : ExEculid(b, a)) != 1;
+}
+
+// 求逆 a ^ -1 mod b
+mpz_class getInv(const mpz_class &a, const mpz_class &b)
+{
+    return ExEculid(b, ((a % b) + b) % b);
 }
 
 // 字符串转整数
@@ -195,16 +231,16 @@ ElGamalSignature ElGamalSign(const ElGamalPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class k = generateRandomNumber(1, sk.p - 1);
+    const mpz_class k = generateRandomNumber(1, sk.p - 1, sk.p - 1);
 
     const mpz_class r = powm(sk.g, k, sk.p);
-    const mpz_class s = (modInverse(k, sk.p - 1) * (m + sk.x * r)) % sk.p - 1;
+    const mpz_class s = (getInv(k, sk.p - 1) * (m - sk.x * r)) % (sk.p - 1);
 
     return ElGamalSignature(r, s);
 }
 
 // ElGamal验签函数
-bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sign, const string & m_str)
+bool ElGamalVerify(const ElGamalPublicKey &pk, const ElGamalSignature &sign, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
