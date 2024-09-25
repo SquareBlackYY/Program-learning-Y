@@ -107,7 +107,7 @@ int main()
     DSAPrivateKey sk = kp.generatePrivateKey(mpz_class("0x3B2F0C9E3A1B5D8A6E7C0D4F8A6B2E1C3D9F5E1"));
     DSAPublicKey pk = kp.generatePublicKey(sk);
 
-    string m = "a";
+    string m = "This is a test message for DSA signature";
 
     cout << pk << endl << sk << endl;
 
@@ -254,7 +254,8 @@ DSASignature DSASign(const DSAPrivateKey &sk, const string &m_str)
 {
     const mpz_class m = stringToMpz(m_str);
 
-    const mpz_class k = generateRandomNumber(1, sk.q);
+    //const mpz_class k = generateRandomNumber(1, sk.q);
+    const mpz_class k = 9;
 
     const mpz_class r = powm(sk.g, k, sk.p) % sk.q;
     const mpz_class s = (getInv(k, sk.q) * (sha256(m) + sk.x * r)) % sk.q;
@@ -270,7 +271,7 @@ bool DSAVerify(const DSAPublicKey &pk, const DSASignature &sign, const string & 
     const mpz_class w = getInv(sign.s, pk.q);
     const mpz_class u1 = (sha256(m) * w) % pk.q;
     const mpz_class u2 = (sign.r * w) % pk.q;
-    const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p)) % pk.q;
+    const mpz_class v = (powm(pk.g, u1, pk.p) * powm(pk.y, u2, pk.p) % pk.p) % pk.q;
 
     return sign.r == v;
 }
