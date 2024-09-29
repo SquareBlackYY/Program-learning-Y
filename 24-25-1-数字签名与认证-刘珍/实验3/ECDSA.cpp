@@ -7,8 +7,6 @@ using namespace std;
 
 mpz_class powm(const mpz_class &, const mpz_class &, const mpz_class &);
 mpz_class getRandomNumber(const mpz_class &, const mpz_class &, const mpz_class &coprime = 0);
-mpz_class exEculid(const mpz_class &, const mpz_class &);
-bool isCoprime(const mpz_class &, const mpz_class &);
 mpz_class getInv(const mpz_class &, const mpz_class &);
 
 class Point
@@ -36,12 +34,18 @@ public:
 
     bool operator==(const Point &another) const
     {
-        return (x == another.x && y == another.y);
+        if (p != 0)
+            return ((x % p + p) % p == (another.x % p + p) % p && (y % p + p) % p == (another.y % p + p) % p);
+        else
+            return (x == another.x && y == another.y);
     }
 
     bool operator!=(const Point &another) const
     {
-        return (x != another.x || y != another.y);
+        if (p != 0)
+            return ((x % p + p) % p != (another.x % p + p) % p || (y % p + p) % p != (another.y % p + p) % p);
+        else
+            return (x != another.x || y != another.y);
     }
 
     Point operator+(const Point &another) const
@@ -58,7 +62,6 @@ public:
         else
             lambda = (another.y - y) * getInv(another.x - x, p) % p;
 
-        
         Point sum;
         sum.x = ((lambda * lambda - x - another.x) % p + p) % p;
         sum.y = ((lambda * (x - sum.x) - y) % p + p) % p;
@@ -95,7 +98,7 @@ public:
     mpz_class n;
 
     ECDSAPrivateKey(const mpz_class &d, const Point &G, const mpz_class &n) : d(d), G(G), n(n) {}
-    
+
     friend ostream &operator<<(ostream &os, const ECDSAPrivateKey &sk)
     {
         os << "ECDSA私钥:" << endl;
@@ -136,13 +139,13 @@ public:
     {
         this->G.p = p;
         this->G.a = a;
+
         Point point = INF;
         do
         {
-            point += this->G;            
+            point += this->G;
             n++;
-            cout << point << endl;
-        } while (point != INF && n != 29);
+        } while (point != INF);
     }
 
     Point setPoint(const mpz_class &x, const mpz_class &y)
@@ -189,15 +192,14 @@ int main()
 {
     ECDSAParameter ecdsa(23, 1, 4, Point(0, 2));
 
-    cout << ecdsa.n << endl;
-
     ECDSAPrivateKey sk = ecdsa.getPrivateKey();
     ECDSAPublicKey pk = ecdsa.getPublicKey(sk);
 
     cout << pk << endl << sk << endl;
-
+    
     string m = "aaa";
-    cout << "明文:" << m << endl << endl;
+    cout << "明文:" << m << endl
+         << endl;
 
     // 签名
     ECDSASignature sig = ECDSASign(sk, m);
@@ -234,7 +236,7 @@ bool ECDSAVerify(const ECDSAPublicKey &pk, const ECDSASignature &sig, const stri
 {
     if (sig.r < 1 || sig.r >= pk.n || sig.s < 1 || sig.s >= pk.n)
         return false;
-    
+
     const mpz_class e = sha256(stringToMpz(m_str));
 
     const mpz_class w = getInv(sig.s, pk.n);
@@ -274,47 +276,35 @@ mpz_class getRandomNumber(const mpz_class &lowerBound, const mpz_class &upperBou
     do
     {
         result = lowerBound + rand.get_z_range(upperBound - lowerBound);
-    } while (!isCoprime(result, coprime) && coprime != 0);
+    } while (coprime != 0 && getInv(result, coprime) == 0);
 
     return result;
 }
 
-// 扩展欧里几得算法
-mpz_class exEculid(const mpz_class &a, const mpz_class &b)
-{
-    mpz_class a_copy = a, b_copy = b;
-    mpz_class x0 = 1, y0 = 0, x1 = 0, y1 = 1;
-    mpz_class q, r, x, y;
-
-    while (b_copy != 0)
-    {
-        q = a_copy / b_copy;
-        r = a_copy % b_copy;
-
-        x = x0 - q * x1;
-        y = y0 - q * y1;
-
-        a_copy = b_copy;
-        b_copy = r;
-        x0 = x1;
-        y0 = y1;
-        x1 = x;
-        y1 = y;
-    }
-
-    return (a_copy == 1 ? (x0 + b) % b : mpz_class(0));
-}
-
-// 互素判断
-bool isCoprime(const mpz_class &a, const mpz_class &b)
-{
-    return exEculid(a, b) != 0;
-}
-
-// 求逆 a ^ -1 mod b
+// 扩展欧里几得算法求模逆 a ^ -1 mod b
 mpz_class getInv(const mpz_class &a, const mpz_class &b)
 {
-    return exEculid(a, b);
+    mpz_class x1 = 1, x2 = 0, x3 = b, y1 = 0, y2 = 1, y3 = (a % b + b) % b;
+    mpz_class q, t1, t2, t3;
+
+    while (y3 > 1)
+    {
+        q = x3 / y3;
+
+        t1 = x1 - q * y1;
+        t2 = x2 - q * y2;
+        t3 = x3 % y3;
+
+        x1 = y1;
+        x2 = y2;
+        x3 = y3;
+
+        y1 = t1;
+        y2 = t2;
+        y3 = t3;
+    }
+
+    return y3 == 1 ? (y2 % b + b) % b : y3;
 }
 
 // 字符串转整数
