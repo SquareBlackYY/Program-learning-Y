@@ -17,7 +17,7 @@ struct Elliptic_Curve
     mpz_class a;
     mpz_class b;
 
-    Elliptic_Curve(const mpz_class p, const mpz_class a, const mpz_class b) : p(p), a{a}, b(b) {}
+    Elliptic_Curve(const mpz_class p, const mpz_class a, const mpz_class b) : p(p), a(a), b(b) {}
 };
 
 Coordinate ECC_add(const Elliptic_Curve &, const Coordinate &, const Coordinate &);
@@ -42,12 +42,12 @@ public:
 
     Coordinate generate_public_key()
     {
-        return {(rn * G.x) % E.p, (rn * G.y) % E.p};
+        return Coordinate((rn * G.x) % E.p, (rn * G.y) % E.p);
     }
 
     Coordinate generate_share_key(const Coordinate &PK)
     {
-        return {(rn * PK.x) % E.p, (rn * PK.y) % E.p};
+        return Coordinate((rn * PK.x) % E.p, (rn * PK.y) % E.p);
     }
 };
 
@@ -60,7 +60,7 @@ int main()
     std::cout << "结果: (" << ECC_multiple_add(E, p, multiple).x << ", " << ECC_multiple_add(E, p, multiple).y << ")" << std::endl;
 
     std::cout << "ECDH算法实现:" << std::endl;
-    ECDH A({211, 0, -4}, {2, 2}, 241), B({211, 0, -4}, {2, 2}, 241);
+    ECDH A(Elliptic_Curve(211, 0, -4), Coordinate(2, 2), 241), B(Elliptic_Curve(211, 0, -4), Coordinate(2, 2), 241);
     Coordinate PK_A = A.generate_public_key(), PK_B = B.generate_public_key();
     std::cout << "A向B发出的公钥: (" << PK_A.x <<  ", " << PK_A.y << ")" << std::endl;
     std::cout << "B向A发出的公钥: (" << PK_B.x <<  ", " << PK_B.y << ")" << std::endl;
