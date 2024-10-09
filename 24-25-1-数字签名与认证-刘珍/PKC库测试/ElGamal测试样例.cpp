@@ -2,10 +2,14 @@
 
 int main()
 {
-    ElGamal param;
+    mpz_class p("0xaa5ae5a2ff388b78174378cfdea0f7363893a63c68227df45ed8be2cde31241f");
+    mpz_class g("0x5");
+    mpz_class x("0x4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9");
+
+    ElGamal param(p, g);
     cout << param;
 
-    ElGamal::PrivateKey sk = param.getPrivateKey(mpz_class("0x4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9"));
+    ElGamal::PrivateKey sk = param.getPrivateKey(x);
     cout << sk;
     
     ElGamal::PublicKey pk = param.getPublicKey(sk);

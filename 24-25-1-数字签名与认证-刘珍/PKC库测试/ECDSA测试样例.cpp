@@ -2,7 +2,11 @@
 
 int main()
 {
-    ECDSA param;
+    EllipticCurve E(23, 1, 4);
+    ECPoint G(E, 0, 2);
+    mpz_class n(29);
+
+    ECDSA param(E, G, n);
     cout << param;
 
     ECDSA::PrivateKey sk = param.getPrivateKey();
