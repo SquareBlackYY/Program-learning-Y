@@ -22,5 +22,11 @@ int main()
     
     cout << (pk.verify(sig, m) ? "签名合法" : "签名非法") << endl;
 
+    cout << "随机数重用攻击" << endl;
+
+    string m_2 = "This is a test message for ElGamal random nunber reuse attack";
+
+    cout << (sk.signReuseRandNum(m, m_2) ? "攻击成功" : "攻击失败") << endl;
+
     return 0;
 }
