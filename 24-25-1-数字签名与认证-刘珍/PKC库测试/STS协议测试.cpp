@@ -11,7 +11,7 @@ int main() {
     User A("Alice", channel);
     User B("Bob", channel);
 
-    // 启动线程，KDC 和 User 轮询消息
+    // 启动线程，User 轮询消息
     thread userAThread(&User::pollMessages, &A);
     thread userBThread(&User::pollMessages, &B);
 

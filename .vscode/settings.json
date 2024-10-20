@@ -59,7 +59,9 @@
         "iomanip": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "stdio.h": "c",
+        "_stdio.h": "c"
     },
     "C_Cpp.default.cppStandard": "c++11"
 }

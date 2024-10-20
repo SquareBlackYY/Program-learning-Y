@@ -129,7 +129,7 @@ int main()
 {
     clock_t start_time, end_time;
     double execution_time;
-    const char *seed_key = "1f1f1f1f0e0e0e0e";
+    const char *seed_key = "8020104800020040";
     char *key_binary = hex_to_binary(seed_key);
 
     FILE *input_file = fopen("input.txt", "r");
@@ -214,10 +214,12 @@ void DES(const char *text, const char *seed_key, const int mode, char *text_proc
         memcpy(text_rounded, bits_iped, 64);
         text_rounded[64] = '\0';
         for (int round_num = 0; round_num < 16; round_num++)
+        {
             if (mode == 0)
                 text_rounded = DES_round(text_rounded, key_schedule[round_num]);
             else
                 text_rounded = DES_round(text_rounded, key_schedule[15 - round_num]);
+        }
         exchange_strings(text_rounded);
         char *bits_ip_1ed = DES_initial_permutation(text_rounded, 1);
         memcpy(text_processed + i * 64, bits_ip_1ed, 64);
@@ -234,7 +236,7 @@ void DES(const char *text, const char *seed_key, const int mode, char *text_proc
 
 char **generate_key_schedule(const char *seed_key)
 {
-    char permuted_key[56 + 1], left[28 + 1], right[28 + 1];
+    char permuted_key[56 + 1], left[28 + 1], right[28 + 1], temp[2];
     for (int i = 0; i < 56; i++)
         permuted_key[i] = seed_key[pc1_table[i] - 1];
     permuted_key[56] = '\0';
@@ -248,11 +250,15 @@ char **generate_key_schedule(const char *seed_key)
     for (int round_num = 0; round_num < 16; round_num++)
     {
         char combined_key[56];
-        for (int i = 0; i < 28; i++)
-        {
-            left[i] = left[(i + loop_table[round_num]) % (28)];
-            right[i] = right[(i + loop_table[round_num]) % (28)];
-        }
+
+        int n = loop_table[round_num];
+        memcpy(temp, left, n);
+        memmove(left, left + n, 28 - n);
+        memcpy(left + 28 - n, temp, n);
+        memcpy(temp, right, n);
+        memmove(right, right + n, 28 - n);
+        memcpy(right + 28 - n, temp, n);
+
         memcpy(combined_key, left, 28);
         memcpy(combined_key + 28, right, 28);
         for (int i = 0; i < 48; i++)
@@ -284,14 +290,17 @@ char *DES_round(char *bits, const char *key)
     left[32] = '\0';
     memcpy(right, bits + 32, 32);
     right[32] = '\0';
+
     char *right_expanded = DES_expand(right);
     char *right_xored_with_key = xor_strings(right_expanded, key);
     char *bits_compressed = DES_compress(right_xored_with_key);
     char *bits_permuted = DES_permute(bits_compressed);
     char *right_new = xor_strings(left, bits_permuted);
+
     memcpy(bits, right, 32);
     memcpy(bits + 32, right_new, 32);
     bits[64] = '\0';
+
     free(right_expanded);
     free(right_xored_with_key);
     free(bits_compressed);
