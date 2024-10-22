@@ -16,7 +16,7 @@ int main() {
     thread userBThread(&User::pollMessages, &B);
 
     // 模拟发送消息
-    Message msg("admin", "Alice", "请求协商共享密钥", {(Payload){"协议信息", {{"协议", "STS协议"}, {"步骤", "0"}, {"目标", "Bob"}}}});
+    Message msg("admin", "Alice", "发起STS协议", {(Payload){"协议信息", {{"协议", "STS协议"}, {"步骤", "0"}, {"目标", "Bob"}}}});
     channel.sendMessage(msg);
     this_thread::sleep_for(chrono::seconds(1));
 
