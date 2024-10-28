@@ -158,12 +158,6 @@ int main()
 
     // 密钥生成
     des_key_schedule(key, rk);
-    //for (int i = 0; i < 16; ++i)
-    // {
-    //     for (int j = 0; j < 48; ++j)
-    //     printf("%d", rk[i][j]);
-    // printf("\n");
-    // }
 
     clock_t start = clock();
     
@@ -177,19 +171,17 @@ int main()
 
     printf("Speed : %lf Mbps\n", 64 / ((double)(end - start) / CLOCKS_PER_SEC));
 
-    for (int i = 0; i < 64; ++i)
-        printf("%d", ct[i]);
-    printf("\n");
-
     for (int i = 0; i < 16; ++i)
         memcpy(rkd[i], rk[15 - i], 48 * sizeof(int));
 
     // 解密
     des_decrypt(ct, rkd, pt2);
+    printf("解密结果：\t");
     for (int i = 0; i < 64; ++i)
         printf("%d", pt2[i]);
     printf("\n");
     
+    printf("明文：\t\t");
     printf("%s\n", plain_text);
     
     return 0;

@@ -155,11 +155,14 @@ int main()
     clock_t start = clock();
 
     // 加密
-    des_encrypt(c, m, round_key);
+    for (int i = 0; i < (1 << 20); ++i)
+    {
+        des_encrypt(c, m, round_key);
+    }
 
     clock_t end = clock();
 
-    printf("Speed : %lf Mbps\n", (1.0 / (1 << 8)) / ((double)(end - start) / CLOCKS_PER_SEC));
+    printf("Speed : %lf Mbps\n", (1 << 12) / ((double)(end - start) / CLOCKS_PER_SEC));
 
     return 0;
 }
