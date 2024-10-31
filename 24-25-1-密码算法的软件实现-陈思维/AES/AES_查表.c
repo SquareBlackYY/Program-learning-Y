@@ -132,9 +132,9 @@ int main()
 
     const clock_t start = clock();
     // 加密
-    for (int i = 0; i < TEST_BLOCK_SIZE; ++i) {
+    //for (int i = 0; i < TEST_BLOCK_SIZE; ++i) {
     aes_encrypt(plain_text, round_keys, cipher_text);
-    }
+    //}
     const clock_t end = clock();
 
     printf("加密结果:\t");
@@ -215,7 +215,7 @@ void aes_encrypt(uint8_t *plainText, const uint8_t roundKeys[][16], uint8_t *cip
     cipherText[2] = S_BOX[plainText[10]] ^ roundKeys[10][2];
     cipherText[3] = S_BOX[plainText[15]] ^ roundKeys[10][3];
 
-    cipherText[4] = S_BOX[plainText[3]] ^ roundKeys[10][4];
+    cipherText[4] = S_BOX[plainText[4]] ^ roundKeys[10][4];
     cipherText[5] = S_BOX[plainText[9]] ^ roundKeys[10][5];
     cipherText[6] = S_BOX[plainText[14]] ^ roundKeys[10][6];
     cipherText[7] = S_BOX[plainText[3]] ^ roundKeys[10][7];
