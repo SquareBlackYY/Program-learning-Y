@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <arm_neon.h>
+#include <string.h>
 
 static const uint8_t S_BOX[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
@@ -35,13 +36,11 @@ static const uint8_t key[16] = {
     0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff};
 
-int main()
-{
+int main() {
     FILE *input = fopen("plaintext.bin", "rb");
     FILE *output = fopen("ciphertext.bin", "wb");
 
-    if (!input || !output)
-    {
+    if (!input || !output) {
         perror("无法打开输入或输出文件");
         return 1;
     }
@@ -51,24 +50,24 @@ int main()
     size_t file_size = ftell(input);
     fseek(input, 0, SEEK_SET);
 
-    uint8_t *plaintext = (uint8_t *)malloc(file_size);
-    uint8_t *ciphertext = (uint8_t *)malloc(file_size);
     uint8x16_t round_keys[11];
+    init_round_keys(round_keys, key);
 
-    if (!plaintext || !ciphertext)
-    {
-        perror("内存分配失败");
-        return 1;
+    uint8_t plaintext_block[16];
+    uint8_t ciphertext_block[16];
+
+    // 分块加密
+    size_t read_bytes;
+    while ((read_bytes = fread(plaintext_block, 1, 16, input)) > 0) {
+        // 如果读取的字节数不足BLOCK_SIZE，则用0填充
+        if (read_bytes < 16) {
+            memset(plaintext_block + read_bytes, 0, 16 - read_bytes);
+        }
+
+        aes128_encrypt_neon(plaintext_block, ciphertext_block, round_keys);
+        fwrite(ciphertext_block, 1, 16, output);
     }
 
-    init_round_keys(round_keys, key);
-    fread(plaintext, sizeof(uint8_t), file_size, input);
-
-    aes128_encrypt_neon(plaintext, ciphertext, round_keys);
-    fwrite(ciphertext, sizeof(uint8_t), file_size, output);
-
-    free(plaintext);
-    free(ciphertext);
     fclose(input);
     fclose(output);
 

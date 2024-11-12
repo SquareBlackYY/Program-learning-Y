@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#define TEST_BLOCK_SIZE (1ULL << 20)
+#define TEST_BLOCK_SIZE (1ULL << 25)
 
 int main() {
     FILE *file = fopen("plaintext.bin", "wb");

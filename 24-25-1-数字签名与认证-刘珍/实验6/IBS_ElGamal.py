@@ -1,25 +1,75 @@
-# G1, G2是阶为素数q的椭圆曲线上的加法群
-# GT是有限域上阶为q的乘法群
-# ZR通常指的整数模q的环
-from charm.toolbox.pairinggroup import PairingGroup, G1, G2, GT, ZR 
+from charm.toolbox.pairinggroup import PairingGroup, G1, ZR, pair
 
-# 创建配对组，其中SS256是一种特定的配对群参数
-# 通常在密码学中用于生成双线性对
-# 这里的“SS”指的是“Smart and Sorensen”方法，一种基于椭圆曲线的加密协议
-# 256 则指的是安全级别，即使用的素数的位数。
-group = PairingGroup('SS512')
 
-# 生成椭圆曲线群G1中元素
-g = group.random(G1)
+class Signature:
+    def __init__(self) -> None:
+        self.R = None
+        self.S = None
 
-id = 'aaa'
+    def __str__(self) -> str:
+        return f"IBS_ElGamal签名:\nR: {self.R}\nS: {self.S}"
 
-# 将身份哈希成G1中元素
-group.hash(id, G1)
 
-class KGC:
-    def __init__(self, group_obj):
-        self.group = group_obj
-        self.p = self.group.randomGen(G1)
+class System:
+    # 初始化
+    def __init__(self) -> None:
+        self.group = PairingGroup('SS512')
+        # 系统主私钥 s, 属于 ZR 群
+        self.s = self.group.random()
+        # P 是 G1 的一个生成元
+        self.P = self.group.random(G1)
+        # P_pub 是系统的主公钥, 计算 s * P
+        self.P_pub = self.s * self.P
 
-    
+
+class User:
+    # 初始化
+    def __init__(self, id: str, system: System) -> None:
+        self.ID: str = id
+        self.system: System = system
+        # 用户ID的公开钥 Q_ID = H1(ID)
+        self.Q_ID = self.system.group.hash(self.ID, G1)
+        # 用户ID的秘密钥 d_ID = s * Q_ID
+        self.d_ID = self.system.s * self.Q_ID
+
+    # 签名
+    def sign(self, msg: str) -> Signature:
+        sig = Signature()
+        # 选择随机数 k
+        k = self.system.group.random()
+        # 计算 R = k * P
+        sig.R = k * self.system.P
+        # 计算 H2(m)， x_R
+        H2_m = self.system.group.hash(msg)
+        x_R = int(sig.R.__str__().strip("[]").split(", ")[0])
+        # 计算S = k^-1 * (H2(m) * P + x_R * d_ID)
+        sig.S = (k ** -1) * (H2_m * self.system.P + self.d_ID ** x_R)
+        return sig
+
+    # 验签
+    def verify(self, prover: 'User', msg: str, sig: Signature) -> bool:
+        # 计算 H2(m)， x_R
+        H2_m = self.system.group.hash(msg)
+        x_R = int(sig.R.__str__().strip("[]").split(", ")[0])
+        return pair(sig.R, sig.S) == (pair(self.system.P, self.system.P) ** H2_m) * (pair(self.system.P_pub, prover.Q_ID) ** x_R)
+
+
+def IBS_ElGamal():
+    # 初始化系统和用户
+    system = System()
+    prover = User("Alice", system)
+    verifier = User("Bob", system)
+
+    # 消息
+    message = "基于身份的ElGamal签名测试"
+
+    # 签名
+    sig = prover.sign(message)
+    print(sig)
+
+    # 验签
+    if verifier.verify(prover, message, sig):
+        print("验签成功")
+
+
+IBS_ElGamal()

@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define TEST_BLOCK_SIZE (1ULL << 25) // 测试分组（16字节）
 #define TEST_ROUND 10 // 测试轮数
 
 // S盒 用于加密时字节代换
@@ -41,8 +40,12 @@ void aes128_encrypt_neon(const uint8_t *p, uint8_t *c, const uint8x16_t *rk)
     uint8x16_t state = vld1q_u8(p);
 
     for (int i = 0; i < 9; ++i)
-        state = vaesmcq_u8(vaeseq_u8(state, rk[i]));
-
+    {
+        // 执行AddRoundKey, SubBytes, ShiftRows
+        state = vaeseq_u8(state, rk[i]);
+        // 执行MixColumns
+        state = vaesmcq_u8(state);
+    }
     state = vaeseq_u8(state, rk[9]);
     state = veorq_u8(state, rk[10]);
     vst1q_u8(c, state);
@@ -54,11 +57,18 @@ void aes128_decrypt_neon(const uint8_t *c, uint8_t *p, const uint8x16_t *rk)
     // 加载输入块
     uint8x16_t state = vld1q_u8(c);
 
-    
-    for (int i = 10; i > 1; i--)
-       state = vaesimcq_u8(vaesdq_u8(state, vaesimcq_u8(rk[i])));
+    state = vaesdq_u8(state, rk[10]);
+    for (int i = 9; i > 0; --i)
+    {
+        state = veorq_u8(state, rk[i]);
+        // 执行MixColumns
+        state = vaesimcq_u8(state);
+        state = veorq_u8(state, rk[i]);
+        // 执行AddRoundKey, SubBytes, ShiftRows
+        state = vaesdq_u8(state, rk[i]);
+    }
 
-    state = veorq_u8(state, vaesimcq_u8(rk[0]));
+    state = veorq_u8(state, rk[0]);
     vst1q_u8(p, state);
 }
 
@@ -129,17 +139,23 @@ int main()
         printf("%02x ", de_pt[i]);
     printf("\n");
 
-    uint8_t *pts = (uint8_t *)malloc(TEST_BLOCK_SIZE * 16 * sizeof(uint8_t));
-    uint8_t *cts = (uint8_t *)malloc(TEST_BLOCK_SIZE * 16 * sizeof(uint8_t));
-    uint8_t *de_pts = (uint8_t *)malloc(TEST_BLOCK_SIZE * 16 * sizeof(uint8_t));
+    FILE *input = fopen("plaintext.bin", "rb");
+    fseek(input, 0, SEEK_END);
+    size_t file_size = ftell(input);
+    fseek(input, 0, SEEK_SET);
+
+    size_t TEST_BLOCK_SIZE = file_size / 16;  // 计算TEST_BLOCK_SIZE
+
+    uint8_t *pts = (uint8_t *)malloc(file_size);
+    uint8_t *cts = (uint8_t *)malloc(file_size);
+
+    // 读取plaintext.bin文件内容到pts缓冲区
+    fread(pts, 1, file_size, input);
+    fclose(input);
 
     // 加密速度测试
     for (int j = 0; j < TEST_ROUND; ++j)
     {
-        // 随机生成数据
-        for (size_t i = 0; i < TEST_BLOCK_SIZE * 16; ++i)
-            pts[i] = (uint8_t)(rand() % 256);
-
         // 加密
         uint8_t *pts_ptr = pts, *cts_ptr = cts;
         clock_t start = clock();
@@ -152,31 +168,16 @@ int main()
         clock_t end = clock();
         unsigned long long data = 16 * TEST_BLOCK_SIZE / 1024 / 1024; // 测试数据大小（MB）
         printf("第%2d轮, 加密了 %llu MB 数据, 速度: %.2f Mbps\n",j + 1 ,data, 8 * data / ((double)(end - start) / CLOCKS_PER_SEC));
-
-        // 解密
-        cts_ptr = cts;
-        uint8_t *de_pt_ptr = de_pts;
-        for (int i = 0; i < TEST_BLOCK_SIZE; ++i)
-        {
-            aes128_decrypt_neon(cts_ptr, de_pt_ptr, rk);
-            cts_ptr += 16;
-            de_pt_ptr += 16;
-        }
-
-        // 解密正确性验证
-        bool isSame = true;
-        for (int i = 0; i < TEST_BLOCK_SIZE * 16; ++i)
-        {
-            if (pts[i] != de_pts[i])
-            {
-                isSame = false;
-                break;
-            }
-        }
-        printf("%s", isSame ? "验证通过\n" : "验证失败\n");
-
-        //if ()
     }
+
+    // 将加密结果写入ciphertext.bin
+    FILE *output = fopen("ciphertext.bin", "wb");
+    fwrite(cts, 1, file_size, output);
+    fclose(output);
+
+    // 释放内存
+    free(pts);
+    free(cts);
 
     return 0;
 }

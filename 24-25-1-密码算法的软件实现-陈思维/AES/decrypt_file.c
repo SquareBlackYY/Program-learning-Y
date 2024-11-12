@@ -49,23 +49,19 @@ int main() {
     size_t file_size = ftell(input);
     fseek(input, 0, SEEK_SET);
 
-    uint8_t *ciphertext = (uint8_t *)malloc(file_size);
-    uint8_t *plaintext_decrypted = (uint8_t *)malloc(file_size);
     uint8x16_t round_keys[11];
+    init_round_keys(round_keys, key);
 
-    if (!ciphertext || !plaintext_decrypted) {
-        perror("内存分配失败");
-        return 1;
+    uint8_t ciphertext_block[16];
+    uint8_t plaintext_block[16];
+
+    // 分块解密
+    size_t read_bytes;
+    while ((read_bytes = fread(ciphertext_block, 1, 16, input)) > 0) {
+        aes128_decrypt_neon(ciphertext_block, plaintext_block, round_keys);
+        fwrite(plaintext_block, 1, read_bytes, output);
     }
 
-    init_round_keys(round_keys, key);
-    fread(ciphertext, sizeof(uint8_t), file_size, input);
-
-    aes128_decrypt_neon(ciphertext, plaintext_decrypted, round_keys);
-    fwrite(plaintext_decrypted, sizeof(uint8_t), file_size, output);
-
-    free(ciphertext);
-    free(plaintext_decrypted);
     fclose(input);
     fclose(output);
 
