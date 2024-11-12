@@ -132,9 +132,9 @@ int main()
 
     const clock_t start = clock();
     // 加密
-    //for (int i = 0; i < TEST_BLOCK_SIZE; ++i) {
+    for (int i = 0; i < TEST_BLOCK_SIZE; ++i) {
     aes_encrypt(plain_text, round_keys, cipher_text);
-    //}
+    }
     const clock_t end = clock();
 
     printf("加密结果:\t");
