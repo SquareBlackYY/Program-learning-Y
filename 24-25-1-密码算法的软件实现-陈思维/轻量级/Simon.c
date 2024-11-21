@@ -50,8 +50,8 @@ void SimonDecrypt(const uint64_t *ciphertext, const uint64_t round_keys[], uint6
         x = y ^ (S(x, 1) & S(x, 8)) ^ S(x, 2) ^ round_keys[i];
         y = tmp;
     }
-    plaintext[0] = y;
     plaintext[1] = x;
+    plaintext[0] = y;
 }
 
 int main() {
