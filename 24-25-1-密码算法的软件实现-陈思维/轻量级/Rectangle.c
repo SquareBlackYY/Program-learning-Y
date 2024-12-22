@@ -22,9 +22,14 @@ static const uint8_t P_BOX[64] = {
     12, 28, 44, 60, 13, 29, 45, 61, 14, 30, 46, 62, 15, 31, 47, 63
 };
 
-static uint64_t Table[8][256];
+static const uint8_t RC[25] = {
+    0x01, 0x02, 0x04, 0x09, 0x12, 0x05, 0x0B, 0x16,
+    0x0C, 0x19, 0x13, 0x07, 0x0F, 0x1F, 0x1E, 0x1C,
+    0x18, 0x11, 0x03, 0x06, 0x0D, 0x1B, 0x17, 0x0E,
+    0x1D
+};
 
-// P置换
+// P 置换
 inline static uint64_t Permutation(uint64_t state) {
     uint64_t permuted = 0;
     for (int i = 0; i < 64; i++)
@@ -35,76 +40,76 @@ inline static uint64_t Permutation(uint64_t state) {
 
 // 轮密钥生成
 void GenerateKeySchedule(const uint16_t key[], uint64_t round_keys[]) {
-    uint64_t current_key = (uint64_t) key[0] << 60
-                           | (uint64_t) key[1] << 45
-                           | (uint64_t) key[2] << 30
-                           | (uint64_t) key[3] << 15
-                           | key[4];
+    uint16_t state[5];
+    for (int i = 0; i < 5; i++)
+        state[i] = key[i];
 
     for (int i = 0; i < ROUNDS; i++) {
-        // 提取高64位作为轮密钥
-        round_keys[i] = current_key >> 16;
+        // 提取轮密钥
+        round_keys[i] = (uint64_t)state[3] << 48
+                        | (uint64_t)state[2] << 32
+                        | (uint64_t)state[1] << 16
+                        | (uint64_t)state[0];
 
         // 循环左移19位
         current_key = current_key << 19 & 0xFFFFFFFFFFFFFFFFULL |
                       current_key >> (80 - 19);
 
-        // S盒替换最高4位
+        // S 盒
         const uint8_t sbox_input = current_key >> 76 & 0xF;
         current_key &= ~(0xFULL << 76);
         current_key |= (uint64_t) S_BOX[sbox_input] << 76;
 
-        // 异或轮计数到密钥低5位
-        current_key ^= (uint64_t) (i + 1);
+        // 异或轮常数
+        state[0] = (state[0] & 0x1F) ^ ;
     }
 }
 
 // 加密函数
-void RectangleEncrypt(const uint64_t plaintext, const uint64_t round_keys[], uint64_t *ciphertext) {
-    uint64_t state = plaintext;
+void RectangleEncrypt(const uint64_t *plaintext, const uint64_t round_keys[], uint64_t *ciphertext) {
+    *ciphertext = *plaintext;
 
     for (int i = 0; i < ROUNDS; i++) {
         // 与轮密钥异或
-        state ^= round_keys[i];
+        *ciphertext ^= round_keys[i];
 
         // S盒替换
         uint64_t sbox_state = 0;
         for (int j = 0; j < 16; j++) {
-            const uint8_t nibble = state >> j * 4 & 0xF;
+            const uint8_t nibble = *ciphertext >> j * 4 & 0xF;
             sbox_state |= (uint64_t)S_BOX[nibble] << j * 4;
         }
-        state = sbox_state;
+        *ciphertext = sbox_state;
 
         // P置换
-        state = Permutation(state);
+        *ciphertext = Permutation(*ciphertext);
     }
 
     // 最后一轮异或
-    state ^= round_keys[ROUNDS - 1];
-    *ciphertext = state;
+    *ciphertext ^= round_keys[ROUNDS - 1];
 }
 
 // 解密函数
-void RectangleDecrypt(const uint64_t ciphertext, const uint64_t round_keys[], uint64_t *plaintext) {
-    uint64_t state = ciphertext;
+void RectangleDecrypt(const uint64_t *ciphertext, const uint64_t round_keys[], uint64_t *plaintext) {
+    *plaintext = *ciphertext;
 
     // 反向最后一轮异或
-    state ^= round_keys[ROUNDS - 1];
+    *plaintext ^= round_keys[ROUNDS - 1];
 
     for (int i = ROUNDS - 1; i >= 0; i--) {
         // 反向P置换
         uint64_t permuted = 0;
         for (int j = 0; j < 64; j++) {
-            if (state & 1ULL << P_BOX[j]) {
+            if (*plaintext & 1ULL << P_BOX[j]) {
                 permuted |= 1ULL << j;
             }
         }
-        state = permuted;
+        *plaintext = permuted;
 
         // 反向S盒替换
         uint64_t sbox_state = 0;
         for (int j = 0; j < 16; j++) {
-            const uint8_t nibble = state >> j * 4 & 0xF;
+            const uint8_t nibble = *plaintext >> j * 4 & 0xF;
             for (int k = 0; k < 16; k++) {
                 if (S_BOX[k] == nibble) {
                     sbox_state |= (uint64_t)k << j * 4;
@@ -112,17 +117,11 @@ void RectangleDecrypt(const uint64_t ciphertext, const uint64_t round_keys[], ui
                 }
             }
         }
-        state = sbox_state;
+        *plaintext = sbox_state;
 
         // 与轮密钥异或
-        state ^= round_keys[i];
+        *plaintext ^= round_keys[i];
     }
-
-    *plaintext = state;
-}
-
-// 初始化加速表
-void InitTable() {
 }
 
 int main() {
@@ -137,10 +136,10 @@ int main() {
 
     printf("明文: %016llX\n", plaintext);
 
-    RectangleEncrypt(plaintext, round_keys, &ciphertext);
+    RectangleEncrypt(&plaintext, round_keys, &ciphertext);
     printf("密文: %016llX\n", ciphertext);
 
-    RectangleDecrypt(ciphertext, round_keys, &decryptedtext);
+    RectangleDecrypt(&ciphertext, round_keys, &decryptedtext);
     printf("解密: %016llX\n", decryptedtext);
 
     return 0;

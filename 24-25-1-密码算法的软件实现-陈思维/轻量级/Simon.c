@@ -13,7 +13,7 @@
 static const uint64_t Z2 = 0b10101111011100000011010010011000101000010001111110010110110011Ull;
 
 // 循环左移
-inline static uint64_t S(uint64_t value, int num) {
+static uint64_t S(uint64_t value, int num) {
     return (((value) << ((num) & 63)) | ((value) >> ((64 - ((num) & 63)) & 63)));
 }
 
