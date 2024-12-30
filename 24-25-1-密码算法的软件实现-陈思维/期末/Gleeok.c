@@ -9,7 +9,7 @@
 
 #define BLOCK_SIZE 128  // 分组长度
 #define KEY_SIZE 256    // 密钥长度
-#define KEY_ROUNDS 12   // 轮数
+#define ROUNDS 12       // 轮数
 
 static const uint8_t S3[8] = {
     0, 5, 3, 2, 6, 1, 4, 7
@@ -24,7 +24,7 @@ static const uint8_t S5[32] = {
     18, 21, 24, 27, 6, 1, 4, 7, 26, 29, 16, 19, 30, 25, 28, 31
 };
 
-static const uint64_t RC[3][KEY_ROUNDS + 1][2] = {
+static const uint64_t RC[3][ROUNDS + 1][2] = {
     {
         {0x243f6a8885a308d3ULL, 0x13198a2e03707344ULL},
         {0xa4093822299f31d0ULL, 0x082efa98ec4e6c89ULL},
@@ -76,9 +76,9 @@ void GleeokInitTable();
 
 static void lookup_table(uint64_t text[], int table_num);
 
-static void keyschedule(uint64_t K00, uint64_t K01, uint64_t K10, uint64_t K11, int s, uint64_t rk[KEY_ROUNDS + 1][2]);
+static void keyschedule(uint64_t K00, uint64_t K01, uint64_t K10, uint64_t K11, int s, uint64_t rk[ROUNDS + 1][2]);
 
-void GleeokKeyExpansion(const uint64_t key[], uint64_t round_key[3][KEY_ROUNDS + 1][2]);
+void GleeokKeyExpansion(const uint64_t key[], uint64_t round_key[3][ROUNDS + 1][2]);
 
 static void branch0(uint64_t text[], const uint64_t branch_key[], const uint64_t rc[], bool last);
 
@@ -86,7 +86,7 @@ static void branch1(uint64_t text[], const uint64_t branch_key[], const uint64_t
 
 static void branch2(uint64_t text[], const uint64_t branch_key[], const uint64_t rc[], bool last);
 
-void GleeokEncryption(const uint64_t plaintext[], const uint64_t round_key[3][KEY_ROUNDS + 1][2],
+void GleeokEncryption(const uint64_t plaintext[], const uint64_t round_key[3][ROUNDS + 1][2],
                       uint64_t ciphertext[]);
 
 uint64_t Table[3][16][256][2];
@@ -99,7 +99,7 @@ int main() {
         0x0001020304050607ULL, 0x08090a0b0c0d0e0fULL,
         0x1011121314151617ULL, 0x18191a1b1c1d1e1fULL
     };
-    uint64_t round_key[3][KEY_ROUNDS + 1][2] = {0};
+    uint64_t round_key[3][ROUNDS + 1][2] = {0};
 
     // 密钥扩展
     GleeokKeyExpansion(key, round_key);
@@ -214,10 +214,10 @@ static void lookup_table(uint64_t text[], const int table_num) {
 
 // 轮密钥生成
 static void keyschedule(const uint64_t K00, const uint64_t K01, const uint64_t K10, const uint64_t K11, const int s,
-                        uint64_t rk[KEY_ROUNDS + 1][2]) {
+                        uint64_t rk[ROUNDS + 1][2]) {
     uint64_t K0[2] = {K00, K01}, K1[2] = {K10, K11}, tmp[2];
 
-    for (int r = 0; r < KEY_ROUNDS + 1; r++) {
+    for (int r = 0; r < ROUNDS + 1; r++) {
         if (r % 2 == 0) {
             memcpy(tmp, K0, sizeof(uint64_t[2]));
             memset(K0, 0, sizeof(uint64_t[2]));
@@ -237,7 +237,7 @@ static void keyschedule(const uint64_t K00, const uint64_t K01, const uint64_t K
 }
 
 // 密钥扩展
-void GleeokKeyExpansion(const uint64_t key[], uint64_t round_key[3][KEY_ROUNDS + 1][2]) {
+void GleeokKeyExpansion(const uint64_t key[], uint64_t round_key[3][ROUNDS + 1][2]) {
     keyschedule(key[0], key[1], key[2], key[3], 29, round_key[0]);
     keyschedule(key[2], key[3], key[0], key[1], 51, round_key[1]);
     keyschedule(key[1], key[2], key[0], key[3], 107, round_key[2]);
@@ -320,7 +320,7 @@ static void branch2(uint64_t text[], const uint64_t branch_key[], const uint64_t
 }
 
 // 加密函数
-void GleeokEncryption(const uint64_t plaintext[], const uint64_t round_key[3][KEY_ROUNDS + 1][2],
+void GleeokEncryption(const uint64_t plaintext[], const uint64_t round_key[3][ROUNDS + 1][2],
                       uint64_t ciphertext[]) {
     uint64_t b[3][2] = {0};
 
@@ -333,16 +333,16 @@ void GleeokEncryption(const uint64_t plaintext[], const uint64_t round_key[3][KE
     b[2][1] = plaintext[1] ^ round_key[2][0][1];
 
     // 轮函数
-    for (int r = 1; r < KEY_ROUNDS; r++) {
+    for (int r = 1; r < ROUNDS; r++) {
         branch0(b[0], round_key[0][r], RC[0][r], false);
         branch1(b[1], round_key[1][r], RC[1][r], false);
         branch2(b[2], round_key[2][r], RC[2][r], false);
     }
 
     // 最后一轮
-    branch0(b[0], round_key[0][KEY_ROUNDS], RC[0][KEY_ROUNDS], true);
-    branch1(b[1], round_key[1][KEY_ROUNDS], RC[1][KEY_ROUNDS], true);
-    branch2(b[2], round_key[2][KEY_ROUNDS], RC[2][KEY_ROUNDS], true);
+    branch0(b[0], round_key[0][ROUNDS], RC[0][ROUNDS], true);
+    branch1(b[1], round_key[1][ROUNDS], RC[1][ROUNDS], true);
+    branch2(b[2], round_key[2][ROUNDS], RC[2][ROUNDS], true);
 
     // 结果输出
     ciphertext[0] = b[0][0] ^ b[1][0] ^ b[2][0];
