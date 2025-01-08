@@ -190,7 +190,7 @@ int Compare(const BigInteger x, const BigInteger y) {
     return compare(x.value, y.value, max_len) * (x.isNegative ? -1 : 1);
 }
 
-// 右移 (num >> n_bit) (负数为左移)
+// 右移 (num >>= n_bit) (负数为左移)
 BigInteger RightShift(BigInteger num, const int n_bit) {
     // 0 判断
     if (num.length == 0)
@@ -236,7 +236,7 @@ BigInteger RightShift(BigInteger num, const int n_bit) {
     return num;
 }
 
-// 加法 (x + y)
+// 加法 (res = x + y)
 BigInteger Add(const BigInteger x, const BigInteger y) {
     // 0 判断
     if (x.length == 0 && y.length == 0)
@@ -282,7 +282,7 @@ BigInteger Add(const BigInteger x, const BigInteger y) {
     return res;
 }
 
-// 减法 (x - y)
+// 减法 (res = x - y)
 BigInteger Subtract(const BigInteger x, BigInteger y) {
     // 0 判断
     if (x.length == 0 && y.length == 0)
@@ -331,7 +331,7 @@ BigInteger Subtract(const BigInteger x, BigInteger y) {
     return res;
 }
 
-// 乘法 (x * y)
+// 乘法 (res = x * y)
 BigInteger Multiply(const BigInteger x, const BigInteger y) {
     // 0 判断
     if (x.length == 0 || y.length == 0)
@@ -354,6 +354,42 @@ BigInteger Multiply(const BigInteger x, const BigInteger y) {
     // 更新有效长度
     update_length(&res);
     return res;
+}
+
+// 模乘 (C = A * B % N) (蒙哥马利算法)
+BigInteger ModMultiply(const BigInteger A, const BigInteger B, const BigInteger N) {
+    // 0 判断
+    if (A.length == 0 || B.length == 0)
+        return ZERO;
+    if (N.length == 0) {
+        printf("Error: Modulus is zero.\n");
+        return ZERO;
+    }
+
+    // 1. 选取 R > N 且互素, 且为 2^k 次方 (k为整数)
+    // 加速: 可以直接将对应位置置 1, 无需实际计算
+    const int k = N.length * 32;
+    BigInteger R = ZERO;
+    R.value[N.length] = 1;
+    R.length = N.length + 1;
+
+    // 2. 计算 N' = N^-1 mod R
+    const BigInteger N_prime = ModInverse(N, R);
+
+    // 3. 将 A, B 转换到蒙哥马利域 A' = A * R mod N, B' = B * R mod N
+    // 加速: 与 R 相乘可以直接转化为左移 k 位
+    const BigInteger A_prime = Mod(RightShift(A, -k), N);
+    const BigInteger B_prime = Mod(RightShift(B, -k), N);
+
+    // 4. 计算 C' = A' * B' mod N
+    const BigInteger C_prime = Mod(Multiply(A_prime, B_prime), N);
+
+    // 5. 将 C' 转换回原域 C = C' * N' mod R
+    // 加速: 对 R 取模可以直接转化保留 k 位
+    BigInteger C = Multiply(C_prime, N_prime);
+    memset(C.value + N.length, 0, (C.length - N.length) * sizeof(uint32_t));
+    C.length = N.length;
+    return C;
 }
 
 // 带余除法 (quot = x // y, rem = x % y) (rem不会被修正为正数) (性能较低)
@@ -465,6 +501,12 @@ BigInteger GetRandomNumWithCoprime(const BigInteger *coprime, const int len) {
 
 // 模逆 (num ^ -1 % mod) (扩展欧几里得算法)
 BigInteger ModInverse(const BigInteger num, const BigInteger mod) {
+    // 0 判断
+    if (mod.length == 0) {
+        printf("Error: Modulus is zero.\n");
+        return ZERO;
+    }
+
     // 扩展的欧几里得算法
     BigInteger res[3];
     ex_Euclid(res, &num, &mod);
@@ -475,7 +517,7 @@ BigInteger ModInverse(const BigInteger num, const BigInteger mod) {
     return ZERO;
 }
 
-// 快速模幂 (base ^ exp % mod) (exp为负数时自动求逆)
+// 快速模幂 (res = base ^ exp % mod) (exp为负数时自动求逆)
 BigInteger ModExp(BigInteger base, BigInteger exp, const BigInteger mod) {
     // 0 判断
     if (base.length == 0 && exp.length == 0) {
@@ -565,7 +607,7 @@ BigInteger GetRandomPrime(const int len) {
         res = GetRandomNum(len, false);
     } while (!isPrime(&res));
     return res;
-} 
+}
 
 // RSA 参数生成
 void RSAKeygen(BigInteger *p, BigInteger *q, BigInteger *n, BigInteger *e, BigInteger *d) {
