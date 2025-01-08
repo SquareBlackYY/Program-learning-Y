@@ -232,7 +232,7 @@ void aes_encrypt(uint8_t *plainText, const uint8_t roundKeys[][16], uint8_t *cip
 }
 
 // AES 解密
-void aes_decrypt(uint8_t *cipherText, const uint8_t mixRoundKeys[11][16], uint8_t *decryptedText)
+void aes_decrypt(uint8_t *cipherText, const uint8_t mixRoundKeys[][16], uint8_t *decryptedText)
 {
     uint32_t *u32ct = (uint32_t *)cipherText;
     uint32_t *u32dt = (uint32_t *)decryptedText;
