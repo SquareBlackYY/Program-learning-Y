@@ -392,7 +392,7 @@ BigInteger ModMultiply(const BigInteger A, const BigInteger B, const BigInteger 
     return C;
 }
 
-// 带余除法 (quot = x // y, rem = x % y) (rem不会被修正为正数) (性能较低)
+// 带余除法 (quot = x // y, rem = x % y) (rem不会被修正为正数)
 void DivideAndMod(BigInteger *quot, BigInteger *rem, const BigInteger *x, const BigInteger *y) {
     // 0 判断
     if (y->length == 0) {
@@ -446,7 +446,7 @@ void DivideAndMod(BigInteger *quot, BigInteger *rem, const BigInteger *x, const 
     update_length(rem);
 }
 
-// 取模 (x % y) (结果会被修正为正数) (性能较低)
+// 取模 (x % y) (结果会被修正为正数)
 BigInteger Mod(const BigInteger x, const BigInteger y) {
     BigInteger res, quot, rem;
     DivideAndMod(&quot, &rem, &x, &y);
