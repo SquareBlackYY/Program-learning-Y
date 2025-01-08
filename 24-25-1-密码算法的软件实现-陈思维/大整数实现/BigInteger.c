@@ -553,7 +553,7 @@ BigInteger ModExp(BigInteger base, BigInteger exp, const BigInteger mod) {
     return res;
 }
 
-// 素性检测 (Miller-Rabin算法) (指定测试次数times)
+// 素性检测 (Miller-Rabin算法)
 bool isPrime(const BigInteger *num) {
     // 小于等于2, 直接判断
     const int cmp = Compare(*num, TWO);
